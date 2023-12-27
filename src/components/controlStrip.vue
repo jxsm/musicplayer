@@ -147,7 +147,7 @@ export default{
     
 
     .right_tiao div svg:hover{
-        fill: rgba(0, 255, 255, 0.529);
+        fill: #39c5bb;
     }
 
 
@@ -159,5 +159,9 @@ export default{
     .right_tiao div:nth-of-type(3) svg{
         width: 20px;
         height: 20px;
+    }
+
+    svg{
+        transition: fill 0.2s ease-in-out;
     }
 </style>

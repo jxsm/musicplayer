@@ -1,6 +1,7 @@
 'use strict'
 
-import { app, protocol, BrowserWindow ,contextBridge} from 'electron'
+import{ readFile,writeFile } from "../public/static/file"
+import { app, protocol, BrowserWindow ,contextBridge, ipcMain} from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
@@ -86,3 +87,17 @@ if (isDevelopment) {
   }
 }
 
+ipcMain.on("readFolderList",async(event,arg)=>{
+  if(arg=="获取歌曲文件夹列表"){
+    let con = await readFile('./userFile/filePath.json')
+    event.sender.send('musicFolderList',con)
+    console.log("被执行");
+  }
+})
+
+
+
+ipcMain.on("changeFolderList",async(event,arg)=>{
+  let con = await writeFile('./userFile/filePath.json',JSON.stringify(arg),'w')
+  event.sender.send('changeFolder',con)
+})

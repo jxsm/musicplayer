@@ -3,8 +3,12 @@
     <controlStrip @goset="setDisplay"></controlStrip>
     <!--遮罩层-->
     <div class="shadeBox" ref="shadeBox"></div>
+    
     <!--设置页面-->
     <global_set @goset="startSet" v-if="showSet" :show="GlobalSetAnimation" ></global_set>
+
+    <img src="./assets/首页.png" alt="">   
+
 </template>
 
 
@@ -41,13 +45,13 @@ export default {
             if(!this.showSet){
                 this.showSet = !this.showSet
                 this.GlobalSetAnimation = false
-                this.setShadeBox()
+                this.setShadeBox(5,1)
             }
             else{
                 setTimeout(()=>{
                     this.showSet = !this.showSet
                     this.GlobalSetAnimation = false
-                },480)
+                },310)
                 this.setShadeBox(0,1)
             }
 
@@ -58,8 +62,9 @@ export default {
          * @param {Number} time 动画时常
          */
         setShadeBox(dim=4,time=1){
-            this.$refs.shadeBox.style.transition = `filter ${time}s`
-            this.$refs.shadeBox.style.filter = `blur(${dim}px)`
+            this.$refs.shadeBox.style.transition = `backdrop-filter ${time}s , opacity ${time/2}s`
+            this.$refs.shadeBox.style.backdropFilter = `blur(${dim}px)`
+            this.$refs.shadeBox.style.opacity = dim==0?0:1
         }
         
     },
@@ -75,9 +80,17 @@ export default {
     width: 100%;
     height: 100%;
     position: absolute;
-    z-index: 99;
-    background-color: rgba(255, 255, 255, 0.162);
-    filter: blur(0px);
-    transition:filter 0s ;
+    z-index: 999;
+    opacity: 0;
+    background-color: rgba(52, 52, 52, 0.4);
+    backdrop-filter: blur(5px);
+    transition:backdrop-filter 0s opacity 0s;
+    
+
+}
+.main{
+    width: 100%;
+    height: 100%;
+    background-color: aqua
 }
 </style>
