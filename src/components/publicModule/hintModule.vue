@@ -1,7 +1,7 @@
 <template>
     <!--通知组件-->
     <div class="hintBox" ref="hintBox">
-        <div class="whiteBar">
+        <div class="whiteBar" ref="whiteBar">
 
         </div>
 
@@ -61,10 +61,14 @@
                 this.$refs.progressBar.style.left = '0%'
                 this.$refs.progressBar.style.transition = "left 0ms linear"
                 this.$refs.hintBox.style.display = "block"
+                this.$refs.whiteBar.style.transition = "left 0ms"
+                this.$refs.whiteBar.style.left = "0px"
                 setTimeout(()=>{
                     this.$refs.hintBox.style.right = "0px"
                     this.$refs.progressBar.style.transition = `left ${time}ms linear`
                     this.$refs.progressBar.style.left = '100%'
+                    this.$refs.whiteBar.style.transition = `left ${time/4}ms linear`
+                    this.$refs.whiteBar.style.left = "300px"
                 },50)
 
 
@@ -136,6 +140,7 @@
     position: absolute;
     left: 300px;
     background-color: aliceblue;
+    transition: left 0.5s;
 }
 
 .text{

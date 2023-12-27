@@ -97,7 +97,6 @@ ipcMain.on("readFolderList",async(event,arg)=>{
 
 
 ipcMain.on("changeFolderList",async(event,arg)=>{
-  console.log(arg);
   let con = await writeFile('./userFile/filePath.json',JSON.stringify(arg),'w')
   if(arg.length===0){
     con = await writeFile('./userFile/filePath.json',[],'w')

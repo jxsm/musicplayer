@@ -5,7 +5,7 @@
             <svg @click="$emit('goset')" t="1703493087916" class="closeSet" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5098" width="200" height="200"><path d="M576 512l277.333333 277.333333-64 64-277.333333-277.333333L234.666667 853.333333 170.666667 789.333333l277.333333-277.333333L170.666667 234.666667 234.666667 170.666667l277.333333 277.333333L789.333333 170.666667 853.333333 234.666667 576 512z" fill="" p-id="5099"></path></svg>
 
                 <div class="topbox" >
-                    <p>占位{{fillList}}</p>
+                    <p>占位</p>
                 </div>
 
                 <!--主要的设置内容-->
@@ -35,6 +35,7 @@ export default{
             alterFileList:false,//是否要更改文件
             FileListPath:null,//选择的文件的列表
             deleteFile:false,//是否是删除文件
+            first:true,//是否是为首次查询
         }
     },
     methods:{
@@ -94,13 +95,19 @@ export default{
          */
          window.ipcRenderer.on('musicFolderList', (event, arg) => {
             let oldFileList  = JSON.parse(arg);
-            
+
+            if(this.first){//判断是否为第一次查询
+                this.first = false
+                this.files = JSON.parse(JSON.stringify(oldFileList))
+                return
+            }
+
             //判断是否要更改文件
             if(this.alterFileList ){
                 if(!this.deleteFile){
                     for(let i = 0;i<oldFileList.length;i++){
                         if(oldFileList[i].path == this.FileListPath){
-                            proceedHint.warn("该文件夹已被添加")
+                            proceedHint.warn("该文件夹已被添加","提醒",2000)
                             return
                         }                
                     }
@@ -125,8 +132,7 @@ export default{
                                 
                                 this.files = JSON.parse(JSON.stringify(newList))
 
-                                proceedHint.warn("移除成功")
-                                console.log(newList)
+                                proceedHint.warn("移除成功","提醒",2000)
                                 break
                             }
                         }
@@ -135,7 +141,7 @@ export default{
                         oldFileList.push({path:this.FileListPath,name:this.FileListPath.split('\\').pop()});
                         //发送更改信息
                         window.ipcRenderer.send('changeFolderList',oldFileList);
-                        proceedHint.commonHint("添加成功")
+                        proceedHint.commonHint("添加成功","提示" ,2000)
                         //更改完成后恢复变量
                         this.files = JSON.parse(JSON.stringify(oldFileList))
                     }
@@ -155,9 +161,13 @@ export default{
          * 监听是否更改成功
          */
         window.ipcRenderer.on('changeFolder', (event, arg) => {
-            console.log(arg)
+            if(arg){
+                void 0
+            }
         })
 
+        //获取文件列表
+        this.first = true
         this.getFileList()
 
     },
