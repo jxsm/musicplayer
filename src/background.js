@@ -91,13 +91,16 @@ ipcMain.on("readFolderList",async(event,arg)=>{
   if(arg=="获取歌曲文件夹列表"){
     let con = await readFile('./userFile/filePath.json')
     event.sender.send('musicFolderList',con)
-    console.log("被执行");
   }
 })
 
 
 
 ipcMain.on("changeFolderList",async(event,arg)=>{
+  console.log(arg);
   let con = await writeFile('./userFile/filePath.json',JSON.stringify(arg),'w')
+  if(arg.length===0){
+    con = await writeFile('./userFile/filePath.json',[],'w')
+  }
   event.sender.send('changeFolder',con)
 })

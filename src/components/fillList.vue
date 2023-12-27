@@ -1,7 +1,11 @@
 <template>
 <!--文件列表-->
 <div :style="boxStyle" class="mainBox">
-    <div class="fillText" v-for="(item,index) in files" :key="index"><div>{{item.path}}</div></div>
+    <div class="fillText" v-for="(item,index) in files" :key="index" >
+        <div>{{item.path}}</div>
+        <img src="../assets/trash.svg" alt="删除" @click="del(item.path)" >
+    </div>
+    
 </div>
 </template>
 <script>
@@ -12,7 +16,9 @@ export default{
         }
     },
     methods:{
-
+        del(filePath){
+            this.$emit('del',filePath)
+        }
     },
     mounted(){
         
@@ -25,7 +31,7 @@ export default{
                 height:this.height,
                 backgroundColor:this.backgroundColor
             }
-        }
+        },
     },
     props:{
         width:{
@@ -42,7 +48,7 @@ export default{
         },
         files:{
             type:Array,
-            default:()=>{return []}
+            default:()=>{return []},
         }
         
     }
@@ -75,10 +81,7 @@ export default{
     margin-left: 30px;
     width: 85%;
     overflow: hidden;
+    white-space:nowrap;
 }
 
-.fillText::after{
-    content: url("../assets/trash.svg");
-    position: relative;
-}
 </style>

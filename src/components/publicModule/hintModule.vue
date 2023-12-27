@@ -43,6 +43,7 @@
                 this.$refs.mainBox.style.backgroundColor = e.detail.background
                 this.content = e.detail.content
                 this.startAnimation(e.detail.time)
+                e.stopPropagation();
             },
             /**
              * 设置动画
@@ -64,7 +65,7 @@
                     this.$refs.hintBox.style.right = "0px"
                     this.$refs.progressBar.style.transition = `left ${time}ms linear`
                     this.$refs.progressBar.style.left = '100%'
-                })
+                },50)
 
 
                 this.oldTime = setTimeout(()=>{

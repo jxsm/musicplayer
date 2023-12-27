@@ -5,7 +5,7 @@
             <svg @click="$emit('goset')" t="1703493087916" class="closeSet" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5098" width="200" height="200"><path d="M576 512l277.333333 277.333333-64 64-277.333333-277.333333L234.666667 853.333333 170.666667 789.333333l277.333333-277.333333L170.666667 234.666667 234.666667 170.666667l277.333333 277.333333L789.333333 170.666667 853.333333 234.666667 576 512z" fill="" p-id="5099"></path></svg>
 
                 <div class="topbox" >
-                    <p>占位</p>
+                    <p>占位{{fillList}}</p>
                 </div>
 
                 <!--主要的设置内容-->
@@ -14,7 +14,7 @@
                     <div class="addMusic">
                         <!--添加文件-->
                         <selectFile @selectFile="changeFileList" filewidth="150px" fileheight="150px" class="addfile" ></selectFile>
-                        <fillList width="50%" height="150px" backgroundColor="#4e4e4e" :files="files"></fillList>
+                        <fillList width="50%" height="150px" backgroundColor="#4e4e4e" :files="files" @del="deleteFiles"></fillList>
                     </div>
                 </div>
             </div>
@@ -27,12 +27,14 @@
 <script>
 import selectFile from "./selectFile.vue"
 import fillList from "./fillList.vue"
+import {proceedHint} from "../../public/static/proceedHint"
 export default{
     data(){
         return{
-            files:["E:\\SteamLibrary\\steamapps"],
+            files:[],
             alterFileList:false,//是否要更改文件
             FileListPath:null,//选择的文件的列表
+            deleteFile:false,//是否是删除文件
         }
     },
     methods:{
@@ -41,6 +43,8 @@ export default{
          */
         closeBox(){
             this.$refs.mainBox.style.transform = "rotateY(90deg) rotateX(10deg)"
+            this.alterFileList = false
+            this.FileListPath = null
         },
         /**
          * 获取音乐文件列表
@@ -65,6 +69,16 @@ export default{
          */
         selectFile(data){
             console.log(data)
+        },
+        /**
+         * 删除文件列表中的文件
+         * @param {String} filePath 
+         */
+        deleteFiles(filePath){
+            this.deleteFile = true
+            this.alterFileList = true
+            this.getFileList()//读取文件中的内容
+            this.FileListPath = filePath
         }
 
 
@@ -83,33 +97,65 @@ export default{
             
             //判断是否要更改文件
             if(this.alterFileList ){
-
-                for(let i = 0;i<oldFileList.length;i++){
-                    if(oldFileList[i].path == this.FileListPath){
-                        console.log("已添加")
-                        return
-                    }                
+                if(!this.deleteFile){
+                    for(let i = 0;i<oldFileList.length;i++){
+                        if(oldFileList[i].path == this.FileListPath){
+                            proceedHint.warn("该文件夹已被添加")
+                            return
+                        }                
+                    }
                 }
+                
                 //更改文件
                 if(this.FileListPath){
-                    //先变量更改
-                    oldFileList.push({path:this.FileListPath,name:this.FileListPath.split('\\').pop()});
-                    //发送更改信息
-                    window.ipcRenderer.send('changeFolderList',oldFileList);
-                    //更改完成后恢复变量
+                    //看是添加还是删除文件
+                    if(this.deleteFile){
+                        //遍历删除
+                        for(let i = 0;i<oldFileList.length;i++){
+                            if(oldFileList[i].path == this.FileListPath){
+                                let newList
+                                if(oldFileList.length>1){
+                                     newList = oldFileList.splice(i-1,1)
+                                }
+                                else{
+                                    newList = []
+                                }
+                                
+                                window.ipcRenderer.send('changeFolderList',newList);
+                                
+                                this.files = JSON.parse(JSON.stringify(newList))
+
+                                proceedHint.warn("移除成功")
+                                console.log(newList)
+                                break
+                            }
+                        }
+                    }else{
+                        //先变量更改
+                        oldFileList.push({path:this.FileListPath,name:this.FileListPath.split('\\').pop()});
+                        //发送更改信息
+                        window.ipcRenderer.send('changeFolderList',oldFileList);
+                        proceedHint.commonHint("添加成功")
+                        //更改完成后恢复变量
+                        this.files = JSON.parse(JSON.stringify(oldFileList))
+                    }
+
+                    //恢复变量
+                    this.deleteFile = false
                     this.alterFileList = false;
                     this.FileListPath = '';
+                    
                 }
             }
 
-            this.files = JSON.parse(JSON.stringify(oldFileList))
+            
         })
 
         /**
          * 监听是否更改成功
          */
         window.ipcRenderer.on('changeFolder', (event, arg) => {
-            console.log(arg);
+            console.log(arg)
         })
 
         this.getFileList()

@@ -9,17 +9,8 @@ class proceedHint {
      * @param {String} title 提示标题[警告]
      * @param {int} time 提示时间
      */
-    static commonHint(content,title="提示",time = 3000){
-        let tempEvent = new CustomEvent('hint',{
-            detail:{
-                title:title,
-                content:content,
-                titleColor:'#3653f6',
-                time:time,
-                background:'#242323',
-            }
-        });
-        window.dispatchEvent(tempEvent);
+    static commonHint(content,title="提示",time=3000){
+        this.general(content,title,"#3653f6","#242323",time)
     }
 
     /**
@@ -28,17 +19,8 @@ class proceedHint {
      * @param {String} title 提示标题[警告]
      * @param {int} time 提示时间
      */
-    static warning(content,title="警告",time = 3000){
-        let warningEvent = new CustomEvent('hint',{
-            detail:{
-                title:title,
-                content:content,
-                titleColor:'#F73859',
-                time:time,
-                background:'#242323',
-            }
-        });
-        window.dispatchEvent(warningEvent);
+    static warning(content,title="警告",time=3000){
+        this.general(content,title,'#F73859','#242323',time)
     }
 
 
@@ -48,17 +30,8 @@ class proceedHint {
      * @param {String} title 提示标题[警告]
      * @param {int} time 提示时间
      */
-    static warn(content,title="提醒",time = 3000){
-        let warningEvent = new CustomEvent('hint',{
-            detail:{
-                title:title,
-                content:content,
-                titleColor:'#FFCF3F',
-                time:time,
-                background:'#242323',
-            }
-        });
-        window.dispatchEvent(warningEvent);
+    static warn(content,title="提醒",time=3000){
+        this.general(content,title,'#FFCF3F','#242323',time)
     }
 
     /**
