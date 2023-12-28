@@ -66,7 +66,6 @@
 }
 
 .addMusic{
-    border: 1px solid royalblue;
     width: 90%;
     height: 200px;
     display: flex;
@@ -75,3 +74,22 @@
     justify-content: space-around;
 }
 
+.fillListDiv{
+    width: 50%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.addFileDiv{
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.addMusic p {
+    color: white;
+    font-weight: bold;
+}

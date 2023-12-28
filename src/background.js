@@ -1,7 +1,7 @@
 'use strict'
 
 import{ readFile,writeFile } from "../public/static/file"
-import { app, protocol, BrowserWindow ,contextBridge, ipcMain} from 'electron'
+import { app, protocol, BrowserWindow ,contextBridge, ipcMain,dialog} from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
@@ -87,6 +87,9 @@ if (isDevelopment) {
   }
 }
 
+/**
+ * 获取歌曲文件夹列表
+ */
 ipcMain.on("readFolderList",async(event,arg)=>{
   if(arg=="获取歌曲文件夹列表"){
     let con = await readFile('./userFile/filePath.json')
@@ -95,7 +98,9 @@ ipcMain.on("readFolderList",async(event,arg)=>{
 })
 
 
-
+/**
+ * 写入歌词文件夹列表
+ */
 ipcMain.on("changeFolderList",async(event,arg)=>{
   let con = await writeFile('./userFile/filePath.json',JSON.stringify(arg),'w')
   if(arg.length===0){
@@ -103,3 +108,16 @@ ipcMain.on("changeFolderList",async(event,arg)=>{
   }
   event.sender.send('changeFolder',con)
 })
+
+
+
+
+ipcMain.on('open-Directory', function (event, p) {
+  dialog.showOpenDialog({
+      properties: ["openDirectory"],
+      title: '请选择保存目录',
+      buttonLabel: '选择'
+  }).then(result => {
+      event.sender.send('selectedItem', [p,result.filePaths[0]])
+  })
+});

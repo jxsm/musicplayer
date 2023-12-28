@@ -13,8 +13,15 @@
                     <!--添加音乐-->
                     <div class="addMusic">
                         <!--添加文件-->
-                        <selectFile @selectFile="changeFileList" filewidth="150px" fileheight="150px" class="addfile" ></selectFile>
-                        <fillList width="50%" height="150px" backgroundColor="#4e4e4e" :files="files" @del="deleteFiles"></fillList>
+                        <div class="addFileDiv">
+                            <p>添加音乐文件夹</p>
+                            <selectFile @selectFile="changeFileList" filewidth="150px" fileheight="150px" class="addfile" ></selectFile>
+                        </div>
+
+                        <div class="fillListDiv">
+                            <p>音乐文件夹列表</p>
+                            <fillList width="100%" height="150px" backgroundColor="#4e4e4e" :files="files" @del="deleteFiles"></fillList>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -120,17 +127,17 @@ export default{
                         //遍历删除
                         for(let i = 0;i<oldFileList.length;i++){
                             if(oldFileList[i].path == this.FileListPath){
-                                let newList
+                                
                                 if(oldFileList.length>1){
-                                     newList = oldFileList.splice(i-1,1)
+                                    oldFileList.splice(i,1)
                                 }
                                 else{
-                                    newList = []
+                                    oldFileList = []
                                 }
                                 
-                                window.ipcRenderer.send('changeFolderList',newList);
+                                window.ipcRenderer.send('changeFolderList',oldFileList);
                                 
-                                this.files = JSON.parse(JSON.stringify(newList))
+                                this.files = JSON.parse(JSON.stringify(oldFileList))
 
                                 proceedHint.warn("移除成功","提醒",2000)
                                 break

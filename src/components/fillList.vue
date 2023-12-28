@@ -65,10 +65,10 @@ export default{
 }
 
 .fillText{
-    margin-top: 15px;
-    border-radius: 8px;
+    margin-top: 10px;
+    border-radius: 15px 0px  15px;
     width: 85%;
-    height: 25px;
+    height: 30px;
     background-color: #595656;
     display: flex;
     align-items: center;

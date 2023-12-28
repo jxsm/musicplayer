@@ -5,7 +5,7 @@
     </div>
 </template>
 <script>
-
+import {proceedHint} from '../../public/static/proceedHint'
 
 export default{
     data(){
@@ -32,29 +32,23 @@ export default{
     },
     methods:{
         addFile(){
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.webkitdirectory = true; // 设置为true以选择文件夹
-            input.style.display = 'none';
-            document.body.appendChild(input);
-            input.addEventListener('change', (event) => {
-                const target = event.target;
-                //分离路径
-                let temp =  target.files[0].path
-                temp = temp.split("\\")
-                temp = temp.slice(0,temp.length-1)
-                this.$emit("selectFile",temp.join("\\"))
-                // 清理输入元素
-                document.body.removeChild(input);
-            });
-            input.click();
-            
+            window.ipcRenderer.send('open-Directory', 1);
         },
        
     },
     mounted(){
-       
-        
+        window.ipcRenderer.on('selectedItem', (event, arg) => {
+            if(arg[1] == void 0){
+                return
+            }
+            if(arg[0] == 1){
+                if(arg[1].length<=3){
+                    proceedHint.warning("禁止选择根目录","警告",3000)
+                    return
+                }
+                this.$emit("selectFile",arg[1])
+            }
+        })
     },
     computed:{
         //计算属性
