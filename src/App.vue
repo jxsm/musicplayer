@@ -1,15 +1,18 @@
 <template>
     <hintModule></hintModule>
     <!--窗口顶部控制条-->
-    <controlStrip @goset="setDisplay"></controlStrip>
+    <controlStrip @goset="setDisplay" :setSongListX="setSongListX"></controlStrip>
+    <!--歌单列表-->
+    <songList class="songList" :style="songListStyle" @clicksong="showSong" :isShow="songListShow"></songList>
     <!--遮罩层-->
     <div class="shadeBox" ref="shadeBox"></div>
     
     <!--设置页面-->
     <global_set @goset="startSet" v-if="showSet" :show="GlobalSetAnimation" ></global_set>
 
+    <button @click="showSong">点击</button>
 
-    <img src="./assets/首页.png" alt="">   
+     <!--该写主页面了-->
 
 </template>
 
@@ -19,17 +22,20 @@
 import controlStrip from "./components/controlStrip.vue"//窗口顶部的控制条
 import global_set from "./components/global_set.vue"//窗口设置页
 import hintModule from "./components/publicModule/hintModule.vue"//提示框
-
+import  songList  from "./components/songList/songList.vue"//歌曲列表
 export default {
     components:{
         controlStrip,
         global_set,
         hintModule,
+        songList,
     },
     data(){
         return{
-            showSet:false,
-            GlobalSetAnimation:false
+            showSet:false,//是否显示设置菜单
+            GlobalSetAnimation:false,
+            SongListX:0,//歌单列表x轴坐标
+            songListShow:false,//歌单列表是否显示
         }
     },
     methods:{
@@ -80,10 +86,31 @@ export default {
                 this.$refs.shadeBox.style.zIndex = 9999
             }
         },
+        /**
+         * 设置歌单列表的位置
+         * @param {Number} x 位置
+         * 传递给了顶部控制条组件,由顶部控制条组件来设置
+         */
+        setSongListX(x){
+            this.SongListX = x - 180/2
+        },
+        /**
+         * 显示歌单列表页面?
+         */
+        showSong(){
+            this.songListShow = !this.songListShow
+        }
         
     },
     mounted(){
 
+    },
+    computed:{
+        songListStyle(){
+            return {
+                left:`${this.SongListX}px`
+            }
+        }
     }
     
 }
@@ -106,5 +133,9 @@ export default {
     width: 100%;
     height: 100%;
     background-color: aqua
+}
+
+.songList{
+    top: 40px;
 }
 </style>

@@ -145,7 +145,8 @@ export default{
                         }
                     }else{
                         //先变量更改
-                        oldFileList.push({path:this.FileListPath,name:this.FileListPath.split('\\').pop()});
+                        //TODO:编辑写入文件
+                        oldFileList.push({path:this.FileListPath,name:this.FileListPath.split('\\').pop(),collect:false});
                         //发送更改信息
                         window.ipcRenderer.send('changeFolderList',oldFileList);
                         proceedHint.commonHint("添加成功","提示" ,2000)

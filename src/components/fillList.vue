@@ -3,7 +3,8 @@
 <div :style="boxStyle" class="mainBox">
     <div class="fillText" v-for="(item,index) in files" :key="index" >
         <div>{{item.path}}</div>
-        <img src="../assets/trash.svg" alt="删除" @click="del(item.path)" >
+        <img src="../assets/trash.svg" alt="删除" @click="del(item.path)" class="fillTextImg">
+        
     </div>
     
 </div>
@@ -83,5 +84,7 @@ export default{
     overflow: hidden;
     white-space:nowrap;
 }
+
+
 
 </style>
