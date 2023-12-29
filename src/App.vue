@@ -1,7 +1,7 @@
 <template>
     <hintModule></hintModule>
     <!--窗口顶部控制条-->
-    <controlStrip @goset="setDisplay" :setSongListX="setSongListX"></controlStrip>
+    <controlStrip @goset="setDisplay" :setSongListX="setSongListX" @clicksong="showSong"></controlStrip>
     <!--歌单列表-->
     <songList class="songList" :style="songListStyle" @clicksong="showSong" :isShow="songListShow"></songList>
     <!--遮罩层-->
@@ -10,7 +10,6 @@
     <!--设置页面-->
     <global_set @goset="startSet" v-if="showSet" :show="GlobalSetAnimation" ></global_set>
 
-    <button @click="showSong">点击</button>
 
      <!--该写主页面了-->
 
@@ -56,8 +55,11 @@ export default {
                 this.showSet = !this.showSet
                 this.GlobalSetAnimation = false
                 this.setShadeBox(5,1)
+                this.songListShow = false
+
             }
             else{
+                
                 setTimeout(()=>{
                     this.showSet = !this.showSet
                     this.GlobalSetAnimation = false
@@ -99,6 +101,12 @@ export default {
          */
         showSong(){
             this.songListShow = !this.songListShow
+            if(this.songListShow && this.showSet){
+                //当歌单显示的时候关闭设置页面
+                this.showSet = true
+                this.startSet()
+            }
+            
         }
         
     },

@@ -58,7 +58,7 @@ export default{
          * 获取音乐文件列表
          */
         getFileList(){
-            window.ipcRenderer.send('readFolderList',"获取歌曲文件夹列表");
+            window.ipcRenderer.send('readFolderList',1);
         },
         /**
          * 更改音乐文件夹列表
@@ -101,7 +101,11 @@ export default{
          * 监听读取文件的信息
          */
          window.ipcRenderer.on('musicFolderList', (event, arg) => {
-            let oldFileList  = JSON.parse(arg);
+            
+            if(arg[0] !== 1){
+                return
+            }
+            let oldFileList  = JSON.parse(arg[1]);
 
             if(this.first){//判断是否为第一次查询
                 this.first = false

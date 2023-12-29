@@ -91,10 +91,8 @@ if (isDevelopment) {
  * 获取歌曲文件夹列表
  */
 ipcMain.on("readFolderList",async(event,arg)=>{
-  if(arg=="获取歌曲文件夹列表"){
-    let con = await readFile('./userFile/filePath.json')
-    event.sender.send('musicFolderList',con)
-  }
+  let con = await readFile('./userFile/filePath.json')
+  event.sender.send('musicFolderList',[arg,con])
 })
 
 
@@ -115,9 +113,11 @@ ipcMain.on("changeFolderList",async(event,arg)=>{
 ipcMain.on('open-Directory', function (event, p) {
   dialog.showOpenDialog({
       properties: ["openDirectory"],
-      title: '请选择保存目录',
+      title: '请选择歌曲目录',
       buttonLabel: '选择'
   }).then(result => {
       event.sender.send('selectedItem', [p,result.filePaths[0]])
   })
 });
+
+
