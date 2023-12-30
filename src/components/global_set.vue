@@ -32,17 +32,15 @@
 </template>
 
 <script>
+//TODO:改将数据存储改成Local Storage
 import selectFile from "./selectFile.vue"
 import fillList from "./fillList.vue"
 import {proceedHint} from "../../public/static/proceedHint"
 export default{
     data(){
         return{
-            files:[],
-            alterFileList:false,//是否要更改文件
-            FileListPath:null,//选择的文件的列表
-            deleteFile:false,//是否是删除文件
-            first:true,//是否是为首次查询
+            files:[],//文件列表
+            firstTime:true,//是否为第一次查询
         }
     },
     methods:{
@@ -58,35 +56,45 @@ export default{
          * 获取音乐文件列表
          */
         getFileList(){
-            window.ipcRenderer.send('readFolderList',1);
+            return localStorage.getItem('filePath')
         },
         /**
          * 更改音乐文件夹列表
          * @param {List} content 内容 
          */
         changeFileList(content){
-            //让其读取文件中的内容
-            this.alterFileList = true
-            //将其放到临时变量中
-            this.FileListPath = content
-            this.getFileList()//读取文件中的内容
-        },
-        /**
-         * 文件选择后的回调
-         * @param {String} data 
-         */
-        selectFile(data){
-            console.log(data)
+            //TODO:更改文件列表
+            let filePath =  JSON.parse(this.getFileList()) 
+            //先检查是否有重复的了
+            for(let i = 0;i<filePath.length;i++){
+                if(filePath[i].path == content){
+                    proceedHint.warn("该文件夹已存在","提醒",2000)
+                    return
+                }
+            }
+
+
+            filePath.push({path:content,name:content.split('\\').pop(),collect:false})
+            localStorage.setItem('filePath',JSON.stringify(filePath));
+            //提示还没搞
+            proceedHint.commonHint("添加成功","提醒",2000)
+            this.files = filePath
         },
         /**
          * 删除文件列表中的文件
          * @param {String} filePath 
          */
-        deleteFiles(filePath){
-            this.deleteFile = true
-            this.alterFileList = true
-            this.getFileList()//读取文件中的内容
-            this.FileListPath = filePath
+        deleteFiles(path){
+            let filePath =  JSON.parse(this.getFileList()) 
+            for(let i = 0;i<filePath.length;i++){
+                if(filePath[i].path == path){
+                    filePath.splice(i,1)
+                    break
+                }
+            }
+            localStorage.setItem('filePath',JSON.stringify(filePath));
+            proceedHint.warn("删除成功","提醒",2000)
+            this.files = filePath
         }
 
 
@@ -96,92 +104,13 @@ export default{
         //设置动画
         setTimeout(() =>{
             this.$refs.mainBox.style.transform = "rotateY(0deg) rotateX(0deg)"
-        }),
-         /**
-         * 监听读取文件的信息
-         */
-         window.ipcRenderer.on('musicFolderList', (event, arg) => {
-            
-            if(arg[0] !== 1){
-                return
-            }
-            let oldFileList  = JSON.parse(arg[1]);
-
-            if(this.first){//判断是否为第一次查询
-                this.first = false
-                this.files = JSON.parse(JSON.stringify(oldFileList))
-                return
-            }
-
-            //判断是否要更改文件
-            if(this.alterFileList ){
-                if(!this.deleteFile){
-                    for(let i = 0;i<oldFileList.length;i++){
-                        if(oldFileList[i].path == this.FileListPath){
-                            proceedHint.warn("该文件夹已被添加","提醒",2000)
-                            return
-                        }                
-                    }
-                }
-                
-                //更改文件
-                if(this.FileListPath){
-                    //看是添加还是删除文件
-                    if(this.deleteFile){
-                        //遍历删除
-                        for(let i = 0;i<oldFileList.length;i++){
-                            if(oldFileList[i].path == this.FileListPath){
-                                
-                                if(oldFileList.length>1){
-                                    oldFileList.splice(i,1)
-                                }
-                                else{
-                                    oldFileList = []
-                                }
-                                
-                                window.ipcRenderer.send('changeFolderList',oldFileList);
-                                
-                                this.files = JSON.parse(JSON.stringify(oldFileList))
-
-                                proceedHint.warn("移除成功","提醒",2000)
-                                break
-                            }
-                        }
-                    }else{
-                        //先变量更改
-                        //TODO:编辑写入文件
-                        oldFileList.push({path:this.FileListPath,name:this.FileListPath.split('\\').pop(),collect:false});
-                        //发送更改信息
-                        window.ipcRenderer.send('changeFolderList',oldFileList);
-                        proceedHint.commonHint("添加成功","提示" ,2000)
-                        //更改完成后恢复变量
-                        this.files = JSON.parse(JSON.stringify(oldFileList))
-                    }
-
-                    //恢复变量
-                    this.deleteFile = false
-                    this.alterFileList = false;
-                    this.FileListPath = '';
-                    
-                }
-            }
-
-            
         })
 
-        /**
-         * 监听是否更改成功
-         */
-        window.ipcRenderer.on('changeFolder', (event, arg) => {
-            if(arg){
-                void 0
-            }
-        })
 
-        //获取文件列表
-        this.first = true
-        this.getFileList()
-
+        //当打开的时候获取文件列表
+        let filePath =  JSON.parse(this.getFileList())
+        this.files = filePath
+       
     },
     props:{
         show:{

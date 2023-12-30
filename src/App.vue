@@ -10,8 +10,10 @@
     <!--设置页面-->
     <global_set @goset="startSet" v-if="showSet" :show="GlobalSetAnimation" ></global_set>
 
-
-     <!--该写主页面了-->
+     <!--主页面-->
+     <div class="appMainBox">
+        <songNameList></songNameList>
+     </div>
 
 </template>
 
@@ -21,13 +23,17 @@
 import controlStrip from "./components/controlStrip.vue"//窗口顶部的控制条
 import global_set from "./components/global_set.vue"//窗口设置页
 import hintModule from "./components/publicModule/hintModule.vue"//提示框
-import  songList  from "./components/songList/songList.vue"//歌曲列表
+import  songList  from "./components/songList/songList.vue"//歌单列表
+import songNameList from "./components/songNameList/songNameList.vue"//歌曲列表
+
+
 export default {
     components:{
         controlStrip,
         global_set,
         hintModule,
         songList,
+        songNameList,
     },
     data(){
         return{
@@ -107,10 +113,30 @@ export default {
                 this.startSet()
             }
             
-        }
+        },
+        /**
+         * 检查FilePath的数据是否存在,如果不存在则进行初始化
+         */
+        testFilePath(){
+            if (!localStorage.getItem('filePath')){
+                localStorage.setItem('filePath','[]')
+            }
+        },
+        //软件关闭的时候保存数据
+        beforeunloadHandler(e) {
+            console.log('关闭窗口之后',e)
+        },
         
     },
     mounted(){
+        //初始化检查数据看是否存在
+        this.testFilePath()
+
+
+        
+        //软件关闭的时候保存数据
+        window.addEventListener('beforeunload', e => this.beforeunloadHandler(e))
+
 
     },
     computed:{
@@ -137,13 +163,18 @@ export default {
     
 
 }
-.main{
-    width: 100%;
-    height: 100%;
-    background-color: aqua
-}
+
 
 .songList{
+    z-index: 2;
     top: 40px;
 }
+
+.appMainBox{
+    width: 100%;
+    height: 95.5vh;
+    position: relative;
+    border: 1px solid red;
+}
+
 </style>

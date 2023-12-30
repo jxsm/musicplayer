@@ -30,25 +30,20 @@ export default{
                 this.$refs.songBox.style.opacity = 1
                 this.$refs.songBox.style.transform = "rotateX(0deg)"
                 //在显示的时候激活重新查询文件
-                this.gainFileList()
-                //开启监听事件
-                window.ipcRenderer.on("musicFolderList",this.TwoGetList)
-                
+                this.listProcessing(this.gainFileList())
             }else{
                 //不显示
                 this.$refs.songBox.style.opacity = 0
                 this.$refs.songBox.style.transform = "rotateX(50deg)"
-                //取消监听
-                window.ipcRenderer.off("musicFolderList",this.TwoGetList)
             }
         }
     },
     methods:{
         /**
-         * 发送获取文件夹列表的请求给主线程
+         * 获取歌单列表
          */
         gainFileList(){
-            window.ipcRenderer.send('readFolderList',2)
+            return localStorage.getItem('filePath')
         },
         /**
          * 歌单排序
@@ -70,40 +65,37 @@ export default{
          * @param {Object} info 歌曲信息
          */
         cancelCollection(info){
-            this.tempInfo = info
-            window.ipcRenderer.send('readFolderList',4)
+            this.alterCollect(info,false)
         },
         /**
          * 添加收藏事件
          * @param {Object} info 歌曲信息
          */
         collected(info){
-            this.tempInfo = info
-            window.ipcRenderer.send('readFolderList',3)
+            this.alterCollect(info,true)
+            
         },
-        TwoGetList(event, arg){
-            switch (arg[0]){
-                case 2:
-                    //获取到文件列表然后进行排序,并显示到页面中
-                    this.listProcessing(arg)
+        /**
+         * 修改收藏状态
+         */
+        alterCollect(info,isCollect =false){
+            let FileList  = JSON.parse(this.gainFileList());
+            for(let i = 0;i<FileList.length;i++){
+                if(FileList[i].path == info.path){
+                    FileList[i].collect = isCollect
                     break
-                case 3:
-                    //添加收藏
-                    this.addCollect(arg)
-                    break
-                case 4:
-                    //取消收藏
-                    this.removeCollect(arg)
-                    break
+                }
             }
+
+            localStorage.setItem('filePath',JSON.stringify(FileList))
         }
         ,
         /**
-         * 当主线程查询到数据后交给该函数进行顺序处理
+         * 给查询到的数据排序,并显示到页面中
          * @param {List} arg 
          */
         listProcessing(arg){
-            let FileList  = JSON.parse(arg[1]);
+            let FileList  = JSON.parse(arg);
             //TODO:分离收藏和未收藏的歌曲,然后将其都按照字母顺序排序
             let collect = []
             let noCollect = []
@@ -123,39 +115,6 @@ export default{
             //合并
             this.songList = collect.concat(noCollect)
         },
-        /**
-         * 添加收藏处理
-         * @param {List} arg 
-         */
-        addCollect(arg){
-            //去找到歌曲然后添加收藏
-            let FileList  = JSON.parse(arg[1]);
-            for(let i = 0 ;i<FileList.length;i++){
-                if(FileList[i].path === this.tempInfo.path){
-                    FileList[i].collect = true
-                    break
-                }
-            }
-            
-            //重新写入到文件中
-            window.ipcRenderer.send('changeFolderList',FileList)
-        },
-        /**
-         * 取消收藏处理
-         * @param {List} arg 
-         */
-        removeCollect(arg){
-            //去找到歌曲然后添加收藏
-            let FileList  = JSON.parse(arg[1]);
-            for(let i = 0 ;i<FileList.length;i++){
-                if(FileList[i].path === this.tempInfo.path){
-                    FileList[i].collect = false
-                    break
-                }
-            }
-            //重新写入到文件中
-            window.ipcRenderer.send('changeFolderList',FileList)
-        }
     },
     mounted(){
         

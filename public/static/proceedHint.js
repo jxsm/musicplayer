@@ -6,7 +6,7 @@ class proceedHint {
     /**
      * 提示
      * @param {String} content 提示内容
-     * @param {String} title 提示标题[警告]
+     * @param {String} title 提示标题[提示]
      * @param {int} time 提示时间
      */
     static commonHint(content,title="提示",time=3000){
@@ -27,7 +27,7 @@ class proceedHint {
     /**
      * 提醒
      * @param {String} content 提示内容
-     * @param {String} title 提示标题[警告]
+     * @param {String} title 提示标题[提醒]
      * @param {int} time 提示时间
      */
     static warn(content,title="提醒",time=3000){
