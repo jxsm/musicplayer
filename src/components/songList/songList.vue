@@ -11,7 +11,6 @@ export default{
     data(){
         return{
             songList:[],//歌单列表
-            tempInfo:{},//临时存储歌单信息
         }
     },
     components:{
