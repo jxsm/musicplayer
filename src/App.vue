@@ -115,16 +115,40 @@ export default {
             
         },
         /**
+         * 设置filePath的值
+         */
+        setfFilePath(event,arg){
+            if(arg[0] == 1){
+                let data =  JSON.parse(arg[1])
+                if(data.length>0){
+                    localStorage.setItem('filePath',JSON.stringify(data))
+                }
+                else{
+                    localStorage.setItem('filePath',"[]")
+                }
+            }
+            //执行完成后取消监听
+            window.ipcRenderer.off('musicFolderList',this.setfFilePath)
+        },
+        /**
          * 检查FilePath的数据是否存在,如果不存在则进行初始化
          */
         testFilePath(){
             if (!localStorage.getItem('filePath')){
-                localStorage.setItem('filePath','[]')
+                localStorage.setItem('filePath',"[]")
+                //如果不存在则从文件中取读取
+                window.ipcRenderer.send('readFolderList',1)
+                window.ipcRenderer.on('musicFolderList',this.setfFilePath)
             }
         },
         //软件关闭的时候保存数据
         beforeunloadHandler(e) {
-            console.log('关闭窗口之后',e)
+            void e
+            let  filePath = JSON.parse(localStorage.getItem('filePath'))
+            if(filePath){
+                window.ipcRenderer.send('changeFolderList',filePath)
+            }
+            
         },
         
     },
@@ -133,7 +157,6 @@ export default {
         this.testFilePath()
 
 
-        
         //软件关闭的时候保存数据
         window.addEventListener('beforeunload', e => this.beforeunloadHandler(e))
 
