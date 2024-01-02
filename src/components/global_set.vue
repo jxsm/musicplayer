@@ -15,12 +15,12 @@
                         <!--添加文件-->
                         <div class="addFileDiv">
                             <p>添加音乐文件夹</p>
-                            <selectFile @selectFile="changeFileList" filewidth="150px" fileheight="150px" class="addfile" ></selectFile>
+                            <selectFile @selectFile="changeFileList" filewidth="150px" fileheight="150px" class="addfile" filecolor="var(--adjacent-theme-colour)"></selectFile>
                         </div>
 
                         <div class="fillListDiv">
                             <p>音乐文件夹列表</p>
-                            <fillList width="100%" height="150px" backgroundColor="#4e4e4e" :files="files" @del="deleteFiles"></fillList>
+                            <fillList width="100%" height="150px" backgroundColor="var(--adjacent-theme-colour)" :files="files" @del="deleteFiles"></fillList>
                         </div>
                     </div>
                 </div>

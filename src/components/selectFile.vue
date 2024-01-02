@@ -1,7 +1,7 @@
 <!--该组件用于选中文件-->
 <template>
     <div class="outer" :style="outerStyle" @click="addFile">
-        <svg t="1703575040210" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4241" width="200" height="200"><path d="M992 480H544V32c0-17.7-14.3-32-32-32s-32 14.3-32 32v448H32c-17.7 0-32 14.3-32 32s14.3 32 32 32h448v448c0 17.7 14.3 32 32 32s32-14.3 32-32V544h448c17.7 0 32-14.3 32-32s-14.3-32-32-32z" fill="#8a8a8a" p-id="4242"></path></svg>
+        <svg t="1703575040210" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4241" width="200" height="200"><path d="M992 480H544V32c0-17.7-14.3-32-32-32s-32 14.3-32 32v448H32c-17.7 0-32 14.3-32 32s14.3 32 32 32h448v448c0 17.7 14.3 32 32 32s32-14.3 32-32V544h448c17.7 0 32-14.3 32-32s-14.3-32-32-32z"  p-id="4242"></path></svg>
     </div>
 </template>
 <script>
@@ -78,7 +78,7 @@ export default{
 }
 
 .outer:hover{
-    box-shadow: inset 0px 0px 15px 8px #313131;
+    box-shadow: inset 0px 0px 15px 8px #31313147;
 }
 
 .outer:hover svg{
@@ -88,6 +88,7 @@ export default{
 .outer svg{
     transition: width 0.2s;
     width: 70%;
+    fill:var(--opposite-theme-colour) ;
 }
 
 

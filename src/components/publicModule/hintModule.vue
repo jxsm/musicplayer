@@ -38,6 +38,10 @@
              * @param {*} e 
              */
             hintEvent(e){
+                //判断是否在通知等级内
+                if(e.detail.level<window.hintLevel){
+                    return
+                }
                 this.title = e.detail.title
                 this.$refs.titleBox.style.backgroundColor = e.detail.titleColor
                 this.$refs.mainBox.style.backgroundColor = e.detail.background

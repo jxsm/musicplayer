@@ -1,6 +1,6 @@
 <template>
-    <div class="waiBox" ref="songBox">
-        <detailChunk @cancelCollection="cancelCollection" @collected="collected" v-for="(item,index) in songList" :key="index" :info="item" class="detailChunk"></detailChunk>
+    <div class="waiBox" ref="songBox" id="songBox">
+        <detailChunk  @cancelCollection="cancelCollection" @collected="collected" v-for="(item,index) in songList" :key="index" :info="item" class="detailChunk"></detailChunk>
     </div>
 </template>
 <script>
@@ -11,6 +11,7 @@ export default{
     data(){
         return{
             songList:[],//歌单列表
+            concealTime:0//隐藏计时器
         }
     },
     components:{
@@ -25,19 +26,46 @@ export default{
     watch:{
         isShow(){
             if(this.isShow){
+                if(this.concealTime){
+                    clearTimeout(this.concealTime)
+                    this.concealTime = 0
+                }
                 //显示
-                this.$refs.songBox.style.opacity = 1
-                this.$refs.songBox.style.transform = "rotateX(0deg)"
+                this.$refs.songBox.style.display = 'block'
+                setTimeout(()=>{
+                    this.$refs.songBox.style.opacity = 1
+                    this.$refs.songBox.style.transform = "rotateX(0deg)"
+                })
                 //在显示的时候激活重新查询文件
                 this.listProcessing(this.gainFileList())
+                setTimeout(()=>{
+                    //监听鼠标点击事件,当鼠标点击自己页面自己页面以外的时候页面关闭
+                    window.addEventListener("click",this.testMousePosition)
+                },50)
+                
             }else{
                 //不显示
                 this.$refs.songBox.style.opacity = 0
                 this.$refs.songBox.style.transform = "rotateX(50deg)"
+                //关闭监听
+                window.removeEventListener("click",this.testMousePosition)
+                this.concealTime = setTimeout(()=>{
+                    this.$refs.songBox.style.display = 'none'
+                    this.concealTime = 0
+                },500)
             }
         }
     },
     methods:{
+        /**
+         * 检查鼠标位置,如果鼠标位置不在此组件内则向父组件传递关闭事件
+         */
+        testMousePosition(e){
+            if(e.target.id!=="songBox" && e.target.id!=="songInfo"){
+                this.$emit("closeSongList")
+            }
+            
+        },
         /**
          * 获取歌单列表
          */
@@ -126,10 +154,11 @@ export default{
         position: absolute;
         width: 180px;
         height: 80%;
-        background-color: #353535;
-        border-radius: 0px 0px 10px 10px;
+        background-color: var(--adjacent-theme-colour);
+        border-radius: 10px 10px 10px 10px;
         box-shadow: 0px 2px 10px 0px #5f5f5f;
         opacity: 0;
+        transform: rotateX(50deg);
         transition: opacity 0.2s,transform 0.5s;
         transform-origin:top;
         overflow: scroll;

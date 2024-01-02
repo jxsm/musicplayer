@@ -3,18 +3,18 @@
     <!--窗口顶部控制条-->
     <controlStrip @goset="setDisplay" :setSongListX="setSongListX" @clicksong="showSong"></controlStrip>
     <!--歌单列表-->
-    <songList class="songList" :style="songListStyle" @clicksong="showSong" :isShow="songListShow"></songList>
+    <songList class="songList" :style="songListStyle" @clicksong="showSong" @closeSongList="showSong" :isShow="songListShow"></songList>
     <!--遮罩层-->
     <div class="shadeBox" ref="shadeBox"></div>
     
     <!--设置页面-->
     <global_set @goset="startSet" v-if="showSet" :show="GlobalSetAnimation" ></global_set>
 
-     <!--主页面-->
-     <div class="appMainBox">
-        <songNameList></songNameList>
-     </div>
 
+     <!--主页面-->
+    <MainInterface></MainInterface>
+
+    
 </template>
 
 
@@ -24,8 +24,8 @@ import controlStrip from "./components/controlStrip.vue"//窗口顶部的控制�
 import global_set from "./components/global_set.vue"//窗口设置页
 import hintModule from "./components/publicModule/hintModule.vue"//提示框
 import  songList  from "./components/songList/songList.vue"//歌单列表
-import songNameList from "./components/songNameList/songNameList.vue"//歌曲列表
-
+import MainInterface from "./components/mainInterface/mainInterface.vue"//主页面
+import {ThemeColors} from "./js/ThemeColors.js"
 
 export default {
     components:{
@@ -33,7 +33,7 @@ export default {
         global_set,
         hintModule,
         songList,
-        songNameList,
+        MainInterface
     },
     data(){
         return{
@@ -159,7 +159,7 @@ export default {
 
         //软件关闭的时候保存数据
         window.addEventListener('beforeunload', e => this.beforeunloadHandler(e))
-
+        ThemeColors.set("#3bc8f4")
 
     },
     computed:{
@@ -175,6 +175,7 @@ export default {
 
 <style scoped>
 .shadeBox{
+    top: 0;
     width: 100%;
     height: 100%;
     position: absolute;
@@ -193,11 +194,5 @@ export default {
     top: 40px;
 }
 
-.appMainBox{
-    width: 100%;
-    height: 95.5vh;
-    position: relative;
-    border: 1px solid red;
-}
 
 </style>

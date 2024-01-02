@@ -28,7 +28,7 @@
 .main_box{
     width: 80%;
     height: 80%;
-    background-color: #2d2d2daf;
+    background-color: var(--oppositeAdjacent-theme-colour);
     border-radius: 15px;
     overflow: scroll;
     transform: rotateY(90deg) rotateX(10deg) ;
@@ -48,13 +48,13 @@
     height: 20px;
     margin-left: 96%;
     top: 10px;
-    fill: #888888;
+    fill: var(--theme-colour);
     transition: fill 0.2s ease-in-out;
     z-index: 20;
 }
 
 .closeSet:hover{
-    fill: #39c5bb;
+    fill: var(--adjacent-theme-colour);
 }
 
 .contentBox{
@@ -90,6 +90,6 @@
 }
 
 .addMusic p {
-    color: white;
+    color: var(--theme-colour);
     font-weight: bold;
 }
