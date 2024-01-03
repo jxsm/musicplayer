@@ -1,6 +1,7 @@
 <template>
     <div class="waiBox" ref="songBox" id="songBox">
-        <detailChunk  @cancelCollection="cancelCollection" @collected="collected" v-for="(item,index) in songList" :key="index" :info="item" class="detailChunk"></detailChunk>
+        <!--TODO:选中之后改变样式-->
+        <detailChunk  @cancelCollection="cancelCollection" @collected="collected" v-for="(item,index) in songList" :key="index" :info="item" class="detailChunk" :checked="checked == index ? true:false"></detailChunk>
     </div>
 </template>
 <script>
@@ -11,7 +12,8 @@ export default{
     data(){
         return{
             songList:[],//歌单列表
-            concealTime:0//隐藏计时器
+            concealTime:0,//隐藏计时器
+            checked:1,//选中第几个歌单
         }
     },
     components:{
@@ -162,6 +164,7 @@ export default{
         transition: opacity 0.2s,transform 0.5s;
         transform-origin:top;
         overflow: scroll;
+        display: none;
     }
 
     .detailChunk:not(:first-child){

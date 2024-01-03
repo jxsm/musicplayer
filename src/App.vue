@@ -159,7 +159,7 @@ export default {
 
         //软件关闭的时候保存数据
         window.addEventListener('beforeunload', e => this.beforeunloadHandler(e))
-        ThemeColors.set("#3bc8f4")
+        ThemeColors.set("#d7ba80")
 
     },
     computed:{

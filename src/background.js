@@ -42,6 +42,10 @@ async function createWindow() {
   }
 }
 
+
+app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');//允许音频自动播放
+
+
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
   // On macOS it is common for applications and their menu bar

@@ -1,5 +1,5 @@
 <template>
-    <div class="infoBox">
+    <div class="infoBox" ref="infoBox">
         <div class="info">
             <p>{{c}}</p>
             <p>未知</p>
@@ -20,6 +20,19 @@ export default{
         c:{
             type:Number,
             default:0
+        },
+        songHeight:{
+            type:Number,
+            default:50
+        }
+    },
+    watch:{
+        /**
+         * 父组件可动态更改该组件元素的高度
+         * @param {Number} newValue 
+         */
+        songHeight(newValue){
+            this.$refs.infoBox.style.height = newValue + "px";
         }
     }
 }
@@ -27,6 +40,7 @@ export default{
 
 <style scoped>
 .infoBox{
+    transition:height 0.3s ;
     margin-top: 10px;
     width: 100%;
     height: 50px;
@@ -53,5 +67,6 @@ export default{
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    color: var(--adjacent-theme-colour);
 }
 </style>

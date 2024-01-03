@@ -1,5 +1,5 @@
 <template>
-    <div class="waiBox">
+    <div class="waiBox" ref="nameListBox">
         <div class="titleText">
             <p>曲名</p>
             <p>歌手</p>
@@ -7,7 +7,7 @@
             <p>时长</p>
         </div>
 
-        <songInfo v-for="(item,index) in 100" :key="index" :c="item"></songInfo>
+        <songInfo v-for="(item,index) in 100" :key="index" :c="item" :songHeight="songHeight"></songInfo>
 
 
     </div>
@@ -18,7 +18,7 @@ import songInfo from "./songInfo.vue"
 export default {
     data(){
         return{
-
+            songHeight:50,//每一行的高度
         }
     },
     methods:{
@@ -26,6 +26,27 @@ export default {
     },
     components:{
         songInfo
+    },
+    props:{
+        showMiniPlayer:{
+            type:Boolean,
+            default:true
+        }
+    },
+    watch:{
+        showMiniPlayer(newValue){
+            //看小播放器是否隐藏了,如果隐藏了则扩大此组件的显示范围
+            if(newValue){
+                this.$refs.nameListBox.style.width = "60%"
+                this.$refs.nameListBox.style.height = "94.6%"
+                this.songHeight = 50
+            }
+            else{
+                this.$refs.nameListBox.style.height = "88.5%"
+                this.$refs.nameListBox.style.width = "95%"
+                this.songHeight = 40
+            }
+        }
     }
 }
 
@@ -37,7 +58,7 @@ export default {
     height: 94.6%;
     position: absolute;
     right: 2%;
-    transition:background-color 0.5s ;
+    transition:width 0.3s,height 0.3s;
     overflow: scroll;
 }
 

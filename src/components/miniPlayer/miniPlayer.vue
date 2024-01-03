@@ -1,5 +1,5 @@
 <template>
-    <div class="waiBox">
+    <div class="waiBox" ref="miniPlayerWaiBox">
         <div class="mainBox">
             <div class="upBox" ref="upBox">
                 <div class="songCover">
@@ -15,7 +15,7 @@
 export default{
     data(){
         return{
-
+            
         }
     },
     methods:{
@@ -26,6 +26,13 @@ export default{
         resizeFn(){
             const upBoxWidth =  this.$refs.upBox.offsetWidth
             const upBoxHeight =  this.$refs.upBox.offsetHeight
+            //根据元素的大小判断看需不需要隐藏小播放器
+            if(this.showMiniPlayer && (upBoxWidth<330 || upBoxHeight<230)){
+                this.$emit('hideSmallPlayer',false)
+            }
+            else if(!this.showMiniPlayer && upBoxWidth>=330 && upBoxHeight>=230){
+                this.$emit('hideSmallPlayer',true)
+            }   
             //取最小值
             const min = upBoxWidth>upBoxHeight?upBoxHeight:upBoxWidth
             //设置公共变量到upBoxWidth上
@@ -37,13 +44,31 @@ export default{
         //监听页面大小改变事件
         this.resizeFn()
         window.addEventListener('resize',this.resizeFn)
+    },
+    props:{
+        showMiniPlayer:{
+            type:Boolean,
+            default:true
+        }
+    },
+    watch:{
+        showMiniPlayer(newValue){
+            if(newValue){
+                this.$refs.miniPlayerWaiBox.style.opacity = 1
+            }
+            else{
+                this.$refs.miniPlayerWaiBox.style.opacity = 0
+            }
+        }
     }
+        
 }
 
 </script>
 
 <style scoped>
 .waiBox{
+    opacity: 1;
     position: absolute;
     width: 33%;
     height: 96%;
@@ -51,6 +76,7 @@ export default{
     display: flex;
     justify-content: center;
     align-items: center;
+    transition:opacity 0.3s ;
 }
 
 .mainBox{

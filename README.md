@@ -1,24 +1,23 @@
 # musicplayer
 
-## Project setup
-```
+## 更新包
+```shell
 npm install
 ```
 
-### Compiles and hot-reloads for development
-```
-npm run serve
+### 启动项目
+```shell
+npm run electron:serve
 ```
 
-### Compiles and minifies for production
-```
+
+### 打包项目
+```shell
 npm run build
 ```
 
-### Lints and fixes files
-```
+### 修复项目
+```shell
 npm run lint
 ```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
