@@ -59,9 +59,9 @@
         <!--其他控件-->
         <div class="threeBox">
             <!--音量控件-->
-            <div class="volumeBox" title="调节音量">
+            <div class="volumeBox" title="调节音量" ref="volumeBox">
                 <adjustVolume class="barAdjustVolume" :isShow="showAdjustVolume"></adjustVolume>
-                <div @click="alterAdjustVolume" @dblclick="mute">
+                <div @mouseover="alterAdjustVolume(true)" @dblclick="mute">
                     <div class="slash"></div>
                     <svg  t="1704266368648" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="6314" id="mx_n_1704266368648" width="200" height="200"><path d="M619.5 1004.595c-9.6 0-19.3-1.1-29-3.4l-6.8-1.6-328.3-226.3c-7.2-3.1-15.1-4-22.9-2.8l-6.1 0.5h-98.5c-64.5 0-127.9-67.4-127.9-136.2v-249.2c0-62.2 56.2-111 127.9-111h96.4c9.4-1.2 18.1-5 25.4-11.1l2.1-1.6 331.5-237.2 7-1.7c9.4-2.3 19-3.5 28.7-3.6 32.7-0.1 64.7 12.5 88.5 35.9 23.8 23.4 37 54.6 37.2 88v736.7c0 9.6-1.2 19.2-3.4 28.5-13.7 57.4-65.2 96.1-121.8 96.1z m-5.8-74.8c24.8 2.8 49.1-13.4 55.1-38.6 0.9-3.7 1.3-7.5 1.4-11.3v-736.4c-0.1-13.2-5.4-25.8-15-35.2-9.5-9.3-22-14.5-35.3-14.5-2.3 0.1-3.9 0.1-5.8 0.3l-318 227.6c-19 15.4-41.8 24.8-66.2 27.2l-3.6 0.2h-98.4c-22.2 0-53.4 11.3-53.4 36.5v249.3c0 27.1 29.9 61.7 53.4 61.7h95.7c23-3.2 46 0.6 66.9 10.9l4.6 2.7 318.6 219.6zM874.9 796.895c-9.5 0-19.1-3.6-26.3-10.9-14.5-14.5-14.5-38.1 0-52.7 66.1-66.1 101-143.1 101-223s-34.9-156.9-101-223c-14.5-14.5-14.5-38.1 0-52.7s38.1-14.5 52.7 0c80.3 80.3 122.8 175.6 122.8 275.6 0 100-42.5 195.3-122.8 275.6-7.3 7.5-16.9 11.1-26.4 11.1z" p-id="6315"></path></svg>
                 </div>
@@ -79,7 +79,6 @@ export default{
             pattern:1,
             isPlaying:false,//是否播放
             showAdjustVolume:false,//是否显示音频控件
-            alterAdjustVolumeTime:[],//记录更改音频控件的时间
         }
     },
     props:{
@@ -100,33 +99,31 @@ export default{
         /**
          * 控制音量播放控件是否显示
          */
-        alterAdjustVolume(){
-            let tempTime = setTimeout(()=>{
-                this.showAdjustVolume = !this.showAdjustVolume
-                this.alterAdjustVolumeTime.shift()
-                console.log("单击事件被触发")
-            },200)
-
-            this.alterAdjustVolumeTime.push(tempTime)
+        alterAdjustVolume(isShow){
+            this.showAdjustVolume = isShow
         },
         /**
          * 静音事件
          */
         mute(){
             if(this.alterAdjustVolumeTime){
-                //删除所有单击事件计时器
-                for(let i of this.alterAdjustVolumeTime){
-                    clearTimeout(i)
-                }
-                clearTimeout(this.alterAdjustVolumeTime)
-                this.alterAdjustVolumeTime = []
+                void 0
             }
-            console.log("双击事件触发")
-        }
+        },
+       
+    },
+    mounted(){
+
     }
 }
 </script>
 <style scoped>
+
+*{
+    /**禁止文字被选中 */
+    -webkit-user-select: none;
+    user-select: none;
+}
 .barMainBox{
     box-shadow: 0px -1px  3px 3px var(--theme-colour);
     width: 100%;

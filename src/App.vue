@@ -12,7 +12,7 @@
 
 
      <!--主页面-->
-    <MainInterface></MainInterface>
+    <MainInterface ></MainInterface>
 
     
 </template>
@@ -150,6 +150,14 @@ export default {
             }
             
         },
+        /**
+         * 更新音量事件
+         * @param {num} value 
+         */
+        updateVolume(value){
+            this.musicVolume = value
+            console.log('音量更新',value)
+        }
         
     },
     mounted(){
@@ -159,7 +167,8 @@ export default {
 
         //软件关闭的时候保存数据
         window.addEventListener('beforeunload', e => this.beforeunloadHandler(e))
-        ThemeColors.set("#d7ba80")
+        ThemeColors.set("#42a5f5")
+
 
     },
     computed:{
