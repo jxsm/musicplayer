@@ -69,6 +69,7 @@ export default {
          * @param {*} e 
          */
         getCoordinates(e){
+            this.$refs.controlStrip.style.transition = 'height 0s'
             let parent
             for(let i of e.path){
                 if(i.id === 'adjustBox'){
@@ -139,7 +140,7 @@ export default {
         //监听鼠标点击事件
         this.$refs.strip.addEventListener('click',this.getCoordinates)
         //监听鼠标按下的拖动事件
-        document.addEventListener('mousedown',this.mouseDown)
+        this.$refs.strip.addEventListener('mousedown',this.mouseDown)
         //监听鼠标抬起事件
         document.addEventListener('mouseup',this.mouseSeup)
     }

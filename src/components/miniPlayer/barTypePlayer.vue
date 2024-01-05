@@ -13,7 +13,7 @@
         </div>
         <div class="twoBox">
             <div class="controlBox">
-                <playMode class="altPattern"></playMode>
+                <playMode class="altPattern" @alterPlayMode="alterPlayMode"></playMode>
                 <!--播放模式-->
                 <div class="pattern" :title="pattern === 1?'顺序播放':pattern ===2?'列表循环':pattern ===3?'单曲循环':'随机播放' ">
                     <!--顺序播放-->
@@ -94,9 +94,8 @@ export default{
         }
     },
     watch:{
-        showMiniPlayer(newValue){
-            void newValue
-        }
+       
+
     },
     components:{
         adjustVolume,
@@ -137,7 +136,7 @@ export default{
             this.shiftOutTimeID =  setTimeout(()=>{
                 this.alterAdjustVolume(false)
                 this.shiftOutTimeID = 0
-            },200)
+            },400)
         },
         /**
          * 停止鼠标移出的计时器事件
@@ -147,6 +146,13 @@ export default{
                 clearTimeout(this.shiftOutTimeID)
                 this.shiftOutTimeID = 0
             }
+        },
+        /**
+         * 更改播放模式
+         * @param {*} mode 播放模式
+         */
+        alterPlayMode(mode){
+            this.pattern = mode
         }
        
     },
@@ -156,8 +162,11 @@ export default{
 }
 </script>
 <style scoped>
+/**
+更改播放模式
+ */
 .altPattern{
-    top: -122px;
+    top: -152px;
     transform: translateX(-30px);
 }
 
