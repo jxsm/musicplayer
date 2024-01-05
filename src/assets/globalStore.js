@@ -1,6 +1,7 @@
 
 let  globalStore = {
    'musicVolume':0,
+   'pattern':1,
 }
 
 /**
@@ -13,7 +14,6 @@ let  globalStore = {
  */
 function alterGlobalStore(key,value,inform = false){
    let tempOldValue = globalStore[key]
-
    try{
       if(value != null){
          globalStore[key] = value
@@ -42,8 +42,6 @@ function alterGlobalStore(key,value,inform = false){
 
 }
 
-
-
 /**
  * 获取公共变量中的值
  * @param {String} key 
@@ -52,6 +50,21 @@ function getGlobalStore(key){
     return globalStore[key]
 }
 
+/**
+ * 通过Object对象设置到公共变量中,注意在存储时key依旧会被转成String类型
+ * 也就是说在读取的时候请传入字符串
+ * @param {Object} parameter 
+ */
+function globalStore_Object(parameter){
+   //获取所有kye
+   let keys = Object.keys(parameter)
+   for(let i = 0;i < keys.length;i++){
+      alterGlobalStore(keys[i],parameter[keys[i]])
+   }
+}
 
 
-module.exports = {alterGlobalStore,getGlobalStore}
+
+
+
+module.exports = {alterGlobalStore,getGlobalStore,globalStore_Object}

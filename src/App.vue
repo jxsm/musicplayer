@@ -26,7 +26,7 @@ import hintModule from "./components/publicModule/hintModule.vue"//提示框
 import  songList  from "./components/songList/songList.vue"//歌单列表
 import MainInterface from "./components/mainInterface/mainInterface.vue"//主页面
 import {ThemeColors} from "./js/ThemeColors.js"
-
+import {getGlobalStore,globalStore_Object} from './assets/globalStore.js'
 export default {
     components:{
         controlStrip,
@@ -144,11 +144,21 @@ export default {
         //软件关闭的时候保存数据
         beforeunloadHandler(e) {
             void e
+            //保存歌单数据
             let  filePath = JSON.parse(localStorage.getItem('filePath'))
             if(filePath){
                 window.ipcRenderer.send('changeFolderList',filePath)
             }
-            
+
+            //保存播放状态
+            let playState = {
+                musicVolume:getGlobalStore('musicVolume'),//音量
+                pattern:getGlobalStore('pattern'),//播放模式
+            }
+
+            localStorage.setItem('playState',JSON.stringify(playState))
+
+
         },
         /**
          * 更新音量事件
@@ -157,13 +167,22 @@ export default {
         updateVolume(value){
             this.musicVolume = value
             console.log('音量更新',value)
+        },
+        /**
+         * 初始化
+         */
+        initialize(){
+            this.testFilePath()
+
+            //加载播放模式
+            let playState = JSON.parse(localStorage.getItem('playState'))
+            globalStore_Object(playState)
+           
         }
-        
     },
     mounted(){
-        //初始化检查数据看是否存在
-        this.testFilePath()
-
+        //初始化
+        this.initialize()
 
         //软件关闭的时候保存数据
         window.addEventListener('beforeunload', e => this.beforeunloadHandler(e))

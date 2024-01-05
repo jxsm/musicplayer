@@ -1,6 +1,6 @@
 <template>
 <!--调节音量组件-->
-<div class="adjustBox" ref="adjustBox" id="adjustBox">
+<div class="adjustBox" ref="adjustBox" id="adjustBox" @mouseenter="stopMouseOutTime" @mouseleave="shiftOut">
     <div class="strip" ref="strip">
         <div class="controlStrip" ref="controlStrip">
 
@@ -9,18 +9,30 @@
 </div>
 </template>
 <script>
-import {alterGlobalStore} from '../../assets/globalStore.js'
+import {alterGlobalStore,getGlobalStore} from '../../assets/globalStore.js'
 export default {
     data(){
         return{
-            volume:0,
-            midway:false
+            volume:0,//音量大小
+            midway:false,//是否正在被更改
         }
     },
     props:{
         isShow:{
             type:Boolean,
             default:false
+        },
+        mouseOut:{
+            type:Function,
+            default:null
+        },
+        stopMouseOutTime:{
+            type:Function,
+            default:null
+        },
+        muteVolume:{
+            tyle:Boolean,
+            default:null
         }
     },
     watch:{
@@ -34,7 +46,22 @@ export default {
         },
         volume(newValue){
             alterGlobalStore('musicVolume',newValue,true)
-        }
+             //设置音量条应该对应的位置
+             this.$refs.controlStrip.style.height = (newValue+8) +'%'
+             if(newValue <= 2){
+                this.$emit('muteVolume')
+             }
+             else{
+                this.$emit('noMuteVolume')
+             }
+        },
+        muteVolume(){
+            this.init()
+            this.$refs.controlStrip.style.transition = 'height 0.3s'
+            setTimeout(()=>{
+                this.$refs.controlStrip.style.transition = 'height 0s'
+            },300)
+        },
     },
     methods:{
         /**
@@ -56,8 +83,7 @@ export default {
 
             let percentage = 100 - ((e.clientY - parentY)/parent.offsetHeight * 100)
             this.volume = Math.round(percentage)  -1
-            //设置音量条应该对应的位置
-            this.$refs.controlStrip.style.height = (percentage+10) +'%'
+           
         },
         /**
          * 当鼠标按下的时候执行去监听鼠标移动事件
@@ -70,24 +96,43 @@ export default {
          * 显示
          */
         show(){
-            void 0
+            this.init()
             this.$refs.adjustBox.style.transform = "rotateX(0deg)"
             this.$refs.adjustBox.style.opacity = 1
+            this.volume = getGlobalStore('musicVolume')
+
         },
         /**
          * 隐藏事件
          */
         conceal(){
-            void 0 
             this.$refs.adjustBox.style.transform = "rotateX(90deg)"
             this.$refs.adjustBox.style.opacity = 0
         },
-        //TODO:鼠标移出组件,更具情况通知父组件是触发隐藏事件
+        /**
+         * 鼠标抬起的时候移除监听事件
+         */
+        mouseSeup(){
+            window.removeEventListener('mousemove',this.getCoordinates)
+            this.midway = false
+        },
+        /**
+         * 鼠标移出组件事件
+         */
         shiftOut(){
-            if(!this.midway){
-                console.log("退退退")
+            if(this.midway){
+                setTimeout(this.shiftOut,100)
+            }else{
+                this.mouseOut()
             }
-        }
+        },
+        /**
+         * 初始化函数(每次显示前都需要调用此函数读取公共变量中的音量并设置到组件中)
+         */
+        init(){
+            this.volume = getGlobalStore('musicVolume')
+        },
+      
 
     },
     mounted(){
@@ -96,10 +141,7 @@ export default {
         //监听鼠标按下的拖动事件
         document.addEventListener('mousedown',this.mouseDown)
         //监听鼠标抬起事件
-        document.addEventListener('mouseup',()=>{
-            window.removeEventListener('mousemove',this.getCoordinates)
-            this.midway = false
-        })
+        document.addEventListener('mouseup',this.mouseSeup)
     }
 }
 </script>
@@ -110,7 +152,6 @@ export default {
     transform-origin:bottom;
     transform: rotateX(90deg);
     transition:transform 0.3s,background-color 0.5s, color 0.5s,opacity 0.3s ;
-    left: 100px;
     z-index: 90;
     position: absolute;
     width: 40px;
@@ -121,6 +162,7 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
+    
 }
 
 .strip{
@@ -139,6 +181,7 @@ export default {
     height: 10%;
     background-color: var(--adjacent-theme-colour);
     border-radius: 10px;
+    
 }
 .controlStrip::before{
     position: absolute;
