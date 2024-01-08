@@ -19,10 +19,17 @@ export default {
     data(){
         return{
             songHeight:50,//每一行的高度
+            dynamicHeight:false//是否需要动态高度
         }
     },
     methods:{
-
+        resizeFn(){
+            if(this.dynamicHeight){
+                const upBoxHeight =  window.innerHeight
+                let height = upBoxHeight - 100
+                this.$refs.nameListBox.style.height =`${height}px`
+            }
+        }
     },
     components:{
         songInfo
@@ -39,14 +46,20 @@ export default {
             if(newValue){
                 this.$refs.nameListBox.style.width = "60%"
                 this.$refs.nameListBox.style.height = "94.6%"
+                this.dynamicHeight = false
                 this.songHeight = 50
             }
             else{
-                this.$refs.nameListBox.style.height = "88.5%"
+                // this.$refs.nameListBox.style.height = "88.5%"
+                this.dynamicHeight = true
                 this.$refs.nameListBox.style.width = "95%"
                 this.songHeight = 40
             }
         }
+    },
+    mounted(){
+        //监听窗口发生变化
+        window.addEventListener('resize',this.resizeFn)
     }
 }
 

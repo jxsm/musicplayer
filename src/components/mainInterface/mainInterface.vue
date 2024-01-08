@@ -4,7 +4,8 @@
         
         <miniPlayer @hideSmallPlayer="hideSmallPlayer" :showMiniPlayer="showMiniPlayer"></miniPlayer>
         <songNameList :showMiniPlayer="showMiniPlayer"></songNameList>
-        <barTypePlayer :showMiniPlayer="showMiniPlayer"></barTypePlayer>
+        <barTypePlayer :isShow="showBarTypePlayer"></barTypePlayer>
+        <progressBar></progressBar>
     </div>
 </template>
 
@@ -12,18 +13,20 @@
 import songNameList from "../songNameList/songNameList.vue"
 import miniPlayer from "../miniPlayer/miniPlayer.vue"
 import barTypePlayer from "../miniPlayer/barTypePlayer.vue"
+import progressBar from '../miniPlayer/progressBar.vue'
 
 export default{
     data(){
         return{
-            showMiniPlayer:true,
+            showMiniPlayer:true,//是否显示迷你播放器
+            showBarTypePlayer:false,//是否显示底部播放器
         }
     },
     components:{
         songNameList,
         miniPlayer,
         barTypePlayer,
-
+        progressBar
     },
     methods:{
         /**
@@ -33,6 +36,14 @@ export default{
         hideSmallPlayer(e){
             this.showMiniPlayer = e;
         }
+    },
+    watch:{
+        showMiniPlayer(newValue){
+            this.showBarTypePlayer = !newValue
+        }
+    },
+    mounted(){
+        
     }
 }
 </script>

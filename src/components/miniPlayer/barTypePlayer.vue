@@ -1,7 +1,6 @@
 <template>
     <!--FIXME:该组件为页面底部的条形播放器,默认情况下不显示,只有当小播放器不显示的时候才会触发让其显示-->
-    <div class="barMainBox">
-        
+    <div class="barMainBox" ref="barMainBox">
         <div class="oneBox">
             <div class="cover">
                 <img src="../../assets/109951168730716074.jpg" alt="封面">
@@ -13,9 +12,9 @@
         </div>
         <div class="twoBox">
             <div class="controlBox">
-                <playMode class="altPattern" @alterPlayMode="alterPlayMode"></playMode>
+                <playMode :pattern="pattern" class="altPattern" @alterPlayMode="alterPlayMode" :playModeSelect="playModeSelect" @mouseleave="playModeSelect = false"></playMode>
                 <!--播放模式-->
-                <div class="pattern" :title="pattern === 1?'顺序播放':pattern ===2?'列表循环':pattern ===3?'单曲循环':'随机播放' ">
+                <div @click="this.playModeSelect = !this.playModeSelect" class="pattern" :title="pattern === 1?'顺序播放':pattern ===2?'列表循环':pattern ===3?'单曲循环':'随机播放' ">
                     <!--顺序播放-->
                     <svg t="1704251873827" class="icon"  v-if="pattern===1" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4241" width="200" height="200"><path d="M106 85.5c-22.1 0-40 17.9-40 40v760.6c0 22.1 17.9 40 40 40s40-17.9 40-40V125.5c0-22.1-17.9-40-40-40zM457.3 85.5c-22.1 0-40 17.9-40 40v760.6c0 22.1 17.9 40 40 40s40-17.9 40-40V125.5c0-22.1-17.9-40-40-40zM955.1 661.4c-7.1-12.4-20.3-20-34.6-20h-72c0-0.8 0.1-1.5 0.1-2.3V125.5c0-22.1-17.9-40-40-40s-40 17.9-40 40v513.6c0 0.8 0 1.5 0.1 2.3h-87c-14.3 0-27.5 7.6-34.6 20-7.1 12.4-7.1 27.6 0 40l119.4 206.8c7.1 12.4 20.3 20 34.6 20s27.5-7.6 34.6-20l119.4-206.8c7.2-12.4 7.2-27.7 0-40z m-154 146.8L751 721.4h100.2l-50.1 86.8z" p-id="4242"></path></svg>
                     <!--列表循环-->
@@ -79,23 +78,29 @@ import {alterGlobalStore,getGlobalStore} from '../../assets/globalStore.js'
 export default{
     data(){
         return{
-            pattern:1,//循环模式
+            pattern:1,//播放模式
             isPlaying:false,//是否播放
             showAdjustVolume:false,//是否显示音频控件
             shiftOutTimeID:0,//鼠标移出计时器记录
             muteVolume:false,//是否静音
             recordVolume:0,//记录音量
+            playModeSelect:false//是否显示播放模式控件
         }
     },
     props:{
-        showMiniPlayer:{
+        isShow:{
             type:Boolean,
             default:false
         }
     },
     watch:{
-       
-
+        isShow(newValue){
+            if(newValue){
+                this.$refs.barMainBox.style.bottom = '0px'
+            }else{
+                this.$refs.barMainBox.style.bottom = '-100px'
+            }
+        }
     },
     components:{
         adjustVolume,
@@ -152,12 +157,20 @@ export default{
          * @param {*} mode 播放模式
          */
         alterPlayMode(mode){
-            this.pattern = mode
-        }
+            //更改公共变量中的数据
+            alterGlobalStore('playMode',mode,true)
+        },
        
     },
     mounted(){
+        //监听全局变量中的播放模式
+        addEventListener('globalStore:playMode',(e)=>{
+            this.pattern = e.detail.value
+        })
 
+        setTimeout(()=>{
+            this.pattern=getGlobalStore('playMode')
+        },300)
     }
 }
 </script>
@@ -168,7 +181,8 @@ export default{
 .altPattern{
     top: -152px;
     transform: translateX(-30px);
-}
+
+    }
 
 
 *{
@@ -183,10 +197,12 @@ export default{
     background-color: var(--oppositeAdjacent-theme-colour);
     border-radius: 30px 30px 0px 0px;
     position: fixed;
-    bottom: 0px;
+    bottom: -100px;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    transition: bottom 0.5s;
+    z-index: 50;
 }
 
 

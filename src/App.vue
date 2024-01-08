@@ -26,7 +26,7 @@ import hintModule from "./components/publicModule/hintModule.vue"//提示框
 import  songList  from "./components/songList/songList.vue"//歌单列表
 import MainInterface from "./components/mainInterface/mainInterface.vue"//主页面
 import {ThemeColors} from "./js/ThemeColors.js"
-import {getGlobalStore,globalStore_Object} from './assets/globalStore.js'
+import {globalStore_Object,getAll} from './assets/globalStore.js'
 export default {
     components:{
         controlStrip,
@@ -150,23 +150,8 @@ export default {
                 window.ipcRenderer.send('changeFolderList',filePath)
             }
 
-            //保存播放状态
-            let playState = {
-                musicVolume:getGlobalStore('musicVolume'),//音量
-                pattern:getGlobalStore('pattern'),//播放模式
-            }
-
-            localStorage.setItem('playState',JSON.stringify(playState))
-
-
-        },
-        /**
-         * 更新音量事件
-         * @param {num} value 
-         */
-        updateVolume(value){
-            this.musicVolume = value
-            console.log('音量更新',value)
+            //保存公共变量
+            localStorage.setItem('globalStore',JSON.stringify(getAll()))
         },
         /**
          * 初始化
@@ -174,9 +159,16 @@ export default {
         initialize(){
             this.testFilePath()
 
-            //加载播放模式
-            let playState = JSON.parse(localStorage.getItem('playState'))
-            globalStore_Object(playState)
+            //加载保存的公共变量
+            try{
+                let globalStore = JSON.parse(localStorage.getItem('globalStore'))
+                globalStore_Object(globalStore)
+            }
+            catch{
+                console.log("没有保存的公共变量")
+            }
+            
+            
            
         }
     },

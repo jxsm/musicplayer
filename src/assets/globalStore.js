@@ -1,10 +1,9 @@
 
 let  globalStore = {
    'musicVolume':0,
-   'pattern':1,
+   'playMode':1,
 }
 
-//TODO:需更换设置模式,从事件触发改为发布订阅模式
 /**
  * 更改全局变量的指定方法,
 * 并可以选择是否通知其他组件
@@ -64,8 +63,16 @@ function globalStore_Object(parameter){
    }
 }
 
+/**
+ * 返回所有公共变量
+ */
+function getAll(){
+   const temp = JSON.stringify(globalStore)
+   return JSON.parse(temp)
+}
 
 
 
 
-module.exports = {alterGlobalStore,getGlobalStore,globalStore_Object}
+
+module.exports = {alterGlobalStore,getGlobalStore,globalStore_Object,getAll}
