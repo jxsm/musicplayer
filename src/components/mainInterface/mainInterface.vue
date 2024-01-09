@@ -3,9 +3,9 @@
     <div class="AppBox">
         
         <miniPlayer @hideSmallPlayer="hideSmallPlayer" :showMiniPlayer="showMiniPlayer"></miniPlayer>
-        <songNameList :showMiniPlayer="showMiniPlayer"></songNameList>
-        <barTypePlayer :isShow="showBarTypePlayer"></barTypePlayer>
-        <progressBar></progressBar>
+        <songNameList :showMiniPlayer="showMiniPlayer" :showBar="showBarTypePlayer"></songNameList>
+        <barTypePlayer :isShow="showBarTypePlayer" @conceal="concealBarTypePlayer"></barTypePlayer>
+        <progressBar @mouseenter="shiftToBottom"></progressBar>
     </div>
 </template>
 
@@ -35,6 +35,20 @@ export default{
          */
         hideSmallPlayer(e){
             this.showMiniPlayer = e;
+        },
+        /**
+         * 当鼠标移入底部的时候看迷你播放器是否显示,如果没有显示则呼出条形控制器
+         */
+        shiftToBottom(){
+            if (!this.showMiniPlayer) {
+                this.showBarTypePlayer = true;
+            }
+        },
+        /**
+         * 当底部控制条的隐藏按钮被点击的时候,隐藏底部控制条
+         */
+        concealBarTypePlayer(){
+            this.showBarTypePlayer = false;
         }
     },
     watch:{

@@ -1,12 +1,12 @@
 <template>
     <div class="waiBox" ref="songBox" id="songBox">
         <!--TODO:选中之后改变样式-->
-        <detailChunk  @cancelCollection="cancelCollection" @collected="collected" v-for="(item,index) in songList" :key="index" :info="item" class="detailChunk" :checked="checked == index ? true:false"></detailChunk>
+        <detailChunk @clikcList="switchCurrentFolder" @cancelCollection="cancelCollection" @collected="collected" v-for="(item,index) in songList" :key="index" :info="item" class="detailChunk" :checked="checked == index ? true:false"></detailChunk>
     </div>
 </template>
 <script>
 import detailChunk from "./detailChunk.vue"
-
+import {alterGlobalStore,getGlobalStore} from "../../assets/globalStore"
 
 export default{
     data(){
@@ -144,6 +144,38 @@ export default{
             //合并
             this.songList = collect.concat(noCollect)
         },
+        /**
+         * 切换当前选择的文件夹
+         * @param {Object} info 
+         */
+        switchCurrentFolder(info){
+
+            console.log(info.path)
+            let fileList =  getGlobalStore('currentPath')
+            //检查是否按下shift,如果按下了shift则push如果没有则直接替换
+            function examine(e,thiss = this){
+                if (e.shiftKey) {
+                    console.log('Shift键被按下');
+                } else {
+                    console.log('Shift键没有被按下');
+                }
+                console.log(thiss.isShow)
+            }
+
+            document.addEventListener('keydown',examine);
+
+            //TODO:检查是否按下shift
+            setTimeout(()=>{
+                document.removeEventListener('keydown',examine);
+            },500)
+            
+
+            void fileList
+            void alterGlobalStore
+            
+
+        }
+
     },
     mounted(){
         

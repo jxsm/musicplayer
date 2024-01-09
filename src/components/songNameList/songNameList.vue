@@ -6,10 +6,8 @@
             <p>专辑</p>
             <p>时长</p>
         </div>
-
-        <songInfo v-for="(item,index) in 100" :key="index" :c="item" :songHeight="songHeight"></songInfo>
-
-
+        <songInfo v-for="(item,index) in 100" :key="index" :c="item" :songHeight="songHeight" v-show="temp"></songInfo>
+        
     </div>
 </template>
 <script>
@@ -19,17 +17,22 @@ export default {
     data(){
         return{
             songHeight:50,//每一行的高度
-            dynamicHeight:false//是否需要动态高度
+            dynamicHeight:false,//是否需要动态高度
+            temp:false
         }
     },
     methods:{
         resizeFn(){
-            if(this.dynamicHeight){
-                const upBoxHeight =  window.innerHeight
+            const upBoxHeight =  window.innerHeight
+            if(this.showBar){
                 let height = upBoxHeight - 100
                 this.$refs.nameListBox.style.height =`${height}px`
             }
+            else{
+                this.$refs.nameListBox.style.height =`${upBoxHeight-50}px`
+            }
         }
+        //制作获取文件夹中的文件列表
     },
     components:{
         songInfo
@@ -38,6 +41,10 @@ export default {
         showMiniPlayer:{
             type:Boolean,
             default:true
+        },
+        showBar:{
+            type:Boolean,
+            default:false
         }
     },
     watch:{
@@ -45,16 +52,17 @@ export default {
             //看小播放器是否隐藏了,如果隐藏了则扩大此组件的显示范围
             if(newValue){
                 this.$refs.nameListBox.style.width = "60%"
-                this.$refs.nameListBox.style.height = "94.6%"
                 this.dynamicHeight = false
                 this.songHeight = 50
             }
             else{
-                // this.$refs.nameListBox.style.height = "88.5%"
                 this.dynamicHeight = true
                 this.$refs.nameListBox.style.width = "95%"
                 this.songHeight = 40
             }
+        },
+        showBar(){
+            this.resizeFn()
         }
     },
     mounted(){

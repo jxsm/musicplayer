@@ -18,6 +18,16 @@ class ThemeColors{
         document.documentElement.style.setProperty('--opposite-theme-colour',oppositeColor.toString())
         //邻近色
         const adjacentColour = Color.rgb(255-color.color[0]/2,255-color.color[1]/2,255-color.color[2]/2)
+        
+        //临近色2
+        let newColour = Color.rgb(ad(color.color)) 
+        
+
+
+
+        document.documentElement.style.setProperty('--adjacentColour-theme-two',newColour.toString())
+
+
         document.documentElement.style.setProperty('--adjacent-theme-colour',adjacentColour.toString())
         //低透明度版本
         document.documentElement.style.setProperty('--adjacent-theme-colour-d',this.getOpacity(adjacentColour.toString(),0.5))
@@ -50,3 +60,27 @@ class ThemeColors{
 
 
 module.exports = {ThemeColors} // 导出ThemeColors类
+
+
+
+function ad(rgb){
+    const max = Math.max(...rgb);
+    const min = Math.min(...rgb);
+    const delta = max - min;
+
+    const adjacentColors = [];
+
+    for (let i = 0; i < 3; i++) {
+        let newValue = rgb[i] + (i === 0 ? 1 : -1);
+        
+        if (newValue > max) {
+            newValue = max - delta / 2;
+        } else if (newValue < min) {
+            newValue = min + delta / 2;
+        }
+        
+        adjacentColors.push(newValue);
+    }
+
+    return adjacentColors
+}

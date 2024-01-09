@@ -6,6 +6,16 @@
 </template>
 
 <script>
+export default {
+    data(){
+        return{
+
+        }
+    },
+    methods:{
+
+    }
+}
 
 </script>
 
@@ -14,7 +24,7 @@
     width: 100%;
     height: 7px;
     position: absolute;
-    background-color: var(--oppositeAdjacent-theme-colour);
+    background-color: var(--adjacentColour-theme-two);
     bottom: 0px;
     z-index: 10;
     transition: height 0.3s;
@@ -23,7 +33,7 @@
 .progressBar{
     width: 30%;
     height: 100%;
-    background-color: var(--opposite-theme-colour);
+    background-color: var(--adjacent-theme-colour);
 }
 
 .progressBarBox:hover{

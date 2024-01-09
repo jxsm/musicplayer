@@ -1,6 +1,6 @@
 'use strict'
 
-import{ readFile,writeFile } from "../public/static/file"
+import{ readFile,writeFile,getFilesAndFoldersInDir} from "../public/static/file"
 import { app, protocol, BrowserWindow ,contextBridge, ipcMain,dialog} from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
@@ -93,6 +93,27 @@ if (isDevelopment) {
 
 
 
+function getSonglist(event ,arg){
+  let path = arg[0]
+  let names = arg[1]
+  let fileList =  getFilesAndFoldersInDir(path)
+  let rt = []
+  //遍历
+  for(let i=0;i<fileList.length;i++){
+    //判断后缀名是否在names中
+    let h = fileList[i].path.split('.')
+      for(let j=0;j<names.length;j++){
+        if(h[h.length-1] == names[j]){
+          rt.push(fileList[i])
+        }
+      }
+  }
+
+  event.sender.send('Songlist',[path,rt])
+}
+
+
+
 
 /**
  * 获取歌曲文件夹列表
@@ -127,7 +148,4 @@ ipcMain.on('open-Directory', function (event, p) {
   })
 });
 
-
-
-
-
+ipcMain.on('getSonglist',getSonglist)

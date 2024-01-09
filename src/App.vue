@@ -9,12 +9,9 @@
     
     <!--设置页面-->
     <global_set @goset="startSet" v-if="showSet" :show="GlobalSetAnimation" ></global_set>
-
-
      <!--主页面-->
     <MainInterface ></MainInterface>
 
-    
 </template>
 
 
@@ -178,7 +175,7 @@ export default {
 
         //软件关闭的时候保存数据
         window.addEventListener('beforeunload', e => this.beforeunloadHandler(e))
-        ThemeColors.set("#42a5f5")
+        ThemeColors.set("#ffca28")
 
 
     },

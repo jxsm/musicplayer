@@ -94,7 +94,7 @@ export default{
     background-color: var(--oppositeAdjacent-theme-colour);
     box-shadow: 0px 0px 3px 1px var(--adjacent-theme-colour);
     position: absolute;
-    display: flex;
+    display: none;
     flex-direction: column;
     align-items: center;
     overflow: hidden;
