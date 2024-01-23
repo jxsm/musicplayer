@@ -1,6 +1,6 @@
 <template>
     <!--通知组件-->
-    <div class="hintBox" ref="hintBox">
+    <div class="hintBox" ref="hintBox" @click="ahead">
         <div class="whiteBar" ref="whiteBar">
 
         </div>
@@ -87,7 +87,22 @@
                 },time)
                 
                 
+            },
+            /**
+             * 提前关闭
+             */
+            ahead(){
+                this.oldTime = setTimeout(()=>{
+                    //用于关闭提示的
+                    this.$refs.hintBox.style.right = "-300px"
+                    this.vanishTime = setTimeout(()=>{
+                        this.$refs.hintBox.style.display = "none"
+                        this.vanishTime = 0
+                    },500)
+                    this.oldTime = 0
+                },0)
             }
+            
         },
         mounted() {
             //监听全局发出的通知事件

@@ -23,7 +23,7 @@ import hintModule from "./components/publicModule/hintModule.vue"//提示框
 import  songList  from "./components/songList/songList.vue"//歌单列表
 import MainInterface from "./components/mainInterface/mainInterface.vue"//主页面
 import {ThemeColors} from "./js/ThemeColors.js"
-import {globalStore_Object,getAll} from './assets/globalStore.js'
+import {globalStore_Object,getAll,getGlobalStore, alterGlobalStore} from './assets/globalStore.js'
 export default {
     components:{
         controlStrip,
@@ -164,9 +164,22 @@ export default {
             catch{
                 console.log("没有保存的公共变量")
             }
-            
-            
-           
+        },
+        /**
+         * 默认选择歌单
+         */
+        selectThePlaylistByDefault(){
+           const a =  Object.keys(getGlobalStore('currentPath')).length
+           console.log(getGlobalStore('currentPath'))
+           if(a === 0){
+                let  filePath = JSON.parse(localStorage.getItem('filePath'))
+                
+                if(filePath.left != 0 ){
+                    let b = {}
+                    b[filePath[0].path] = true
+                    alterGlobalStore('currentPath',b,true)
+                }
+           }
         }
     },
     mounted(){
@@ -175,8 +188,19 @@ export default {
 
         //软件关闭的时候保存数据
         window.addEventListener('beforeunload', e => this.beforeunloadHandler(e))
-        ThemeColors.set("#ffca28")
+        ThemeColors.set("#41b883")
+        //全局监听按键
+        window.pressKeys ={}
+        window.addEventListener('keydown', function (event) {
+            window.pressKeys[event.key] = true
+        });
 
+        window.addEventListener('keyup', function (event) {
+            window.pressKeys[event.key] = false
+        })
+
+
+        this.selectThePlaylistByDefault()//初始化歌单选中列表
 
     },
     computed:{

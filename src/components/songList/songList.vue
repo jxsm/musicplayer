@@ -1,12 +1,16 @@
 <template>
     <div class="waiBox" ref="songBox" id="songBox">
         <!--TODO:选中之后改变样式-->
-        <detailChunk @clikcList="switchCurrentFolder" @cancelCollection="cancelCollection" @collected="collected" v-for="(item,index) in songList" :key="index" :info="item" class="detailChunk" :checked="checked == index ? true:false"></detailChunk>
+        <detailChunk :pitchOn="pitchOn"  @clikcList="switchCurrentFolder" @cancelCollection="cancelCollection" @collected="collected" v-for="(item,index) in songList" :key="index" :info="item" class="detailChunk" :checked="checked == index ? true:false"></detailChunk>
+        <div class="muno" ref="muno">
+            请先在设置中添加歌单
+        </div>
     </div>
 </template>
 <script>
 import detailChunk from "./detailChunk.vue"
 import {alterGlobalStore,getGlobalStore} from "../../assets/globalStore"
+import {proceedHint} from "../../../public/static/proceedHint"
 
 export default{
     data(){
@@ -14,6 +18,7 @@ export default{
             songList:[],//歌单列表
             concealTime:0,//隐藏计时器
             checked:1,//选中第几个歌单
+            pitchOn:[],//被选中的歌单
         }
     },
     components:{
@@ -45,6 +50,16 @@ export default{
                     window.addEventListener("click",this.testMousePosition)
                 },50)
                 
+
+                if(this.songList.length == 0){
+                    this.$refs.muno.style.display = 'flex'
+                    proceedHint.warn('请先添加歌单','提醒',1500)
+                }
+                else{
+                    this.$refs.muno.style.display = 'none'
+                }
+
+
             }else{
                 //不显示
                 this.$refs.songBox.style.opacity = 0
@@ -125,7 +140,6 @@ export default{
          */
         listProcessing(arg){
             let FileList  = JSON.parse(arg);
-            //TODO:分离收藏和未收藏的歌曲,然后将其都按照字母顺序排序
             let collect = []
             let noCollect = []
 
@@ -149,37 +163,31 @@ export default{
          * @param {Object} info 
          */
         switchCurrentFolder(info){
-
-            console.log(info.path)
             let fileList =  getGlobalStore('currentPath')
-            //检查是否按下shift,如果按下了shift则push如果没有则直接替换
-            function examine(e,thiss = this){
-                if (e.shiftKey) {
-                    console.log('Shift键被按下');
-                } else {
-                    console.log('Shift键没有被按下');
-                }
-                console.log(thiss.isShow)
+            if(window.pressKeys['Shift']){
+                fileList[info.path] = true
+            }else if(window.pressKeys['Control']){
+                //删除一个键
+                delete fileList[info.path]
             }
+            else{
+                fileList = {}//清空列表
+                fileList[info.path] = true
+            }
+            this.pitchOn = Object.keys(fileList)
 
-            document.addEventListener('keydown',examine);
-
-            //TODO:检查是否按下shift
-            setTimeout(()=>{
-                document.removeEventListener('keydown',examine);
-            },500)
+            //改变全局变量
+            alterGlobalStore('currentPath',fileList,true)
             
-
-            void fileList
-            void alterGlobalStore
-            
-
         }
 
     },
     mounted(){
-        
-        
+        //加载全局变量
+        setTimeout(()=>{
+            let fileList =  getGlobalStore('currentPath')
+            this.pitchOn = Object.keys(fileList)
+        },10)
     }
 }
 </script>
@@ -201,5 +209,15 @@ export default{
 
     .detailChunk:not(:first-child){
         margin-top: 5px;
+    }
+
+    .muno{
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--theme-colour);
+        font-weight: bold;
     }
 </style>

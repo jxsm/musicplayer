@@ -2,7 +2,7 @@
 let  globalStore = {
    'musicVolume':0,
    'playMode':1,
-   'currentPath':[''],//当前读取的文件夹的路径
+   'currentPath':{},//当前选中的文件路径
 }
 
 /**
