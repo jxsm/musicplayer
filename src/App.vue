@@ -16,6 +16,12 @@
 
 
 <script>
+//TODO:临时模板
+//window.ipcRenderer.send('getFolderMusicInfo',['E:\\青鸟2\\音乐测试',['mp3'],1])
+// window.ipcRenderer.on('returnGetFolderMusicInfo',(e,info)=>{
+//             void e
+//             console.log(info)
+// })
 
 import controlStrip from "./components/controlStrip.vue"//窗口顶部的控制条
 import global_set from "./components/global_set.vue"//窗口设置页
@@ -170,7 +176,6 @@ export default {
          */
         selectThePlaylistByDefault(){
            const a =  Object.keys(getGlobalStore('currentPath')).length
-           console.log(getGlobalStore('currentPath'))
            if(a === 0){
                 let  filePath = JSON.parse(localStorage.getItem('filePath'))
                 
@@ -201,6 +206,25 @@ export default {
 
 
         this.selectThePlaylistByDefault()//初始化歌单选中列表
+
+        //监听歌单列表变化
+        window.addEventListener('fileListAlter',(e)=>{
+            this.selectThePlaylistByDefault()
+            if(!e.detail.type){
+                //如果是删除歌单,则需要将该歌单从被选中的歌单列表中给删除
+                let fileList =  getGlobalStore('currentPath')
+                if(e.detail.path in fileList){
+                    delete fileList[e.detail.path]
+                    alterGlobalStore('currentPath',fileList,true)
+                }
+                
+            }
+        })
+
+        
+
+       
+
 
     },
     computed:{

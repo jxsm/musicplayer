@@ -79,6 +79,7 @@ export default{
             //提示还没搞
             proceedHint.commonHint("添加成功","提醒",2000)
             this.files = filePath
+            this.giveNotice(true,content)
         },
         /**
          * 删除文件列表中的文件
@@ -95,9 +96,23 @@ export default{
             localStorage.setItem('filePath',JSON.stringify(filePath));
             proceedHint.warn("删除成功","提醒",2000)
             this.files = filePath
+            this.giveNotice(false,path)
+        },
+        /**
+         * 发出通知
+         * @param {String} path 路径
+         * @param {boolean} [type=true] 是添加还是删除  
+         */
+        giveNotice(type=true,path){
+            
+            let fileListAlter = new CustomEvent('fileListAlter',{
+                detail:{
+                    type:type,//是添加还是删除
+                    path:path//路径
+                }
+            })
+            window.dispatchEvent(fileListAlter);
         }
-
-
        
     },
     mounted(){

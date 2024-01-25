@@ -5,6 +5,7 @@ import { app, protocol, BrowserWindow ,contextBridge, ipcMain,dialog} from 'elec
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
+import {monitorDispose} from "./js/MainThreadProcessing"
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
@@ -135,9 +136,11 @@ ipcMain.on("changeFolderList",async(event,arg)=>{
   event.sender.send('changeFolder',con)
 })
 
+//获取歌曲列表
+ipcMain.on('getSonglist',getSonglist)
 
 
-
+//用于选取文件的时候获取文件的路径
 ipcMain.on('open-Directory', function (event, p) {
   dialog.showOpenDialog({
       properties: ["openDirectory"],
@@ -148,4 +151,5 @@ ipcMain.on('open-Directory', function (event, p) {
   })
 });
 
-ipcMain.on('getSonglist',getSonglist)
+//监听歌曲信息获取事件
+ipcMain.on('getFolderMusicInfo',monitorDispose.getFolderMusicInfo)

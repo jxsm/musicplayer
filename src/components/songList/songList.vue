@@ -188,6 +188,14 @@ export default{
             let fileList =  getGlobalStore('currentPath')
             this.pitchOn = Object.keys(fileList)
         },10)
+
+        window.addEventListener('fileListAlter',()=>{
+            this.songList = []
+            setTimeout(()=>{
+                this.listProcessing(this.gainFileList())
+            })
+        })
+        
     }
 }
 </script>
