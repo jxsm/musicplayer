@@ -1,3 +1,4 @@
+const writeFile = require('../../public/static/file').writeFile;//文件写入模块
 const metadata = require('music-metadata');//音乐信息获取模块
 
 const fs = require('fs');//文件读取模块
@@ -10,7 +11,7 @@ class monitorDispose{
      */
     static getFolderMusicInfo(event,arg){
         const path = arg[0];//文件夹路径，如'E:\\青鸟2\\音乐测试'，注意：路径中需要使用
-        let names = arg[1] || ['mp3','ogg'];
+        let names = arg[1] || ['mp3','ogg','acc','wav'];
         const flag = arg[2];
     
         let musicList =  readFile(path,names)
@@ -22,6 +23,21 @@ class monitorDispose{
             event.sender.send('returnGetFolderMusicInfo',[flag,infos[1]])//发送消息给渲染进程
         })
     }
+
+
+
+
+    /**
+     * 写入设置信息文件
+     * @param {*} event 
+     * @param {Array} arg 
+     */
+    static globalSetSave(event,arg){
+      void event
+      let data = JSON.stringify(arg[0])
+      writeFile('./userFile/setInfo.json',data,'w')
+    }
+
 }
 
 
@@ -52,7 +68,7 @@ function readFile(path,names) {
       } else {
   // 创建一个对象保存信息
         let fileName = file.split('.');
-        const fileType =  fileName.pop()
+        const fileType =  fileName.pop().toLowerCase(); // 获取文件后缀名并转换为小写
         if(names === true  || names.includes(fileType)){
           fileName = fileName.join('');
           const obj = {};
@@ -83,7 +99,7 @@ function setMusicInfo(infos){
       i.infos = r.common
     })
     .catch((error)=>{
-      if(['mp3','ogg'].includes(i.type)){
+      if(['mp3','ogg','acc','wav'].includes(i.type)){
         console.log(`音乐信息解析失败:${i.path}`,error)
       }
     })

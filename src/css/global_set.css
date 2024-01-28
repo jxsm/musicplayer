@@ -62,7 +62,8 @@
     height: 600px;
     border: 1px solid red;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
 }
 
 .addMusic{
@@ -90,6 +91,19 @@
 }
 
 .addMusic p {
+    color: var(--theme-colour);
+    font-weight: bold;
+}
+
+
+/*扩展名*/
+.ExtensionNameBox{
+    width: 80%;
+    height: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
     color: var(--theme-colour);
     font-weight: bold;
 }

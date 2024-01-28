@@ -165,20 +165,19 @@ export default{
         switchCurrentFolder(info){
             let fileList =  getGlobalStore('currentPath')
             if(window.pressKeys['Shift']){
-                fileList[info.path] = true
+                fileList[info.path] = info.type
             }else if(window.pressKeys['Control']){
                 //删除一个键
                 delete fileList[info.path]
             }
             else{
                 fileList = {}//清空列表
-                fileList[info.path] = true
+                fileList[info.path] = info.type
             }
             this.pitchOn = Object.keys(fileList)
 
             //改变全局变量
             alterGlobalStore('currentPath',fileList,true)
-            
         }
 
     },

@@ -13,12 +13,16 @@
 <script>
 import songInfo from "./songInfo.vue"
 
+import {GetMusicInfo} from "../../js/MusicInformationAcquisition"
+
 export default {
     data(){
         return{
             songHeight:50,//每一行的高度
             dynamicHeight:false,//是否需要动态高度
-            temp:false
+            temp:true,//测试用的，是否显示歌单列表
+            currentPathUpdate:0,//currentPat更新记录
+            musicInformation:[],//音乐信息存储
         }
     },
     methods:{
@@ -68,6 +72,26 @@ export default {
     mounted(){
         //监听窗口发生变化
         window.addEventListener('resize',this.resizeFn)
+
+        //监听公共变量中被选中的歌单列表的变化
+        //TODO:这里监听了全局变量,后续有网络位置的请求可以从这里入手
+        window.addEventListener('globalStore:currentPath',(e)=>{
+            if(this.currentPathUpdate){
+                clearTimeout(this.currentPathUpdate)
+            }
+            this.currentPathUpdate = setTimeout(()=>{
+                //TODO:执行查询
+                const pathList = e.detail.value
+                let pathListIndex = 0
+                for(let i in pathList){
+                    GetMusicInfo.getInfo({path:i,type:pathList[i],index:pathListIndex})
+                    pathListIndex++;
+                }
+
+                
+            },1000)
+        })
+
     }
 }
 

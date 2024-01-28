@@ -29,7 +29,7 @@ import hintModule from "./components/publicModule/hintModule.vue"//提示框
 import  songList  from "./components/songList/songList.vue"//歌单列表
 import MainInterface from "./components/mainInterface/mainInterface.vue"//主页面
 import {ThemeColors} from "./js/ThemeColors.js"
-import {globalStore_Object,getAll,getGlobalStore, alterGlobalStore} from './assets/globalStore.js'
+import {globalStore_Object,getGlobalStore, alterGlobalStore} from './assets/globalStore.js'
 export default {
     components:{
         controlStrip,
@@ -152,9 +152,6 @@ export default {
             if(filePath){
                 window.ipcRenderer.send('changeFolderList',filePath)
             }
-
-            //保存公共变量
-            localStorage.setItem('globalStore',JSON.stringify(getAll()))
         },
         /**
          * 初始化

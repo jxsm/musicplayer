@@ -14,7 +14,7 @@ let  globalStore = {
  * @param {Boll} [false]
  */
 function alterGlobalStore(key,value,inform = false){
-   let tempOldValue = globalStore[key]
+   let tempOldValue = {...globalStore[key]}
    try{
       if(value != null){
          globalStore[key] = value
@@ -39,8 +39,9 @@ function alterGlobalStore(key,value,inform = false){
         });
         window.dispatchEvent(incident);
    }
-   
 
+
+   save()
 }
 
 /**
@@ -55,13 +56,13 @@ function getGlobalStore(key){
  * 通过Object对象设置到公共变量中,注意在存储时key依旧会被转成String类型
  * 也就是说在读取的时候请传入字符串
  * @param {Object} parameter 
+ * @param {boolean} [inform=false]  是否进行通知,值得注意的是该通知是分开的
  */
-function globalStore_Object(parameter){
-   //获取所有kye
-   let keys = Object.keys(parameter)
-   for(let i = 0;i < keys.length;i++){
-      alterGlobalStore(keys[i],parameter[keys[i]])
+function globalStore_Object(parameter,inform = false){
+   for(let akey in parameter){
+      alterGlobalStore(akey,parameter[akey],inform)
    }
+   
 }
 
 /**
@@ -72,6 +73,10 @@ function getAll(){
    return JSON.parse(temp)
 }
 
+
+function save(){
+   localStorage.setItem("globalStore",JSON.stringify(globalStore))
+}
 
 
 

@@ -23,6 +23,14 @@
                             <fillList width="100%" height="150px" backgroundColor="var(--adjacent-theme-colour)" :files="files" @del="deleteFiles"></fillList>
                         </div>
                     </div>
+
+
+                    <!--文件扩展名设置-->
+                    <div class="ExtensionNameBox">
+                        <p>文件扩展名设置()</p>
+                        <filenameExtension></filenameExtension>
+                    </div>
+
                 </div>
             </div>
             
@@ -35,6 +43,7 @@
 //TODO:改将数据存储改成Local Storage
 import selectFile from "./selectFile.vue"
 import fillList from "./fillList.vue"
+import filenameExtension from "./setPage/filenameExtension.vue"
 import {proceedHint} from "../../public/static/proceedHint"
 export default{
     data(){
@@ -74,7 +83,7 @@ export default{
             }
 
 
-            filePath.push({path:content,name:content.split('\\').pop(),collect:false})
+            filePath.push({path:content,name:content.split('\\').pop(),collect:false,type:'local'})
             localStorage.setItem('filePath',JSON.stringify(filePath));
             //提示还没搞
             proceedHint.commonHint("添加成功","提醒",2000)
@@ -140,8 +149,9 @@ export default{
         }
     },
     components:{
-        selectFile,
-        fillList,
+        selectFile,//添加文件设置
+        fillList,//文件夹列表
+        filenameExtension,//文件扩展名设置2
     }
    
 }

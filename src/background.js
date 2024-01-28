@@ -153,3 +153,6 @@ ipcMain.on('open-Directory', function (event, p) {
 
 //监听歌曲信息获取事件
 ipcMain.on('getFolderMusicInfo',monitorDispose.getFolderMusicInfo)
+
+//监听写入设置文件信息
+ipcMain.on('globalSetSave',monitorDispose.globalSetSave)
