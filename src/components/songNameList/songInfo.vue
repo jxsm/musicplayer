@@ -1,10 +1,10 @@
 <template>
-    <div class="infoBox" ref="infoBox">
+    <div class="infoBox" ref="infoBox" :style="`left:${tempLeft};opacity:${tempOpacity}`">
         <div class="info">
-            <p>{{c}}</p>
-            <p>未知</p>
-            <p>未知</p>
-            <p>未知</p>
+            <p class="songNameInfo" :title="musicalName">{{musicalName}}</p>
+            <p :title="singer">{{singer}}</p>
+            <p :title="collection">{{collection}}</p>
+            <p :title="timeDuration">{{timeDuration}}</p>
         </div>
     </div>
 </template>
@@ -13,17 +13,20 @@
 export default{
     data(){
         return{
-
+            tempLeft:'500px',
+            tempOpacity:0
         }
     },
     props:{
-        c:{
-            type:Number,
-            default:0
+        infos:{
         },
         songHeight:{
             type:Number,
             default:50
+        },
+        sequence:{
+            type:Number,
+            default:0
         }
     },
     watch:{
@@ -34,18 +37,68 @@ export default{
         songHeight(newValue){
             this.$refs.infoBox.style.height = newValue + "px";
         }
+
+    },
+    mounted(){
+        setTimeout(()=>{
+            this.tempLeft = '0px';
+            this.tempOpacity = 1
+        },this.sequence*10)
+    },
+    computed:{
+        //音乐名称
+        musicalName(){
+            return this.infos.infos.title || this.infos.name || "未知";
+        },
+        //歌手
+        singer(){
+            let singers = this.infos.infos.artists;
+
+            if(singers){
+                return singers.join("/");
+            }
+            else{
+                return "未知";
+            }
+        },
+        //专辑
+        collection(){
+            return this.infos.infos.album || "未知";
+        },
+        //时间
+        timeDuration(){
+            const duration = this.infos.infos.timeDuration;
+            if(duration){
+                return this.formatTime(duration);
+            }
+            else{
+                return "未知";
+            }
+        }
+    },
+    methods:{
+        formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = seconds % 60;
+            return `${minutes.toString().padStart(2, '0')}:${Math.round(remainingSeconds).toString().padStart(2, '0')}`;
+        }
     }
 }
 </script>
 
 <style scoped>
 .infoBox{
+    font-size: 12px;
+    position: relative;
     transition:height 0.3s ;
     margin-top: 10px;
     width: 100%;
     height: 50px;
     display: flex;
     justify-content: center;
+    left: 500px;
+    opacity: 0;
+    transition: left 1s , opacity 1s;
 }
 
 .info{
@@ -68,5 +121,9 @@ export default{
     text-overflow: ellipsis;
     white-space: nowrap;
     color: var(--adjacent-theme-colour);
+}
+
+.info p:nth-child(1){
+    width: 30%;
 }
 </style>

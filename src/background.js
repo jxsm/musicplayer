@@ -156,3 +156,6 @@ ipcMain.on('getFolderMusicInfo',monitorDispose.getFolderMusicInfo)
 
 //监听写入设置文件信息
 ipcMain.on('globalSetSave',monitorDispose.globalSetSave)
+
+//监听读取设置文件信息
+ipcMain.on('getGlobalSet',monitorDispose.getGlobalSet)

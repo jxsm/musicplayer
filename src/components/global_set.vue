@@ -27,7 +27,7 @@
 
                     <!--文件扩展名设置-->
                     <div class="ExtensionNameBox">
-                        <p>文件扩展名设置()</p>
+                        <p>文件扩展名设置(用','隔开)</p>
                         <filenameExtension></filenameExtension>
                     </div>
 
@@ -45,6 +45,7 @@ import selectFile from "./selectFile.vue"
 import fillList from "./fillList.vue"
 import filenameExtension from "./setPage/filenameExtension.vue"
 import {proceedHint} from "../../public/static/proceedHint"
+import localForage from "localforage"
 export default{
     data(){
         return{
@@ -102,6 +103,7 @@ export default{
                     break
                 }
             }
+            localForage.removeItem(`musicListInfo:${path}`)
             localStorage.setItem('filePath',JSON.stringify(filePath));
             proceedHint.warn("删除成功","提醒",2000)
             this.files = filePath

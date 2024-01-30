@@ -1,4 +1,4 @@
-const writeFile = require('../../public/static/file').writeFile;//文件写入模块
+const fileOperations = require('../../public/static/file');//文件写入模块
 const metadata = require('music-metadata');//音乐信息获取模块
 
 const fs = require('fs');//文件读取模块
@@ -14,7 +14,7 @@ class monitorDispose{
         let names = arg[1] || ['mp3','ogg','acc','wav'];
         const flag = arg[2];
     
-        let musicList =  readFile(path,names)
+        let musicList =  fileOperations.getFolderList(path,names)
 
         const infos = setMusicInfo(musicList)//异步获取音乐信息，并返回一个Promise列表和音乐信息列表，Promise列表用于等待
 
@@ -35,55 +35,30 @@ class monitorDispose{
     static globalSetSave(event,arg){
       void event
       let data = JSON.stringify(arg[0])
-      writeFile('./userFile/setInfo.json',data,'w')
+      fileOperations.writeFile('./userFile/setInfo.json',data,'w')
     }
 
-}
-
-
-
-
-
-/**
- * 获取一个文件夹下后缀为names中的文件信息
- * @param {String} path  文件夹路径
- * @param {Array} names  文件后缀如['mp3','ogg']
- * @returns [
-                {
-                    size: 9973321,
-                    name: '双笙（陈元汐）,封茗囧菌 - 霜雪千年（Cover 洛天依 ／ 乐正绫）',
-                    path: 'E:\\青鸟2\\音乐测试/双笙（陈元汐）,封茗囧菌 - 霜雪千年（Cover 洛天依 ／ 乐正绫）.mp3'
-                }
-            ]
- */
-function readFile(path,names) {
-    let filesList = [];
-    const files = fs.readdirSync(path); // 需要用到同步读取
-    files.forEach(walk);
-  
-    function walk(file) {
-      const states = fs.statSync(path + '/' + file);
-      if (states.isDirectory()) {
-        readFile(path + '/' + file, filesList);
-      } else {
-  // 创建一个对象保存信息
-        let fileName = file.split('.');
-        const fileType =  fileName.pop().toLowerCase(); // 获取文件后缀名并转换为小写
-        if(names === true  || names.includes(fileType)){
-          fileName = fileName.join('');
-          const obj = {};
-          const filePath = path + '/' + file;
-          obj.size = states.size; // 文件大小，以字节为单位
-          obj.name = fileName; // 文件名
-          obj.path = filePath; // 文件绝对路径
-          obj.type = fileType; // 文件类型
-          filesList.push(obj);
-        }
+    /**
+     * 获取本地存储的设置文件内容
+     * @param {*} event 
+     * @param {*} arg 标记位 
+     */
+    static async getGlobalSet(event,arg){
+      let info = await fileOperations.readFile('./userFile/setInfo.json')
+      try{
+        info = JSON.parse(info)
       }
+      catch(e){
+        console.log("设置配置文件出现文件",e)
+        info = 'error'
+      }
+      
+      event.sender.send('returnGetGlobalSet',[arg,info])
     }
 
-    return filesList;
 }
+
+
 
 
 
@@ -97,6 +72,7 @@ function setMusicInfo(infos){
     let temp = metadata.parseFile(i.path)
     .then(r =>{
       i.infos = r.common
+      i.infos.timeDuration = r.format.duration
     })
     .catch((error)=>{
       if(['mp3','ogg','acc','wav'].includes(i.type)){
@@ -112,4 +88,4 @@ function setMusicInfo(infos){
 }
 
 
-module.exports = {monitorDispose,readFile}
+module.exports = {monitorDispose}

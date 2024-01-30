@@ -1,5 +1,6 @@
 //TODO:该js用于获取音乐的信息并返回
 import localforage from "localforage"
+import globalSet from "../assets/globalSet"
 
 void localforage
 class GetMusicInfo {
@@ -16,9 +17,26 @@ class GetMusicInfo {
 
 
  GetMusicInfo.dispose['local'] = async (info)=>{
-    console.log(info)
+    const readFileType = globalSet.getKey('readFileType')
     //TODO:向主线程发送请求
+    window.ipcRenderer.send('getFolderMusicInfo',[info.path,readFileType,['nameList',info.index,info.label]])
 
+    const promise = new Promise((resolve,reject) => {
+        // 这里执行异步操作
+        try{
+            window.ipcRenderer.on('returnGetFolderMusicInfo',(event,arg)=>{
+                void event
+                if(arg[0][1] === info.index && info.label === arg[0][2]) resolve(arg)
+            })
+        }
+        catch(e){
+            reject(e)
+        }
+        
+    });
+
+
+    return promise
 }
 
 

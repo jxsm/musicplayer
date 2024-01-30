@@ -30,6 +30,8 @@ import  songList  from "./components/songList/songList.vue"//歌单列表
 import MainInterface from "./components/mainInterface/mainInterface.vue"//主页面
 import {ThemeColors} from "./js/ThemeColors.js"
 import {globalStore_Object,getGlobalStore, alterGlobalStore} from './assets/globalStore.js'
+import globalSet from "./assets/globalSet.js"
+
 export default {
     components:{
         controlStrip,
@@ -167,6 +169,31 @@ export default {
             catch{
                 console.log("没有保存的公共变量")
             }
+
+            //加载设置文件
+            window.ipcRenderer.send('getGlobalSet',1)
+
+            function setGlobalSet(event,data){
+                void event
+
+                if(data[0] === 1){
+                    if(data[1] != 'error' && Object.keys(data[1]).length != 0){
+                        globalSet.set(data[1])
+                    }
+                    else{
+                        console.log("没有设置文件(现已创建),现目前使用的是默认配置")
+                        globalSet.save()
+                    }
+                }
+                window.ipcRenderer.off('returnGetGlobalSet',setGlobalSet)
+            }
+
+            window.ipcRenderer.on('returnGetGlobalSet',setGlobalSet)
+            
+            //去获取音乐信息
+            alterGlobalStore('currentPath',getGlobalStore('currentPath'),true)
+
+
         },
         /**
          * 默认选择歌单
@@ -178,7 +205,7 @@ export default {
                 
                 if(filePath.left != 0 ){
                     let b = {}
-                    b[filePath[0].path] = true
+                    b[filePath[0].path] = filePath[0].type
                     alterGlobalStore('currentPath',b,true)
                 }
            }
