@@ -1,8 +1,8 @@
 <template>
-    <div class="waiBox" ref="songBox" id="songBox">
+    <div class="waiBox" ref="songBox" id="songBox" :style="songBoxStyle" v-if="detailChunkRefresh">
         <!--TODO:选中之后改变样式-->
-        <detailChunk :pitchOn="pitchOn"  @clikcList="switchCurrentFolder" @cancelCollection="cancelCollection" @collected="collected" v-for="(item,index) in songList" :key="index" :info="item" class="detailChunk" :checked="checked == index ? true:false"></detailChunk>
-        <div class="muno" ref="muno">
+        <detailChunk  :pitchOn="pitchOn"  @clikcList="switchCurrentFolder" @cancelCollection="cancelCollection" @collected="collected" v-for="(item,index) in songList" :key="index" :info="item" class="detailChunk" :checked="checked == index ? true:false"></detailChunk>
+        <div class="muno" ref="muno" :style="munoStyle">
             请先在设置中添加歌单
         </div>
     </div>
@@ -19,6 +19,13 @@ export default{
             concealTime:0,//隐藏计时器
             checked:1,//选中第几个歌单
             pitchOn:[],//被选中的歌单
+            songBoxStyle:{
+                display:"none",
+            },//容器样式
+            munoStyle:{
+                display:"none",
+            },//提示容器样式
+            detailChunkRefresh : true
         }
     },
     components:{
@@ -38,11 +45,18 @@ export default{
                     this.concealTime = 0
                 }
                 //显示
-                this.$refs.songBox.style.display = 'block'
+                this.songBoxStyle.display = 'block'
+                this.detailChunkRefresh = false
                 setTimeout(()=>{
-                    this.$refs.songBox.style.opacity = 1
-                    this.$refs.songBox.style.transform = "rotateX(0deg)"
+                    this.detailChunkRefresh = true
                 })
+
+                setTimeout(()=>{
+                    this.songBoxStyle.opacity = 1
+                    this.songBoxStyle.transform = "rotateX(0deg)"
+                },10)
+
+
                 //在显示的时候激活重新查询文件
                 this.listProcessing(this.gainFileList())
                 setTimeout(()=>{
@@ -52,22 +66,22 @@ export default{
                 
 
                 if(this.songList.length == 0){
-                    this.$refs.muno.style.display = 'flex'
+                    this.munoStyle.display = 'flex'
                     proceedHint.warn('请先添加歌单','提醒',1500)
                 }
                 else{
-                    this.$refs.muno.style.display = 'none'
+                    this.munoStyle.display = 'none'
                 }
 
 
             }else{
                 //不显示
-                this.$refs.songBox.style.opacity = 0
-                this.$refs.songBox.style.transform = "rotateX(50deg)"
+                this.songBoxStyle.opacity = 0
+                this.songBoxStyle.transform = "rotateX(50deg)"
                 //关闭监听
                 window.removeEventListener("click",this.testMousePosition)
                 this.concealTime = setTimeout(()=>{
-                    this.$refs.songBox.style.display = 'none'
+                    this.songBoxStyle.display = 'none'
                     this.concealTime = 0
                 },500)
             }

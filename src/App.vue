@@ -217,7 +217,9 @@ export default {
 
         //软件关闭的时候保存数据
         window.addEventListener('beforeunload', e => this.beforeunloadHandler(e))
-        ThemeColors.set("#41b883")
+
+        //TODO:更改全局主题
+        ThemeColors.set("#f6b839")
         //全局监听按键
         window.pressKeys ={}
         window.addEventListener('keydown', function (event) {
