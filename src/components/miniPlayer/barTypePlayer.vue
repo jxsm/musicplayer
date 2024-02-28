@@ -1,6 +1,6 @@
 <template>
     <!--FIXME:该组件为页面底部的条形播放器,默认情况下不显示,只有当小播放器不显示的时候才会触发让其显示-->
-    <div class="barMainBox" ref="barMainBox">
+    <div class="barMainBox" ref="barMainBox" :style="barMainBoxStyle">
         <div class="oneBox">
             <div class="cover">
                 <img src="../../assets/109951168730716074.jpg" alt="封面">
@@ -84,7 +84,8 @@ export default{
             shiftOutTimeID:0,//鼠标移出计时器记录
             muteVolume:false,//是否静音
             recordVolume:0,//记录音量
-            playModeSelect:false//是否显示播放模式控件
+            playModeSelect:false,//是否显示播放模式控件
+            barMainBoxStyle:{},//主控件样式
         }
     },
     props:{
@@ -96,9 +97,9 @@ export default{
     watch:{
         isShow(newValue){
             if(newValue){
-                this.$refs.barMainBox.style.bottom = '0px'
+                this.barMainBoxStyle.bottom = '0px'
             }else{
-                this.$refs.barMainBox.style.bottom = '-100px'
+                this.barMainBoxStyle.bottom = '-100px'
             }
         }
     },

@@ -1,5 +1,5 @@
 <template>
-    <div class="waiBox" ref="nameListBox">
+    <div class="waiBox" ref="nameListBox" :style="nameListBoxStyle">
         <div class="titleText">
             <p class="songNameBox">曲名</p>
             <p>歌手</p>
@@ -28,6 +28,7 @@ export default {
             currentPathUpdate:0,//currentPat更新记录
             musicInformation:[],//音乐信息存储
             requestLabel:0,//请求标签
+            nameListBoxStyle:{}//歌单列表外层盒子样式
         }
     },
     methods:{
@@ -35,10 +36,10 @@ export default {
             const upBoxHeight =  window.innerHeight
             if(this.showBar){
                 let height = upBoxHeight - 100
-                this.$refs.nameListBox.style.height =`${height}px`
+                this.nameListBoxStyle.height =`${height}px`
             }
             else{
-                this.$refs.nameListBox.style.height =`${upBoxHeight-50}px`
+                 this.nameListBoxStyle.height =`${upBoxHeight-50}px`
             }
         }
         ,
@@ -88,13 +89,13 @@ export default {
         showMiniPlayer(newValue){
             //看小播放器是否隐藏了,如果隐藏了则扩大此组件的显示范围
             if(newValue){
-                this.$refs.nameListBox.style.width = "60%"
+                 this.nameListBoxStyle.width = "60%"
                 this.dynamicHeight = false
                 this.songHeight = 40
             }
             else{
                 this.dynamicHeight = true
-                this.$refs.nameListBox.style.width = "95%"
+                 this.nameListBoxStyle.width = "95%"
                 this.songHeight = 40
             }
         },

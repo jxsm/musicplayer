@@ -1,7 +1,7 @@
 <template>
-    <div class="waiBox" ref="miniPlayerWaiBox">
+    <div class="waiBox" ref="miniPlayerWaiBox" :style="miniPlayerWaiBoxStyle" >
         <div class="mainBox">
-            <div class="upBox" ref="upBox">
+            <div class="upBox" ref="upBox" :style="upBoxStyle" >
                 <div class="songCover">
 
                 </div>
@@ -15,7 +15,8 @@
 export default{
     data(){
         return{
-            
+            miniPlayerWaiBoxStyle :{},//miniPlayerWaiBox的样式
+            upBoxStyle :{}//upBox的样式
         }
     },
     methods:{
@@ -36,8 +37,9 @@ export default{
             //取最小值
             const min = upBoxWidth>upBoxHeight?upBoxHeight:upBoxWidth
             //设置公共变量到upBoxWidth上
-            this.$refs.upBox.style.setProperty('--minWidth',min-20+'px')
-        }
+            this.upBoxStyle["--minWidth"] = (min-20+'px')
+        },
+      
 
     },
     mounted(){
@@ -54,10 +56,10 @@ export default{
     watch:{
         showMiniPlayer(newValue){
             if(newValue){
-                this.$refs.miniPlayerWaiBox.style.opacity = 1
+                this.miniPlayerWaiBoxStyle.opacity = 1
             }
             else{
-                this.$refs.miniPlayerWaiBox.style.opacity = 0
+                this.miniPlayerWaiBoxStyle.opacity = 0
             }
         }
     }

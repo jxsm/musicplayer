@@ -1,8 +1,8 @@
 <template>
 <!--调节音量组件-->
-<div class="adjustBox" ref="adjustBox" id="adjustBox" @mouseenter="stopMouseOutTime" @mouseleave="shiftOut">
+<div class="adjustBox" ref="adjustBox" id="adjustBox" :style="adjustBoxStyle" @mouseenter="stopMouseOutTime" @mouseleave="shiftOut">
     <div class="strip" ref="strip">
-        <div class="controlStrip" ref="controlStrip">
+        <div class="controlStrip" ref="controlStrip" :style="controlStripStyle">
 
         </div>
     </div>
@@ -15,6 +15,8 @@ export default {
         return{
             volume:0,//音量大小
             midway:false,//是否正在被更改
+            adjustBoxStyle:{},//调节音量组件的样式
+            controlStripStyle:{},//控制条的样式
         }
     },
     props:{
@@ -47,7 +49,7 @@ export default {
         volume(newValue){
             alterGlobalStore('musicVolume',newValue,true)
              //设置音量条应该对应的位置
-             this.$refs.controlStrip.style.height = (newValue+8) +'%'
+              this.controlStripStyle.height = (newValue+8) +'%'
              if(newValue <= 2){
                 this.$emit('muteVolume')
              }
@@ -57,9 +59,9 @@ export default {
         },
         muteVolume(){
             this.init()
-            this.$refs.controlStrip.style.transition = 'height 0.3s'
+             this.controlStripStyle.transition = 'height 0.3s'
             setTimeout(()=>{
-                this.$refs.controlStrip.style.transition = 'height 0s'
+                 this.controlStripStyle.transition = 'height 0s'
             },300)
         },
     },
@@ -69,7 +71,7 @@ export default {
          * @param {*} e 
          */
         getCoordinates(e){
-            this.$refs.controlStrip.style.transition = 'height 0s'
+            this.controlStripStyle.transition = 'height 0s'
             let parent
             for(let i of e.path){
                 if(i.id === 'adjustBox'){
@@ -98,8 +100,8 @@ export default {
          */
         show(){
             this.init()
-            this.$refs.adjustBox.style.transform = "rotateX(0deg)"
-            this.$refs.adjustBox.style.opacity = 1
+            this.adjustBoxStyle.transform = "rotateX(0deg)"
+            this.adjustBoxStyle.opacity = 1
             this.volume = getGlobalStore('musicVolume')
 
         },
@@ -107,8 +109,8 @@ export default {
          * 隐藏事件
          */
         conceal(){
-            this.$refs.adjustBox.style.transform = "rotateX(90deg)"
-            this.$refs.adjustBox.style.opacity = 0
+            this.adjustBoxStyle.transform = "rotateX(90deg)"
+            this.adjustBoxStyle.opacity = 0
         },
         /**
          * 鼠标抬起的时候移除监听事件

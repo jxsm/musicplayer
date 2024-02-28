@@ -1,5 +1,5 @@
 <template>
-    <div class="infoBox" ref="infoBox" :style="`left:${tempLeft};opacity:${tempOpacity}`">
+    <div class="infoBox" ref="infoBox"  :style="infoBoxStyle">
         <div class="info">
             <p class="songNameInfo" :title="musicalName">{{musicalName}}</p>
             <p :title="singer">{{singer}}</p>
@@ -13,8 +13,7 @@
 export default{
     data(){
         return{
-            tempLeft:'500px',
-            tempOpacity:0
+            infoBoxStyle:{}//信息盒子样式
         }
     },
     props:{
@@ -35,14 +34,14 @@ export default{
          * @param {Number} newValue 
          */
         songHeight(newValue){
-            this.$refs.infoBox.style.height = newValue + "px";
+            this.infoBoxStyle.height = newValue + "px";
         }
 
     },
     mounted(){
         setTimeout(()=>{
-            this.tempLeft = '0px';
-            this.tempOpacity = 1
+            this.infoBoxStyle.left = "0px"
+            this.infoBoxStyle.opacity = 1
         },this.sequence*10)
     },
     computed:{

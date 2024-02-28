@@ -1,12 +1,12 @@
 <template>
     <!--通知组件-->
-    <div class="hintBox" ref="hintBox" @click="ahead">
-        <div class="whiteBar" ref="whiteBar">
+    <div class="hintBox" ref="hintBox" @click="ahead" :style="hintBoxStyle">
+        <div class="whiteBar" ref="whiteBar" :style="whiteBarStyle">
 
         </div>
 
         <div class="mainBox" ref="mainBox">
-            <div class="title" ref="titleBox">
+            <div class="title" ref="titleBox" :style="titleBox">
                 {{title}}
             </div>
             <div class="text" ref="content">
@@ -15,7 +15,7 @@
         </div>
 
         <div class="progressBar">
-            <div ref="progressBar">
+            <div ref="progressBar" :style="progressBarStyle">
 
             </div>
         </div>
@@ -30,6 +30,10 @@
                 content:"提示内容",
                 oldTime:0,//计时器记录
                 vanishTime:0,//消失记录器
+                titleBoxStyle:{},//标题样式
+                progressBarStyle:{},//进度条样式
+                hintBoxStyle:{},//通知框样式
+                whiteBarStyle:{},//白色条样式
             }
         },
         methods:{
@@ -43,8 +47,8 @@
                     return
                 }
                 this.title = e.detail.title
-                this.$refs.titleBox.style.backgroundColor = e.detail.titleColor
-                this.$refs.mainBox.style.backgroundColor = e.detail.background
+                this.titleBoxStyle.backgroundColor = e.detail.titleColor
+                this.titleBoxStyle.backgroundColor = e.detail.background
                 this.content = e.detail.content
                 this.startAnimation(e.detail.time)
                 e.stopPropagation();
@@ -62,25 +66,25 @@
                     clearTimeout(this.vanishTime)
                 }
 
-                this.$refs.progressBar.style.left = '0%'
-                this.$refs.progressBar.style.transition = "left 0ms linear"
-                this.$refs.hintBox.style.display = "block"
-                this.$refs.whiteBar.style.transition = "left 0ms"
-                this.$refs.whiteBar.style.left = "0px"
+                this.progressBarStyle.left = '0%'
+                this.progressBarStyle.transition = "left 0ms linear"
+                this.hintBoxStyle.display = "block"
+                this.whiteBarStyle.transition = "left 0ms"
+                this.whiteBarStyle.left = "0px"
                 setTimeout(()=>{
-                    this.$refs.hintBox.style.right = "0px"
-                    this.$refs.progressBar.style.transition = `left ${time}ms linear`
-                    this.$refs.progressBar.style.left = '100%'
-                    this.$refs.whiteBar.style.transition = `left ${time/4}ms linear`
-                    this.$refs.whiteBar.style.left = "300px"
+                    this.hintBoxStyle.right = "0px"
+                    this.progressBarStyle.transition = `left ${time}ms linear`
+                    this.progressBarStyle.left = '100%'
+                    this.whiteBarStyle.transition = `left ${time/4}ms linear`
+                    this.whiteBarStyle.left = "300px"
                 },50)
 
 
                 this.oldTime = setTimeout(()=>{
                     //用于关闭提示的
-                    this.$refs.hintBox.style.right = "-300px"
+                    this.hintBoxStyle.right = "-300px"
                     this.vanishTime = setTimeout(()=>{
-                        this.$refs.hintBox.style.display = "none"
+                        this.hintBoxStyle.display = "none"
                         this.vanishTime = 0
                     },500)
                     this.oldTime = 0
@@ -94,9 +98,9 @@
             ahead(){
                 this.oldTime = setTimeout(()=>{
                     //用于关闭提示的
-                    this.$refs.hintBox.style.right = "-300px"
+                    this.hintBoxStyle.right = "-300px"
                     this.vanishTime = setTimeout(()=>{
-                        this.$refs.hintBox.style.display = "none"
+                        this.hintBoxStyle.display = "none"
                         this.vanishTime = 0
                     },500)
                     this.oldTime = 0
