@@ -158,4 +158,8 @@ ipcMain.on('getFolderMusicInfo',monitorDispose.getFolderMusicInfo)
 ipcMain.on('globalSetSave',monitorDispose.globalSetSave)
 
 //监听读取设置文件信息
+
 ipcMain.on('getGlobalSet',monitorDispose.getGlobalSet)
+
+//删除临时文件下的所有文件
+ipcMain.on("clearTempAll",(event,arg)=>{monitorDispose.clear_Temp_File()})

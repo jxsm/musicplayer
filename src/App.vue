@@ -146,7 +146,7 @@ export default {
                 window.ipcRenderer.on('musicFolderList',this.setfFilePath)
             }
         },
-        //软件关闭的时候保存数据
+        //软件关闭的操作
         beforeunloadHandler(e) {
             void e
             //保存歌单数据
@@ -154,6 +154,10 @@ export default {
             if(filePath){
                 window.ipcRenderer.send('changeFolderList',filePath)
             }
+
+            //删除临时文件夹中的数据
+            window.ipcRenderer.send('clearTempAll',true)
+
         },
         /**
          * 初始化
@@ -193,7 +197,7 @@ export default {
             //去获取音乐信息
             alterGlobalStore('currentPath',getGlobalStore('currentPath'),true)
 
-
+           
         },
         /**
          * 默认选择歌单
@@ -215,11 +219,12 @@ export default {
         //初始化
         this.initialize()
 
+        
         //软件关闭的时候保存数据
         window.addEventListener('beforeunload', e => this.beforeunloadHandler(e))
 
         //TODO:更改全局主题
-        ThemeColors.set("#f6b839")
+        ThemeColors.set("#528bff")
         //全局监听按键
         window.pressKeys ={}
         window.addEventListener('keydown', function (event) {

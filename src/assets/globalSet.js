@@ -4,7 +4,7 @@
 //设置通用的调用文件
 class globalSet{
     static #setInfo = {
-        'readFileType':['mp3','ogg','acc','wav']
+        'readFileType':['mp3','ogg','acc','wav',"flac"]
     }
 
     /**
@@ -94,5 +94,3 @@ class globalSet{
 
 
 module.exports = globalSet;
-
-//TODO:该做启动的是的加载设置文件了,然后就开始开始读音乐信息了

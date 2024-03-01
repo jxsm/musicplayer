@@ -80,11 +80,24 @@ function getFolderList(path,names) {
         }
       }
     }
+    
 
     return filesList;
 }
 
 
-  
+/**
+ * 删除临时文件夹中的文件
+ * @param {string} path 文件名称(fileName)
+ */
+function removeTempFile(path){
+    fs.unlink(path,(err)=>{
+        if(err){
+            console.log("文件删除失败");
+            return false
+        }
+        return true
+    })
+} 
 
-module.exports = { readFile,writeFile,getFilesAndFoldersInDir,getFolderList}
+module.exports = { readFile,writeFile,getFilesAndFoldersInDir,getFolderList,removeTempFile}

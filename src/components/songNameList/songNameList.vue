@@ -147,7 +147,32 @@ export default {
     right: 2%;
     transition:width 0.3s,height 0.3s;
     overflow: scroll;
+    
 }
+
+.waiBox::-webkit-scrollbar{
+    width:10px;
+    height:0px;
+    display: block;
+}
+.waiBox::-webkit-scrollbar-thumb{
+    background-color: var(--adjacentColour-theme-two);
+    
+  
+}
+.waiBox::-webkit-scrollbar-track{
+    
+    background-color: var(--adjacent-theme-colour);
+   
+
+}
+
+.waiBox::-webkit-scrollbar-thumb:hover{
+
+    background-color: var(--opposite-theme-colour);
+    
+}
+
 
 .titleText{
     background-color: var(--theme-colour);
@@ -167,7 +192,11 @@ export default {
 }
 .info_list_box{
     z-index: 0.8;
+    overflow: scroll;
 }
+
+
+
 
 .songNameBox{
     width: 16%;

@@ -5,13 +5,23 @@
                 <div class="songCover">
 
                 </div>
+               
+
             </div>
-            
+            <div class="musicInfo">
+                <!--歌词和歌曲信息的区域-->
+            </div>
+            <div class="musicControl">
+                <!--歌曲控件-->
+                <!--TODO:添加播放控件-->
+                <playMode :playModeSelect = "true"> </playMode>
+            </div>
         </div>
     </div>
 </template>
 
 <script>
+import playMode from "./playMode.vue"
 export default{
     data(){
         return{
@@ -62,6 +72,9 @@ export default{
                 this.miniPlayerWaiBoxStyle.opacity = 0
             }
         }
+    },
+    components:{
+        playMode
     }
         
 }
@@ -72,7 +85,7 @@ export default{
 .waiBox{
     opacity: 1;
     position: absolute;
-    width: 33%;
+    width: 34%;
     height: 96%;
     border: 1px solid black;
     display: flex;
@@ -88,6 +101,7 @@ export default{
     border-radius: 45px;
     transition: box-shadow 0.5s;
     box-shadow: inset 0px 0px 50px 0px var(--theme-colour);
+    overflow: hidden;
 }
 
 .upBox{
@@ -104,5 +118,17 @@ export default{
     height: var(--minWidth);
     border-radius: 100%;
     background-color: black;
+}
+
+.musicInfo{
+    width: 100%;
+    height: 50%;
+    border: 2px solid rgb(16, 210, 197);
+}
+
+.musicControl{
+    width: 100%;
+    height: 8.8%;
+    border: 2px solid rgb(39, 246, 16);
 }
 </style>
