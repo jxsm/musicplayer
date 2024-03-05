@@ -83,9 +83,9 @@ export default{
                     return
                 }
             }
-
-
-            filePath.push({path:content,name:content.split('\\').pop(),collect:false,type:'local'})
+            //提取文件的名称
+            let file_name = content.split('\\').pop()
+            filePath.push({path:content,name:file_name.split('/').pop(),collect:false,type:'local'})
             localStorage.setItem('filePath',JSON.stringify(filePath));
             //提示还没搞
             proceedHint.commonHint("添加成功","提醒",2000)

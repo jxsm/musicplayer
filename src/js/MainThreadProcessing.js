@@ -109,7 +109,7 @@ static clear_Temp_File(){
       
     }
     
-    log("删除临时文件a:" + fileList[i].name + "." + fileList[i].type)  
+    console.log("删除临时文件a:" + fileList[i].name + "." + fileList[i].type)  
   }
 }
 
@@ -124,6 +124,14 @@ static clear_Temp_File_By_Path(name){
 }
 
 
+/**
+ * 检查temp文件夹是否存在,如果不存在则进行创建
+ */
+static testTemp() {
+  if(!fs.existsSync("./userFile/temp/")){
+    fs.mkdirSync("./userFile/temp");
+  }
+}
 
 
 }

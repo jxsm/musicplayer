@@ -1,11 +1,30 @@
-'use strict'
 
+'use strict'
+const os = require('os');
 import{ readFile,writeFile,getFilesAndFoldersInDir} from "../public/static/file"
 import { app, protocol, BrowserWindow ,contextBridge, ipcMain,dialog} from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
 import {monitorDispose} from "./js/MainThreadProcessing"
+//设置环境FLUENTFFMPEG_COV为false让fluent-ffmpeg加载正确的版本
+process.env.FLUENTFFMPEG_COV = false
+import Ffmpeg from "fluent-ffmpeg";
+
+Ffmpeg.setFfmpegPath()
+
+//检查平台,更具不同的平台下载对应的ffmpeg的包
+if (os.type() == 'Windows_NT') {
+	//Windows
+}
+if (os.type() == 'Darwin') {
+	//mac
+}
+if (os.type() == 'Linux') {
+	//Linux平台
+  console.log("Linux平台用户,需自行添加ffmpeg")
+}
+
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
@@ -150,6 +169,10 @@ ipcMain.on('open-Directory', function (event, p) {
       event.sender.send('selectedItem', [p,result.filePaths[0]])
   })
 });
+
+//检查temp文件夹是否存在,如果不存在则进行创建
+
+monitorDispose.testTemp()
 
 //监听歌曲信息获取事件
 ipcMain.on('getFolderMusicInfo',monitorDispose.getFolderMusicInfo)
