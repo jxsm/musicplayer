@@ -1,11 +1,32 @@
 const fileOperations = require('../../public/static/file');//文件写入模块
 const metadata = require('music-metadata');//音乐信息获取模块
-
+const os = require('os');
 const fs = require('fs');//文件读取模块
-const { log } = require('console');
+var FfmpegCommand = require('../../node_modules/fluent-ffmpeg/lib/fluent-ffmpeg.js');
+
+
+//检查平台,更具不同的平台下载对应的ffmpeg的包
+if (os.type() == 'Windows_NT') {
+	//Windows
+  FfmpegCommand.setFfmpegPath("ffmpeg/win/ffmpeg-2024-03-04-git-e30369bc1c-full_build/bin/ffmpeg.exe")
+}
+if (os.type() == 'Darwin') {
+	//mac
+  FfmpegCommand.setFfmpegPath("ffmpeg/mac/ffmpeg")
+  console.log("mac用户,如果包内自带的ffmpeg有问题,则请自行更换到您可使用的版本")
+}
+if (os.type() == 'Linux') {
+	//Linux平台
+  FfmpegCommand.setFfmpegPath("ffmpeg/linux/ffmpeg-6.1-amd64-static/ffmpeg")
+  console.log("Linux平台用户,如果包内自带的ffmpeg有问题,则请自行更换到您可使用的版本")
+}
 
 
 
+
+/**
+ * 处理一些文件
+ */
 class monitorDispose{
     /**
      * 获取一个文件夹下指定类型的音乐的信息
@@ -77,12 +98,13 @@ class monitorDispose{
 
 /**
  * 使用内置的ffmpeg库进行转码,返回值为转码后临时文件的路径
- * @param {*} filePath 
- * @param {*} target 
+ * @param {*} filePath 文件路径
+ * @param {*} target 目标文件类型
+ * @returns {String} 临时文件的路径
  */
-// static ffmpeg_transcoding(filePath,target){
+static ffmpeg_transcoding_path(filePath,target){
 
-// }
+}
 
 
 
@@ -166,9 +188,30 @@ function setMusicInfo(infos){
 }
 
 
+/**
+ * 当ffmpeg报错时候调用这个代码
+ * TODO: 为每个平台的报错都运用不同的内容
+ */
+function _errFfmpeg(){
+  switch (os.type()){
+    case 'Windows_NT':
+      console.log("ffmpeg报错,请检查ffmpeg是否安装成功(默认使用的内置的ffmpeg请检查内置的ffmpeg是否正常)")
+      break;
+    case 'Linux':
+      console.log("ffmpeg报错,请检查ffmpeg是否安装成功(默认使用的内置的ffmpeg请检查内置的ffmpeg是否正常)")
+      break;
+    case 'Darwin':
+      console.log("ffmpeg报错,请检查ffmpeg是否安装成功(默认使用的内置的ffmpeg请检查内置的ffmpeg是否正常)")
+      break;
+  }
+}
+
 
 
 
 module.exports = {
   monitorDispose
 }
+
+
+

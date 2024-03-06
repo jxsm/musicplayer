@@ -7,20 +7,13 @@ import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
 import {monitorDispose} from "./js/MainThreadProcessing"
-var FfmpegCommand = require('../node_modules/fluent-ffmpeg/lib/fluent-ffmpeg.js');
 
-//检查平台,更具不同的平台下载对应的ffmpeg的包
-if (os.type() == 'Windows_NT') {
-	//Windows
+//ffmpeg的路径,如果您要为特定的平台构建则只需要指定特定平台的ffmpeg就可以了
+ffmpegPath = {
+  Windows_NT:"ffmpeg/win/ffmpeg-2024-03-04-git-e30369bc1c-full_build/bin/ffmpeg.exe",
+  Darwin:"ffmpeg/mac/ffmpeg",
+  Linux:"ffmpeg/linux/ffmpeg-6.1-amd64-static/ffmpeg"
 }
-if (os.type() == 'Darwin') {
-	//mac
-}
-if (os.type() == 'Linux') {
-	//Linux平台
-  console.log("Linux平台用户,需自行添加ffmpeg")
-}
-
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([

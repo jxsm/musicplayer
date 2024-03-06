@@ -24,4 +24,12 @@ pnpm-debug.log*
 
 #Electron-builder output
 /dist_electron
-userFile/filePath.json
+
+
+
+#ffmpeg
+
+ffmpeg
+
+#userFile
+userFile/*

@@ -1,7 +1,4 @@
----
-renderNumberedHeading: true
-title: musicplayer
----
+# musicplayer
 
 # 该项目是一个跨平台的音乐播放器
 
