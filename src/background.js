@@ -7,11 +7,7 @@ import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
 import {monitorDispose} from "./js/MainThreadProcessing"
-//设置环境FLUENTFFMPEG_COV为false让fluent-ffmpeg加载正确的版本
-process.env.FLUENTFFMPEG_COV = false
-import Ffmpeg from "fluent-ffmpeg";
-
-Ffmpeg.setFfmpegPath()
+var FfmpegCommand = require('../node_modules/fluent-ffmpeg/lib/fluent-ffmpeg.js');
 
 //检查平台,更具不同的平台下载对应的ffmpeg的包
 if (os.type() == 'Windows_NT') {
