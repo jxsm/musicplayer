@@ -38,9 +38,4 @@ class GetMusicInfo {
 
     return promise
 }
-
-
-
-
-
 export {GetMusicInfo}

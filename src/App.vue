@@ -224,7 +224,7 @@ export default {
         window.addEventListener('beforeunload', e => this.beforeunloadHandler(e))
 
         //TODO:更改全局主题
-        ThemeColors.set("#528bff")
+        ThemeColors.set("#93d5dc")
         //全局监听按键
         window.pressKeys ={}
         window.addEventListener('keydown', function (event) {

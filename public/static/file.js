@@ -1,4 +1,6 @@
 const fs = require('fs')
+const path = require('path');
+const request = require('request');
 // 读取文件方法
 function readFile(path){
     return new Promise((resolve, reject)=>{
@@ -99,5 +101,21 @@ function removeTempFile(path){
         return true
     })
 } 
+
+/**
+ * 下载文件到temp目录(要注意的是,下载到temp中的文件会在软件关闭的时候全部删除)
+ * @param {String} url 远程路径 
+ * @param {*} fileName 保存的文件名
+ * @param {*} callback 回调函数(在下载完成的时候会被调用)
+ */
+function DownloadFile_Temp(url,fileName,callback=()=>{}){
+    request.head(uri, function(err, res, body){
+        console.log('content-type:', res.headers['content-type']);
+        console.log('content-length:', res.headers['content-length']);
+        request(uri).pipe(fs.createWriteStream(filename)).on('close', callback);
+    
+      }
+      );
+}
 
 module.exports = { readFile,writeFile,getFilesAndFoldersInDir,getFolderList,removeTempFile}

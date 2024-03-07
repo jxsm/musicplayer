@@ -2,25 +2,11 @@ const fileOperations = require('../../public/static/file');//文件写入模块
 const metadata = require('music-metadata');//音乐信息获取模块
 const os = require('os');
 const fs = require('fs');//文件读取模块
-var FfmpegCommand = require('../../node_modules/fluent-ffmpeg/lib/fluent-ffmpeg.js');
+const Transcoding = require("./transcoding-table.js")
 
+const request = require('request');
 
-//检查平台,更具不同的平台下载对应的ffmpeg的包
-if (os.type() == 'Windows_NT') {
-	//Windows
-  FfmpegCommand.setFfmpegPath("ffmpeg/win/ffmpeg-2024-03-04-git-e30369bc1c-full_build/bin/ffmpeg.exe")
-}
-if (os.type() == 'Darwin') {
-	//mac
-  FfmpegCommand.setFfmpegPath("ffmpeg/mac/ffmpeg")
-  console.log("mac用户,如果包内自带的ffmpeg有问题,则请自行更换到您可使用的版本")
-}
-if (os.type() == 'Linux') {
-	//Linux平台
-  FfmpegCommand.setFfmpegPath("ffmpeg/linux/ffmpeg-6.1-amd64-static/ffmpeg")
-  console.log("Linux平台用户,如果包内自带的ffmpeg有问题,则请自行更换到您可使用的版本")
-}
-
+const tempPath = "./userFile/temp/";//临时文件夹
 
 
 
@@ -84,29 +70,54 @@ class monitorDispose{
 
 
     
-
+//TODO: 完成这里
 
 /**
+ * 
+ * * {
+ * path:"路径",
+ * position:"位置信息" ,   如(local|internet)本地或网络位置
+ * sourceType:"原类型" 如(wav)
+ * fileName:,"保存的文件名" 转码后在本地保存的文件名(不需要后缀!!)该文件会被保存到userFile下的temp目录下
+ * target:"希望转成的目标类型" 如(mp3),
+ * tag:唯一标签
+ * } 
  * 接收ipc信息,并调用内置的ffmpeg进行转码
  * 该函数执行后会立即返回转码后临时文件的路径
+ * @param {IpcMessageEvent} event 
+ * @param {Object} args 该对象传入的数据应该严格要这样
  */
-// static ipc_ffmpeg_transcoding(){
-
-// }
-
-
-
-/**
- * 使用内置的ffmpeg库进行转码,返回值为转码后临时文件的路径
- * @param {*} filePath 文件路径
- * @param {*} target 目标文件类型
- * @returns {String} 临时文件的路径
- */
-static ffmpeg_transcoding_path(filePath,target){
-
+static ipc_ffmpeg_transcoding(event,args){
+  
 }
 
 
+
+
+
+
+
+
+/**
+ * 下载文件到temp文件目录
+ * @param {string} uri 资源的远程路径
+ * @param {string} filename 保存的资源名称如(a.mp3)
+ * @param {Object} headers 请求头(可不传)
+ * @returns {Promise} 如果执行正确则返回下载的文件在temp中的文件名称如(a.mp3)
+ */
+static DownloadFile_Temp(uri,filename,headers={}){
+  return new Promise((resolve,reject)=>{
+    request.head(uri, function(err, res, body){
+      if(err){
+        reject(err)
+      }
+      request({url:uri,headers:headers}).pipe(fs.createWriteStream(filename)).on('close', ()=>{
+        resolve(filename);
+      })
+    }
+    );
+  })
+}
 
 
 
@@ -154,8 +165,6 @@ static testTemp() {
     fs.mkdirSync("./userFile/temp");
   }
 }
-
-
 }
 
 
