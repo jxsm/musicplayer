@@ -1,6 +1,6 @@
 const FfmpegCommand = require('../../node_modules/fluent-ffmpeg/lib/fluent-ffmpeg.js');
 const tempPath = "./userFile/temp/";//临时文件夹
-
+const os = require('os');
 
 //检查平台,更具不同的平台下载对应的ffmpeg的包
 if (os.type() == 'Windows_NT') {
@@ -20,35 +20,23 @@ if (os.type() == 'Linux') {
 
 
 
-
 class Transcoding{
 
 
-
-    static transcoding_list = {
-        mp3:this.familiar,
-        ogg:this.familiar,
-        acc:this.familiar,
-        wav:this.familiar,
-        flac:this.familiar,
-        m4a:this.familiar,
-    }
-
-
-
 /**
- * 常见的文件类型进行解码
+ * 常见的文件类型进行转码
  * @param {string} path 文件位置 
  * @param {string} fileName 保存的文件名 
  * @param {string} position  位置 如(local|internet)本地或网络位置
  * @param {string} target 目标格式
  * @param {Object} headers 请求头可为空
+ * @return {Promise} 如果处理正确Promise会返回该文件在temp文件中的路径
  */
 static familiar(path,fileName,position,target,headers={}){
     if(position == "local"){
-        this.ffmpeg_transcoding_path(path,fileName,target)
+        return this.ffmpeg_transcoding_path(path,fileName,target)
     }else if(position == "internet"){
-        this.network_transcode(path,fileName,target,headers)
+        return this.network_transcode(path,fileName,target,headers)
     }
 }
 
@@ -111,10 +99,30 @@ static network_transcode(uri,fileName,target,headers={}){
             ).run();
     })
   }
-  
+
+
 }
 
 
+/**
+ * 转码器列表,第三方插件转码器或解码器只需要在这里对特定的格式进行注册就可以了
+ * 原生支持[mp3,ogg,acc,wav,flac,m4a]
+ * 原生默认使用包内自带的ffmpeg进行转码和解码播放是使用的浏览器原生的API,所以请转码为浏览器可以播放的格式
+ */
+let transcoding_list = {
+    mp3:Transcoding.familiar,
+    ogg:Transcoding.familiar,
+    acc:Transcoding.familiar,
+    wav:Transcoding.familiar,
+    flac:Transcoding.familiar,
+    m4a:Transcoding.familiar
+  }
 
 
-module.exports = Transcoding;
+
+
+
+
+
+module.exports = {Transcoding,transcoding_list};
+

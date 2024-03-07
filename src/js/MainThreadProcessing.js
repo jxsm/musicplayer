@@ -14,6 +14,7 @@ const tempPath = "./userFile/temp/";//临时文件夹
  * 处理一些文件
  */
 class monitorDispose{
+
     /**
      * 获取一个文件夹下指定类型的音乐的信息
      * @param {*} event 
@@ -81,14 +82,34 @@ class monitorDispose{
  * fileName:,"保存的文件名" 转码后在本地保存的文件名(不需要后缀!!)该文件会被保存到userFile下的temp目录下
  * target:"希望转成的目标类型" 如(mp3),
  * tag:唯一标签
+ * headers: 请求头(可为空)
  * } 
  * 接收ipc信息,并调用内置的ffmpeg进行转码
  * 该函数执行后会立即返回转码后临时文件的路径
  * @param {IpcMessageEvent} event 
- * @param {Object} args 该对象传入的数据应该严格要这样
+ * @param {{
+ * path:string,
+ * position:string,
+ * sourceType:string,
+ * fileName:string,
+ * target:string,
+ * tag:string,
+ * headers:object
+ * }} args 该对象传入的数据应该严格要这样
  */
-static ipc_ffmpeg_transcoding(event,args){
-  
+static ipc_ffmpeg_transcoding(event,args = {}){
+  //先检查传入的args是否正确
+  if(!(args.path && args.position && args.sourceType && args.fileName && args.target && args.tag)){
+    event.sender.send('return_ffmpeg_transcoding',[args.tag,'error','请检查传入的args的置是否正确(除了headers属性外都不能为空)'])
+  }
+
+  if(Transcoding.transcoding_list[args.sourceType]){
+    let flag = Transcoding.transcoding_list[args.sourceType](args.path,args.fileName,args.position,args.target,args.headers)
+    event.sender.send('return_ffmpeg_transcoding',[args.tag,flag])
+  }
+  else{
+    event.sender.send('return_ffmpeg_transcoding',[args.tag,'error'])
+  }
 }
 
 
