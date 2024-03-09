@@ -78,7 +78,7 @@ static network_transcode(uri,fileName,target,headers={}){
   
   /**
    * 在使用该函数的时候应该尽量避免在上个同名文件删除之前调用,以避免重复覆盖
-   * 使用内置的ffmpeg库进行转码,返回值为转码后临时文件的路径
+   * 使用内置的ffmpeg库进行转码,返回值为转码后该文件在临时文件的文件名
    * @param {*} filePath 要进行转码的文件路径(或可读流)
    * @param {string} fileName 保存的文件名如(fielName)
    * @param {string} target 目标文件类型如(mp3)
@@ -99,6 +99,27 @@ static network_transcode(uri,fileName,target,headers={}){
             ).run();
     })
   }
+
+
+  /**
+ * 当ffmpeg报错时候调用这个代码
+ * TODO: 为每个平台的报错都运用不同的内容
+ */
+static _errFfmpeg(){
+  switch (os.type()){
+    case 'Windows_NT':
+      console.log("ffmpeg报错,请检查ffmpeg是否安装成功(默认使用的内置的ffmpeg请检查内置的ffmpeg是否正常)")
+      break;
+    case 'Linux':
+      console.log("ffmpeg报错,请检查ffmpeg是否安装成功(默认使用的内置的ffmpeg请检查内置的ffmpeg是否正常)")
+      break;
+    case 'Darwin':
+      console.log("ffmpeg报错,请检查ffmpeg是否安装成功(默认使用的内置的ffmpeg请检查内置的ffmpeg是否正常)")
+      break;
+  }
+}
+
+
 
 
 }

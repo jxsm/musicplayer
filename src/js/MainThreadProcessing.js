@@ -22,7 +22,7 @@ class monitorDispose{
      */
     static getFolderMusicInfo(event,arg){
         const path = arg[0];//文件夹路径，如'E:\\青鸟2\\音乐测试'，注意：路径中需要使用
-        let names = arg[1] || ['mp3','ogg','acc','wav'];
+        let names = arg[1] || ['mp3','ogg','acc','wav','m4a'];
         const flag = arg[2];
     
         let musicList =  fileOperations.getFolderList(path,names)
@@ -102,13 +102,12 @@ static ipc_ffmpeg_transcoding(event,args = {}){
   if(!(args.path && args.position && args.sourceType && args.fileName && args.target && args.tag)){
     event.sender.send('return_ffmpeg_transcoding',[args.tag,'error','请检查传入的args的置是否正确(除了headers属性外都不能为空)'])
   }
-
   if(Transcoding.transcoding_list[args.sourceType]){
     let flag = Transcoding.transcoding_list[args.sourceType](args.path,args.fileName,args.position,args.target,args.headers)
     event.sender.send('return_ffmpeg_transcoding',[args.tag,flag])
   }
   else{
-    event.sender.send('return_ffmpeg_transcoding',[args.tag,'error'])
+    event.sender.send('return_ffmpeg_transcoding',[args.tag,'error',"没有相对应的转码器,如果您是开发者您可以尝试更改sourceType属性为其他类型"])
   }
 }
 
@@ -159,8 +158,6 @@ static clear_Temp_File(){
       if(!this.clear_Temp_File_By_Path(fileList[i].type)){
         this.clear_Temp_File_By_Path("."+ fileList[i].type)
       }
-      
-      
     }
     
     console.log("删除临时文件a:" + fileList[i].name + "." + fileList[i].type)  
@@ -189,9 +186,6 @@ static testTemp() {
 }
 
 
-
-
-
 /**
  * 
  * 
@@ -217,24 +211,6 @@ function setMusicInfo(infos){
   return [prList,infos]
 }
 
-
-/**
- * 当ffmpeg报错时候调用这个代码
- * TODO: 为每个平台的报错都运用不同的内容
- */
-function _errFfmpeg(){
-  switch (os.type()){
-    case 'Windows_NT':
-      console.log("ffmpeg报错,请检查ffmpeg是否安装成功(默认使用的内置的ffmpeg请检查内置的ffmpeg是否正常)")
-      break;
-    case 'Linux':
-      console.log("ffmpeg报错,请检查ffmpeg是否安装成功(默认使用的内置的ffmpeg请检查内置的ffmpeg是否正常)")
-      break;
-    case 'Darwin':
-      console.log("ffmpeg报错,请检查ffmpeg是否安装成功(默认使用的内置的ffmpeg请检查内置的ffmpeg是否正常)")
-      break;
-  }
-}
 
 
 

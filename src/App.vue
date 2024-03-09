@@ -1,5 +1,8 @@
 <template>
+    <!--右侧拉出通知组件-->
     <hintModule></hintModule>
+    <!--底部mini通知组建-->
+    <miniPopUpWindow></miniPopUpWindow>
     <!--窗口顶部控制条-->
     <controlStrip @goset="setDisplay" :setSongListX="setSongListX" @clicksong="showSong"></controlStrip>
     <!--歌单列表-->
@@ -28,6 +31,7 @@ import global_set from "./components/global_set.vue"//窗口设置页
 import hintModule from "./components/publicModule/hintModule.vue"//提示框
 import  songList  from "./components/songList/songList.vue"//歌单列表
 import MainInterface from "./components/mainInterface/mainInterface.vue"//主页面
+import miniPopUpWindow from "./components/publicModule/miniPopUpWindow.vue"//迷你弹窗
 import {ThemeColors} from "./js/ThemeColors.js"
 import {globalStore_Object,getGlobalStore, alterGlobalStore} from './assets/globalStore.js'
 import globalSet from "./assets/globalSet.js"
@@ -38,7 +42,8 @@ export default {
         global_set,
         hintModule,
         songList,
-        MainInterface
+        MainInterface,
+        miniPopUpWindow
     },
     data(){
         return{
