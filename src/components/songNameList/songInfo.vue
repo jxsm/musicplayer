@@ -1,5 +1,6 @@
 <template>
-    <div class="infoBox" ref="infoBox"  :style="infoBoxStyle">
+    <!--TODO:音乐基础信息展示-->
+    <div class="infoBox" ref="infoBox"  :style="infoBoxStyle" @click="clickedOn">
         <div class="info">
             <p class="songNameInfo" :title="musicalName">{{musicalName}}</p>
             <p :title="singer">{{singer}}</p>
@@ -10,10 +11,15 @@
 </template>
 
 <script>
+import {MusicManagement} from "../../js/musicManagement.js"
+
+void MusicManagement
+
 export default{
     data(){
         return{
-            infoBoxStyle:{}//信息盒子样式
+            infoBoxStyle:{},//信息盒子样式
+            clickedOnTime:0,//点击时间的记录,避免重复点击
         }
     },
     props:{
@@ -76,10 +82,25 @@ export default{
         }
     },
     methods:{
+        /**
+         * 计算歌曲时间
+         * @param {flaot} seconds  歌曲时间
+         */
         formatTime(seconds) {
             const minutes = Math.floor(seconds / 60);
             const remainingSeconds = seconds % 60;
             return `${minutes.toString().padStart(2, '0')}:${Math.round(remainingSeconds).toString().padStart(2, '0')}`;
+        },
+        /**
+         * 当元素被点击时触发，用于开始播放流程
+         */
+        clickedOn(){
+            //console.log(this.infos.path)
+            const nowTime = Date.now()
+            if((nowTime - this.clickedOnTime) > 500  ){
+                this.$emit("clickedOn",this.infos)
+                this.clickedOnTime = nowTime
+            }
         }
     }
 }

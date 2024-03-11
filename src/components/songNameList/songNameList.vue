@@ -32,6 +32,9 @@ export default {
         }
     },
     methods:{
+        /**
+         * 设置宽度和高度
+         */
         resizeFn(){
             const upBoxHeight =  window.innerHeight
             if(this.showBar){
@@ -66,11 +69,12 @@ export default {
         /**
          * 更新缓存中的音乐信息
          * @param {String} key 缓存的查询信息
-         * @param {Arry} data  音乐欣喜
+         * @param {Arry} data  音乐信息
          */
         updatCache(key,data){
             localForage.setItem(`musicListInfo:${key}`,data)
-        }
+        },
+
     },
     components:{
         songInfo
