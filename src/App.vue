@@ -36,6 +36,7 @@ import {ThemeColors} from "./js/ThemeColors.js"
 import {globalStore_Object,getGlobalStore, alterGlobalStore} from './assets/globalStore.js'
 import globalSet from "./assets/globalSet.js"
 
+
 export default {
     components:{
         controlStrip,
@@ -224,7 +225,8 @@ export default {
         //初始化
         this.initialize()
 
-        
+       
+
         //软件关闭的时候保存数据
         window.addEventListener('beforeunload', e => this.beforeunloadHandler(e))
 

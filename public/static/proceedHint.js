@@ -1,5 +1,5 @@
 /**
- * 提示类,该类中封装了大部分的提示方法,当然也可以自定义提示
+ * 提示类,该类中封装了侧边推出提示组件的使用
  */
 class proceedHint {
 
@@ -61,6 +61,45 @@ class proceedHint {
 }
 
 
-module.exports = {proceedHint} // 导出proceedHint类
 
+/**
+ * 页面底部的小弹窗的管理类
+ */
+class MinWindowHint{
+
+    /**
+     * 页面底部的小弹窗提示
+     * @param {string} hintText 提示文字 
+     * @param {Number} time  持续时间
+     */
+    static hint(hintText,time){
+        this.general(hintText,"var(--theme-colour)","var(--opposite-theme-colour)",time)
+    }
+
+
+   
+
+
+    /**
+     * 页面底部的小弹窗
+     * @param {string} hintText 提示文字 
+     * @param {string} backgroundColor 背景颜色
+     * @param {string} color 字体颜色
+     * @param {Number} time 持续时间
+     */
+    static general(hintText,backgroundColor,color,time){
+        let message = new CustomEvent('miniHint',{
+            detail:{
+                hintText:hintText,
+                backgroundColor:backgroundColor,
+                color:color,
+                time:time
+            }
+        });
+        window.dispatchEvent(message);
+    }
+}
+
+
+module.exports = {proceedHint,MinWindowHint} // 导出proceedHint类
 

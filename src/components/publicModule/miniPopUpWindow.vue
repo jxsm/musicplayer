@@ -16,9 +16,9 @@ export default {
                 width:"auto",
                 backgroundColor:"rgb(105, 105, 105)",
                 color:"white",
-                opacity:1
+                opacity:0
             },
-            hintText:"阿啊啊啊啊",//提示内容
+            hintText:"",//提示内容
             timeTemp:0,//定时器记录
         }
     },
@@ -28,6 +28,7 @@ export default {
          * @param {CustomEvent} e 
          */
         miniHintEvent(e){
+            console.log(e)
             this.hintText =  e.detail.hintText
             this.window_box_style.backgroundColor = e.detail.backgroundColor
             this.window_box_style.color = e.detail.color
@@ -56,6 +57,7 @@ export default {
         autoPosition(){
             this.window_box_style.width = "auto"
             this.window_box_style.height = "auto"
+            console.log("元素宽度" + this.$refs.window_box.offsetWidth)
             setTimeout(()=>{
                 this.window_box_style.width = this.$refs.window_box.offsetWidth + 30 + "px"
                 this.window_box_style.height = this.$refs.window_box.offsetHeight + 10 + "px"
