@@ -177,3 +177,6 @@ ipcMain.on('getGlobalSet',monitorDispose.getGlobalSet)
 
 //删除临时文件下的所有文件
 ipcMain.on("clearTempAll",(event,arg)=>{monitorDispose.clear_Temp_File()})
+
+//使用ffmpeg进行转码率
+ipcMain.on("ffpegTranscoding",monitorDispose.ipc_ffmpeg_transcoding)

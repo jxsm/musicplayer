@@ -18,7 +18,7 @@ class monitorDispose{
     /**
      * 获取一个文件夹下指定类型的音乐的信息
      * @param {*} event 
-     * @param {Array} arg [路径,类型['mp3'],标识] 
+     * @param {[]} arg [路径,类型['mp3'],标识] 
      */
     static getFolderMusicInfo(event,arg){
         const path = arg[0];//文件夹路径，如'E:\\青鸟2\\音乐测试'，注意：路径中需要使用
@@ -104,7 +104,14 @@ static ipc_ffmpeg_transcoding(event,args = {}){
   }
   if(Transcoding.transcoding_list[args.sourceType]){
     let flag = Transcoding.transcoding_list[args.sourceType](args.path,args.fileName,args.position,args.target,args.headers)
-    event.sender.send('return_ffmpeg_transcoding',[args.tag,flag])
+    flag.then((res)=>{
+      event.sender.send('return_ffmpeg_transcoding',[args.tag,'ok',res])
+    })
+    .catch((e)=>{
+      event.sender.send('return_ffmpeg_transcoding',[args.tag,'error',e])
+    })
+
+    
   }
   else{
     event.sender.send('return_ffmpeg_transcoding',[args.tag,'error',"没有相对应的转码器,如果您是开发者您可以尝试更改sourceType属性为其他类型"])

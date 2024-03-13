@@ -7,7 +7,7 @@
             <p>时长</p>
         </div>
         <div v-for="(i,t) in musicInformation" :key="t" class="info_list_box">
-            <songInfo v-for="(item,index) in i " :key="index" :sequence="index" :infos="item" :songHeight="songHeight" v-show="temp"></songInfo>
+            <songInfo v-for="(item,index) in i " :key="index" :sequence="index" :infos="item" :songHeight="songHeight" v-show="temp" @clickedOn="clickedOn"></songInfo>
         </div>
         
         
@@ -18,6 +18,7 @@ import songInfo from "./songInfo.vue"
 
 import {GetMusicInfo} from "../../js/MusicInformationAcquisition"
 import localForage from "localforage"
+import {MusicManagement} from "../../js/musicManagement.js"
 
 export default {
     data(){
@@ -28,7 +29,7 @@ export default {
             currentPathUpdate:0,//currentPat更新记录
             musicInformation:[],//音乐信息存储
             requestLabel:0,//请求标签
-            nameListBoxStyle:{}//歌单列表外层盒子样式
+            nameListBoxStyle:{},//歌单列表外层盒子样式
         }
     },
     methods:{
@@ -60,7 +61,9 @@ export default {
             })
         }
         ,
-        //设置音乐信息的存储
+        /**
+         * 设置音乐信息的存储
+         */
         setMusicInformation(index,label,data){
             if(label === this.requestLabel) {
                 this.musicInformation[index] = data
@@ -74,7 +77,14 @@ export default {
         updatCache(key,data){
             localForage.setItem(`musicListInfo:${key}`,data)
         },
-
+        /**
+         * 当有歌曲被点击时或执行这里的函数
+         * @param {Object} infos 音乐信息
+         */
+        clickedOn(infos){
+            MusicManagement.addHistoricalRecord(infos)
+            this.musicId = MusicManagement.ffpegTranscoding(infos,"mp3")
+        }
     },
     components:{
         songInfo
@@ -108,6 +118,9 @@ export default {
         }
     },
     mounted(){
+        //监听线程返回
+        MusicManagement.startMonitor()
+
         //监听窗口发生变化
         window.addEventListener('resize',this.resizeFn)
 

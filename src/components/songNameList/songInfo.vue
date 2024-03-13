@@ -11,9 +11,7 @@
 </template>
 
 <script>
-import {MusicManagement} from "../../js/musicManagement.js"
 
-void MusicManagement
 
 export default{
     data(){
@@ -49,6 +47,8 @@ export default{
             this.infoBoxStyle.left = "0px"
             this.infoBoxStyle.opacity = 1
         },this.sequence*10)
+
+
     },
     computed:{
         //音乐名称
@@ -96,10 +96,10 @@ export default{
          */
         clickedOn(){
             //console.log(this.infos.path)
+           
             const nowTime = Date.now()
             if((nowTime - this.clickedOnTime) > 500  ){
                 this.$emit("clickedOn",this.infos)
-                this.clickedOnTime = nowTime
             }
         }
     }

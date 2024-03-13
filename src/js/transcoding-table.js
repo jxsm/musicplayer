@@ -34,9 +34,9 @@ class Transcoding{
  */
 static familiar(path,fileName,position,target,headers={}){
     if(position == "local"){
-        return this.ffmpeg_transcoding_path(path,fileName,target)
+        return Transcoding.ffmpeg_transcoding_path(path,fileName,target)
     }else if(position == "internet"){
-        return this.network_transcode(path,fileName,target,headers)
+        return Transcoding.network_transcode(path,fileName,target,headers)
     }
 }
 
@@ -79,7 +79,7 @@ static network_transcode(uri,fileName,target,headers={}){
   /**
    * 在使用该函数的时候应该尽量避免在上个同名文件删除之前调用,以避免重复覆盖
    * 使用内置的ffmpeg库进行转码,返回值为转码后该文件在临时文件的文件名
-   * @param {*} filePath 要进行转码的文件路径(或可读流)
+   * @param {string} filePath 要进行转码的文件路径(或可读流)
    * @param {string} fileName 保存的文件名如(fielName)
    * @param {string} target 目标文件类型如(mp3)
    * @return {Promise} 如果正确执行则最终会返回转码后的文件在temp文件中的文件名如(fielName.mp3)
@@ -115,7 +115,7 @@ static _errFfmpeg(){
       break;
     case 'Darwin':
       console.log("ffmpeg报错,请检查ffmpeg是否安装成功(默认使用的内置的ffmpeg请检查内置的ffmpeg是否正常)")
-      break;
+      break; 
   }
 }
 

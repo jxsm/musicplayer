@@ -77,9 +77,6 @@ class MinWindowHint{
     }
 
 
-   
-
-
     /**
      * 页面底部的小弹窗
      * @param {string} hintText 提示文字 
