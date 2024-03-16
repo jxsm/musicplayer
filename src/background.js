@@ -7,6 +7,8 @@ import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
 import {monitorDispose} from "./js/MainThreadProcessing"
+import {musicHttpServer} from "./js/musicHttpServer"
+
 
 //ffmpeg的路径,如果您要为特定的平台构建则只需要指定特定平台的ffmpeg就可以了
 let ffmpegPath = {
@@ -180,3 +182,7 @@ ipcMain.on("clearTempAll",(event,arg)=>{monitorDispose.clear_Temp_File()})
 
 //使用ffmpeg进行转码率
 ipcMain.on("ffpegTranscoding",monitorDispose.ipc_ffmpeg_transcoding)
+
+
+//开启一个http服务,用于音乐播放服务
+// void (new musicHttpServer)

@@ -194,8 +194,7 @@ static testTemp() {
 
 
 /**
- * 
- * 
+ * 获取音乐信息并返回
  */
 function setMusicInfo(infos){
   let prList = []//异步数据列表
@@ -217,6 +216,9 @@ function setMusicInfo(infos){
 
   return [prList,infos]
 }
+
+
+//TODO: 添加读取音频二进制文件的的功能
 
 
 

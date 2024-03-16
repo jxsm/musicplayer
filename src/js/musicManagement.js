@@ -20,6 +20,8 @@ class MusicManagement{
 
     static musicId=0//音乐id(用于回调回调的时候识别)
 
+    static playId = 0 //播放id(用于播放音乐的识别id)
+
     static listeningState = false //是否正在监听
 
 
@@ -155,6 +157,7 @@ class MusicManagement{
     }
 
 
+    //TODO: 转码后进行播放
     /**
      * 默认回调函数
      * @param { Electron.IpcMainEvent} event 
@@ -181,9 +184,62 @@ class MusicManagement{
     static startMonitor(callback=this.defaultCallback) {
         if(!this.listeningState){
             window.ipcRenderer.on('return_ffmpeg_transcoding',callback)
+
             this.listeningState = true;
         }
     }
+
+
+
+    /**
+     * 关闭监听
+     * @param {Function} [callback=this.defaultCallback] 回调函数
+     */
+    static stopMonitor(callback=this.defaultCallback){
+        if(this.listeningState){
+            window.ipcRenderer.removeListener('return_ffmpeg_transcoding',callback)
+        }
+    }
+
+
+    /**
+     * 播放音乐
+     * @param {string} path 路径如果直接输入名称则默认在temp的根目录中查找
+     */
+    static paly(path){
+       //判断是路径还是名称
+       if(path.indexOf('\\') != -1 || path.indexOf('/') != -1){
+           window.ipcRenderer.send('load_music',{
+            path:path,
+            playId:this.playId
+        })
+       }
+    }
+
+
+    /**
+     * 主线程回调,将读取到的二进制装载到audio中并开启播放
+     * @param {*} event 
+     * @param {*} args 
+     */
+    static _loadAndPaly(event,args){
+        void event
+        void args
+    }
+
+
+
+    /**
+     * 停止播放音乐
+     */
+    static stop(){
+        void 0
+    }
+
+
+
+
+
 
 
 }
