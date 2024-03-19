@@ -1,6 +1,132 @@
 class musicHttpServer {
-    //构造函数开启服务
-   
+    #stockpile;
+
+    port = -1;
+
+    
+
+
+
+
+    //进行单例函数
+    constructor(){
+        
+    }
+
+
+
+    startServer() {
+        //先查找可端口
+        this.#findPort(4565,6000)
+        .then(res=>{
+          this.port = res;
+          //启动服务
+          this.#sever(res,'../../userFile/temp/')
+        })
+        .catch(err=>{
+          throw "无法找到可用的端口,请查端口占用情况,我们的查找范围是(4565,6000),如果报了这个错则说明在这个个范围内都没有找到可用的端口"
+        })
+    }
+
+
+    /**
+     * 
+     * @param {Number} start 
+     * @param {Number} end 
+     * @returns {Promise(resolve,reject)}
+     */
+    #findPort(start,end) {
+        return new Promise((resolve, reject) => {
+          const startTime = Date.now();
+          for (let port = startPort; port <= endPort; port++) {
+            const server = net.createServer().listen(port);
+            server.on('listening', () => {
+              server.close();
+              resolve(port);
+            })
+            server.on('error', (err) => {
+              if(err.code === 'EADDRINUSE'){
+                void err //端口被占用
+              }
+            })
+          
+            function temp (){
+              if(port === endPort && Date.now() - startTime > 10000){
+                reject("NOPORT")
+              }
+              
+              setTimeout(temp,100)
+            }
+          }
+      
+          temp()
+      })
+    }
+
+
+
+
+
+    //服务器代码
+    #sever(serverPort = 4565,rootDir='../../userFile/temp/'){
+      const fs = require('fs');
+        const path = require('path');
+        const http = require('http');
+
+        const server = http.createServer((req, res) => {
+          let filePath
+          //检查是否为一个路径
+          const len  = req.url.split('/').length + req.url.split('\\').length - 1
+        
+          const URL_TWO = decodeURI(req.url)
+        
+          if(len ===2){
+            filePath = path.join(rootDir, URL_TWO);
+          }
+          else{
+            filePath = path.join("", URL_TWO)
+          }
+        
+          console.log(filePath)
+        
+        
+          fs.stat(filePath, (err, stats) => {
+            if (err) {
+              console.log(err)
+              res.writeHead(404, { 'Content-Type': 'text/plain' });
+              res.end('File not found\n');
+              return;
+            }
+        
+            // Check for range requests
+            const rangeHeader = req.headers.range;
+            if (!rangeHeader) {
+              // No range requested, serve the entire file
+              res.writeHead(200, { 'Content-Type': 'audio/mpeg', 'Accept-Ranges': 'bytes' });
+              fs.createReadStream(filePath).pipe(res);
+            } else {
+              // Handle range requests
+              const parts = rangeHeader.replace(/bytes=/, '').split('-');
+              const start = parseInt(parts[0], 10);
+              const end = parts[1] ? parseInt(parts[1], 10) : stats.size - 1;
+        
+              const contentLength = end - start + 1;
+              res.writeHead(206, {
+                'Content-Range': `bytes ${start}-${end}/${stats.size}`,
+                'Content-Length': contentLength,
+                'Content-Type': 'audio/mpeg',
+              });
+        
+              const stream = fs.createReadStream(filePath, { start, end });
+              stream.pipe(res);
+            }
+          });
+        });
+        
+        server.listen(serverPort, () => {
+          console.log(`Server running at http://localhost:${serverPort}`);
+        });
+    }
     
 }
 
