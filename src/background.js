@@ -186,4 +186,4 @@ ipcMain.on("ffpegTranscoding",monitorDispose.ipc_ffmpeg_transcoding)
 
 //开启一个http服务,用于音乐播放服务
 const musicServer = new musicHttpServer()
-musicServer.startServer()
+musicServer.startServer('userFile/temp')

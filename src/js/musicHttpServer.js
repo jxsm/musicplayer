@@ -1,10 +1,9 @@
 var net = require('net')
+const path = require('path');
 
 class musicHttpServer {
 
-
-    #port = -1 //内部端口号
-    static establish //创建的时间,用来创建单例
+    
 
     //进行单例函数
     constructor(){
@@ -17,6 +16,9 @@ class musicHttpServer {
     }
 
 
+    
+
+
     /**
      * 获取服务端口号
      */
@@ -27,13 +29,17 @@ class musicHttpServer {
 
 
 
-    startServer() {
+    /**
+     * 启动服务器,默认端口是4565,如果端口被占用则会在4566-6000之间寻找一个未被占用的端口
+     * @param {string} rootDir  音乐文件根路径
+     */
+    startServer(rootDir="../userFile/temp/") {
         //先查找可端口
         this.findPort(4565,6000)
         .then(res=>{
           this.port = res;
           //启动服务
-          this._sever(res,'../../userFile/temp/')
+          this._sever(res,rootDir)
         })
         .catch(err=>{
           console.error(err)
@@ -43,6 +49,8 @@ class musicHttpServer {
     }
 
 
+    
+
     /**
      * 查找未被占用的端口,如果该函数已被执行了则就不会再被执行了
      * @param {Number} start 
@@ -51,7 +59,9 @@ class musicHttpServer {
      */
      findPort(startPort,endPort) {
       if(this.port !== -1){
-        return
+        return new Promise((resolve)=>{
+          resolve(this.port)
+        })
       }
       
       let nowPort = -1;
@@ -81,19 +91,14 @@ class musicHttpServer {
           }
 
           temp()
-
-          
-      
-          
       })
     }
 
 
 
 
-
     //服务器代码
-    _sever(serverPort = 4565,rootDir='../../userFile/temp/'){
+    _sever(serverPort = 4565,rootDir='../userFile/temp/'){
       const fs = require('fs');
         const path = require('path');
         const http = require('http');
@@ -112,7 +117,7 @@ class musicHttpServer {
             filePath = path.join("", URL_TWO)
           }
         
-          console.log(filePath)
+          console.log("用户访问本的文件",filePath)
         
         
           fs.stat(filePath, (err, stats) => {
@@ -123,14 +128,14 @@ class musicHttpServer {
               return;
             }
         
-            // Check for range requests
+
             const rangeHeader = req.headers.range;
             if (!rangeHeader) {
-              // No range requested, serve the entire file
+      
               res.writeHead(200, { 'Content-Type': 'audio/mpeg', 'Accept-Ranges': 'bytes' });
               fs.createReadStream(filePath).pipe(res);
             } else {
-              // Handle range requests
+   
               const parts = rangeHeader.replace(/bytes=/, '').split('-');
               const start = parseInt(parts[0], 10);
               const end = parts[1] ? parseInt(parts[1], 10) : stats.size - 1;

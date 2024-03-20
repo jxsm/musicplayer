@@ -3,6 +3,7 @@ import localForage from "localforage"
 
 
 
+
 /**
  * 管理全局的音乐播放,所有有关播放的控制器都在该类中
  * 
@@ -17,6 +18,21 @@ class MusicManagement{
         nowMusicInfo:{},//当前音乐信息
         musicList:[],//音乐列表
     }
+
+
+    static playInfo ={
+        nowTime:0,//当前时间
+        endTime:0,//结束时间
+        surplusTime:0,//剩余时间
+    }
+
+
+    static #audioElement = document.createElement("audio");//创建一个audio标签
+
+    static nowInTemp = []//现在在temp中的音乐信息
+
+    static URL_PATH = 'http://localhost:4565' //音乐文件请求路径
+
 
     static musicId=0//音乐id(用于回调回调的时候识别)
 
@@ -151,13 +167,12 @@ class MusicManagement{
         }
         //发信息到主线程
         window.ipcRenderer.send('ffpegTranscoding',data)
-        console.log(this.musicId)
         return this.musicId;
 
     }
 
 
-    //TODO: 转码后进行播放
+    //TODO: 转码后的回调
     /**
      * 默认回调函数
      * @param { Electron.IpcMainEvent} event 
@@ -165,13 +180,16 @@ class MusicManagement{
      */
     static defaultCallback(event,data){
         void event
+        //将该文的文件名放到列表中,方便后续操作
+        if (data[1] == "ok") MusicManagement.nowInTemp.push(data[2]);
+
         //如果是本次的请求才执行后续操作
         if(data[0] ===MusicManagement.musicId || MusicManagement.musicId === -1){
             if(data[1] == 'error'){
                 console.error(data[2])
             }
             else if(data[1] == 'ok'){
-                console.log(data[2])
+                MusicManagement.paly(data[2])
             }
         }
     }
@@ -184,7 +202,6 @@ class MusicManagement{
     static startMonitor(callback=this.defaultCallback) {
         if(!this.listeningState){
             window.ipcRenderer.on('return_ffmpeg_transcoding',callback)
-
             this.listeningState = true;
         }
     }
@@ -207,13 +224,18 @@ class MusicManagement{
      * @param {string} path 路径如果直接输入名称则默认在temp的根目录中查找
      */
     static paly(path){
-       //判断是路径还是名称
-       if(path.indexOf('\\') != -1 || path.indexOf('/') != -1){
-           window.ipcRenderer.send('load_music',{
-            path:path,
-            playId:this.playId
-        })
-       }
+
+        console.log("播放音乐:",path)
+        let nowPath = path;
+        if(!path.startsWith("/")) nowPath =  '/' + path
+        nowPath = this.URL_PATH + nowPath
+
+       
+       //设置路径
+       this.#audioElement.src = nowPath;
+       //播放
+       this.#audioElement.play();
+
     }
 
 
@@ -227,6 +249,25 @@ class MusicManagement{
         void args
     }
 
+
+
+
+    //TODO: 更新音乐信息
+    /**
+     * 更新播放信息
+     */
+    static updatePlayInfo(){
+        //更新播放信息
+        this.playInfo.nowTime = this.#audioElement.currentTime;
+        this.playInfo.endTime = this.#audioElement.duration;
+        this.playInfo.surplusTime = this.playInfo.nowTime - this.playInfo.endTime
+        //将数据存入localStorage
+        localForage.setItem("music_play_info",this.playInfo)
+        //循环更新信息
+        setTimeout(() => {
+            this.updatePlayInfo()
+        },1000)
+    }
 
 
     /**

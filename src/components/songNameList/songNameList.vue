@@ -30,6 +30,7 @@ export default {
             musicInformation:[],//音乐信息存储
             requestLabel:0,//请求标签
             nameListBoxStyle:{},//歌单列表外层盒子样式
+            noTranscoding:['wav','mp3','ogg','acc','webm'],//在该列表中不进行转码的文件类型
         }
     },
     methods:{
@@ -83,7 +84,21 @@ export default {
          */
         clickedOn(infos){
             MusicManagement.addHistoricalRecord(infos)
-            this.musicId = MusicManagement.ffpegTranscoding(infos,"mp3")
+            
+
+            //播放音乐
+
+
+            //先判断格式
+            if(this.noTranscoding.indexOf(infos.type) === -1){
+                this.musicId = MusicManagement.ffpegTranscoding(infos,"mp3")
+            }
+            else{
+                MusicManagement.paly(infos.path)
+            }
+            
+
+
         }
     },
     components:{
