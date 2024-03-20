@@ -1,42 +1,69 @@
+var net = require('net')
+
 class musicHttpServer {
-    #stockpile;
-
-    port = -1;
-
-    
 
 
-
+    #port = -1 //内部端口号
+    static establish //创建的时间,用来创建单例
 
     //进行单例函数
     constructor(){
-        
+        if(musicHttpServer.establish){
+          return musicHttpServer.establish
+        }
+        else{
+          musicHttpServer.establish = this
+        }
     }
+
+
+    /**
+     * 获取服务端口号
+     */
+    getPort(){
+      return this.port;
+    }
+
 
 
 
     startServer() {
         //先查找可端口
-        this.#findPort(4565,6000)
+        this.findPort(4565,6000)
         .then(res=>{
           this.port = res;
           //启动服务
-          this.#sever(res,'../../userFile/temp/')
+          this._sever(res,'../../userFile/temp/')
         })
         .catch(err=>{
+          console.error(err)
           throw "无法找到可用的端口,请查端口占用情况,我们的查找范围是(4565,6000),如果报了这个错则说明在这个个范围内都没有找到可用的端口"
+
         })
     }
 
 
     /**
-     * 
+     * 查找未被占用的端口,如果该函数已被执行了则就不会再被执行了
      * @param {Number} start 
      * @param {Number} end 
      * @returns {Promise(resolve,reject)}
      */
-    #findPort(start,end) {
+     findPort(startPort,endPort) {
+      if(this.port !== -1){
+        return
+      }
+      
+      let nowPort = -1;
+
         return new Promise((resolve, reject) => {
+          function temp (){
+            if(nowPort === endPort && Date.now() - startTime > 10000){
+              reject("NOPORT")
+            }
+            
+            setTimeout(temp,100)
+          }
           const startTime = Date.now();
           for (let port = startPort; port <= endPort; port++) {
             const server = net.createServer().listen(port);
@@ -49,17 +76,15 @@ class musicHttpServer {
                 void err //端口被占用
               }
             })
-          
-            function temp (){
-              if(port === endPort && Date.now() - startTime > 10000){
-                reject("NOPORT")
-              }
-              
-              setTimeout(temp,100)
-            }
+
+            nowPort = port
           }
-      
+
           temp()
+
+          
+      
+          
       })
     }
 
@@ -68,7 +93,7 @@ class musicHttpServer {
 
 
     //服务器代码
-    #sever(serverPort = 4565,rootDir='../../userFile/temp/'){
+    _sever(serverPort = 4565,rootDir='../../userFile/temp/'){
       const fs = require('fs');
         const path = require('path');
         const http = require('http');

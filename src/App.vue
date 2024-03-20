@@ -36,7 +36,6 @@ import {ThemeColors} from "./js/ThemeColors.js"
 import {globalStore_Object,getGlobalStore, alterGlobalStore} from './assets/globalStore.js'
 import globalSet from "./assets/globalSet.js"
 
-
 export default {
     components:{
         controlStrip,
@@ -203,6 +202,9 @@ export default {
             //去获取音乐信息
             alterGlobalStore('currentPath',getGlobalStore('currentPath'),true)
 
+
+
+     
            
         },
         /**
