@@ -1,6 +1,6 @@
 <template>
     <!--TODO:音乐基础信息展示-->
-    <div class="infoBox" ref="infoBox"  :style="infoBoxStyle" @click="clickedOn">
+    <div class="infoBox" ref="infoBox"  :style="infoBoxStyle" @dblclick="clickedOn">
         <div class="info">
             <p class="songNameInfo" :title="musicalName">{{musicalName}}</p>
             <p :title="singer">{{singer}}</p>
@@ -11,8 +11,6 @@
 </template>
 
 <script>
-
-
 export default{
     data(){
         return{

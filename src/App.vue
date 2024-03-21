@@ -19,12 +19,7 @@
 
 
 <script>
-//TODO:临时模板
-//window.ipcRenderer.send('getFolderMusicInfo',['E:\\青鸟2\\音乐测试',['mp3'],1])
-// window.ipcRenderer.on('returnGetFolderMusicInfo',(e,info)=>{
-//             void e
-//             console.log(info)
-// })
+
 
 import controlStrip from "./components/controlStrip.vue"//窗口顶部的控制条
 import global_set from "./components/global_set.vue"//窗口设置页
@@ -35,6 +30,11 @@ import miniPopUpWindow from "./components/publicModule/miniPopUpWindow.vue"//迷
 import {ThemeColors} from "./js/ThemeColors.js"
 import {globalStore_Object,getGlobalStore, alterGlobalStore} from './assets/globalStore.js'
 import globalSet from "./assets/globalSet.js"
+
+
+
+
+SetItemEvent()
 
 export default {
     components:{
@@ -203,7 +203,7 @@ export default {
             alterGlobalStore('currentPath',getGlobalStore('currentPath'),true)
 
 
-
+       
      
            
         },
@@ -276,6 +276,35 @@ export default {
     }
     
 }
+
+
+/**
+ * 重写setItem函数,并设置新事件setItemEvent
+ */
+function SetItemEvent(){
+         //重写setItem函数,并设置新事件setItemEvent
+         (function(){
+            //定义一个变量让setItem函数的值指向它
+            let originalSetItem = localStorage.setItem;
+            //重写setItem函数
+            localStorage.setItem = function(key,newValue){
+                //创建setItemEvent事件
+                let event = new Event("setItemEvent");
+                event.key = key;
+                event.newValue = newValue;
+                //提交setItemEvent事件
+                window.dispatchEvent(event);
+                //执行原setItem函数
+                originalSetItem.apply(this,arguments);
+            }
+})();
+
+}
+
+
+
+
+
 </script>
 
 <style scoped>

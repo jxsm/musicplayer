@@ -94,6 +94,8 @@ class monitorDispose{
  * fileName:string,
  * target:string,
  * tag:string,
+ * name:string,
+ * artists:Array,
  * headers:object
  * }} args 该对象传入的数据应该严格要这样
  */
@@ -105,7 +107,7 @@ static ipc_ffmpeg_transcoding(event,args = {}){
   if(Transcoding.transcoding_list[args.sourceType]){
     let flag = Transcoding.transcoding_list[args.sourceType](args.path,args.fileName,args.position,args.target,args.headers)
     flag.then((res)=>{
-      event.sender.send('return_ffmpeg_transcoding',[args.tag,'ok',res])
+      event.sender.send('return_ffmpeg_transcoding',[args.tag,'ok',res,{name:args.name,artists:args.artists}])
     })
     .catch((e)=>{
       event.sender.send('return_ffmpeg_transcoding',[args.tag,'error',e])

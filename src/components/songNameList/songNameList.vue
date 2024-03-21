@@ -30,7 +30,7 @@ export default {
             musicInformation:[],//音乐信息存储
             requestLabel:0,//请求标签
             nameListBoxStyle:{},//歌单列表外层盒子样式
-            noTranscoding:['wav','mp3','ogg','acc','webm'],//在该列表中不进行转码的文件类型
+            noTranscoding:['wav','mp3','ogg','aac','webm'],//在该列表中不进行转码的文件类型
         }
     },
     methods:{
@@ -94,7 +94,15 @@ export default {
                 this.musicId = MusicManagement.ffpegTranscoding(infos,"mp3")
             }
             else{
-                MusicManagement.paly(infos.path)
+                let artists
+                try{
+                    artists = JSON.parse(JSON.stringify(infos.infos.artists))
+                }
+                catch(e){
+                    artists = undefined
+                }
+
+                MusicManagement.paly(infos.path,infos.name,artists)
             }
             
 
@@ -133,8 +141,6 @@ export default {
         }
     },
     mounted(){
-        //监听线程返回
-        MusicManagement.startMonitor()
 
         //监听窗口发生变化
         window.addEventListener('resize',this.resizeFn)

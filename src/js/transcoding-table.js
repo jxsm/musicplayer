@@ -133,10 +133,11 @@ static _errFfmpeg(){
 let transcoding_list = {
     mp3:Transcoding.familiar,
     ogg:Transcoding.familiar,
-    acc:Transcoding.familiar,
+    aac:Transcoding.familiar,
     wav:Transcoding.familiar,
     flac:Transcoding.familiar,
-    m4a:Transcoding.familiar
+    m4a:Transcoding.familiar,
+    wma:Transcoding.familiar,
   }
 
 

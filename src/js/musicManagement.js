@@ -19,6 +19,8 @@ class MusicManagement{
         musicList:[],//音乐列表
     }
 
+    
+
 
     static playInfo ={
         nowTime:0,//当前时间
@@ -38,7 +40,7 @@ class MusicManagement{
 
     static playId = 0 //播放id(用于播放音乐的识别id)
 
-    static listeningState = false //是否正在监听
+    static #listeningState = false //是否正在监听 
 
 
     /**
@@ -54,6 +56,8 @@ class MusicManagement{
             return;
         }
         this.#info.musicList = data;
+
+        this.saveInfo()
     }
 
 
@@ -66,7 +70,27 @@ class MusicManagement{
             const randomIndex = Math.floor(Math.random()*(i+1));
             [this.#info.musicList[i],this.#info.musicList[randomIndex]] = [this.#info.musicList[randomIndex],this.#info.musicList[i]];
         }
+        this.saveInfo()
+        
     }
+
+    /**
+     * 保存#indo中的信息到localStorage中
+     */
+    static saveInfo(){
+        localStorage.setItem("MusicManagement_info",JSON.stringify(this.#info))
+    }
+
+    /**
+     * 从localStorage中获取数据并设置到对象中aa
+     */
+    static setInfoInlocalStorage(){
+        const data = localStorage.getItem('MusicManagement_info')
+        if(data){
+            this.#info =  JSON.parse(data)
+        }
+    }
+
 
     /**
      * 添加历史信息
@@ -163,9 +187,10 @@ class MusicManagement{
             fileName:info.name,//名称
             target:target,//目标类型
             tag:this.musicId,//识别id
+            name:info.name,//名称
+            artists:JSON.parse(JSON.stringify(info.infos.artists)),//作者
             headers:headers//请求头
         }
-        //发信息到主线程
         window.ipcRenderer.send('ffpegTranscoding',data)
         return this.musicId;
 
@@ -182,17 +207,18 @@ class MusicManagement{
         void event
         //将该文的文件名放到列表中,方便后续操作
         if (data[1] == "ok") MusicManagement.nowInTemp.push(data[2]);
-
         //如果是本次的请求才执行后续操作
         if(data[0] ===MusicManagement.musicId || MusicManagement.musicId === -1){
             if(data[1] == 'error'){
                 console.error(data[2])
             }
             else if(data[1] == 'ok'){
-                MusicManagement.paly(data[2])
+                MusicManagement.paly(data[2],data[3].name,data[3].artists)
             }
         }
     }
+
+    
 
 
     /**
@@ -200,10 +226,12 @@ class MusicManagement{
      * @param {Function} callback 回调函数,如果为空则使用默认回调函数
      */
     static startMonitor(callback=this.defaultCallback) {
-        if(!this.listeningState){
+        if(!this.#listeningState){
             window.ipcRenderer.on('return_ffmpeg_transcoding',callback)
-            this.listeningState = true;
+            this.#listeningState = true;
+            this.updatePlayInfo()
         }
+
     }
 
 
@@ -213,7 +241,7 @@ class MusicManagement{
      * @param {Function} [callback=this.defaultCallback] 回调函数
      */
     static stopMonitor(callback=this.defaultCallback){
-        if(this.listeningState){
+        if(this.#listeningState){
             window.ipcRenderer.removeListener('return_ffmpeg_transcoding',callback)
         }
     }
@@ -222,9 +250,13 @@ class MusicManagement{
     /**
      * 播放音乐
      * @param {string} path 路径如果直接输入名称则默认在temp的根目录中查找
+     * @param {string} name 播放名称
+     * @param {Array} artists 作者人列表
      */
-    static paly(path){
+    static paly(path,name,artists){
+        console.log(artists)
 
+        //TODO: 删除console
         console.log("播放音乐:",path)
         let nowPath = path;
         if(!path.startsWith("/")) nowPath =  '/' + path
@@ -236,18 +268,16 @@ class MusicManagement{
        //播放
        this.#audioElement.play();
 
+       //更新缓存数据
+       this.#info.nowMusicName = name
+       this.#info.nowMusicUri = path
+       this.#info.nowMusicInfo.artists = artists?artists:"未知"
+       this.saveInfo();
+
     }
 
 
-    /**
-     * 主线程回调,将读取到的二进制装载到audio中并开启播放
-     * @param {*} event 
-     * @param {*} args 
-     */
-    static _loadAndPaly(event,args){
-        void event
-        void args
-    }
+
 
 
 
@@ -260,9 +290,9 @@ class MusicManagement{
         //更新播放信息
         this.playInfo.nowTime = this.#audioElement.currentTime;
         this.playInfo.endTime = this.#audioElement.duration;
-        this.playInfo.surplusTime = this.playInfo.nowTime - this.playInfo.endTime
+        this.playInfo.surplusTime = this.playInfo.endTime - this.playInfo.nowTime
         //将数据存入localStorage
-        localForage.setItem("music_play_info",this.playInfo)
+        localStorage.setItem("music_play_info",JSON.stringify(this.playInfo))
         //循环更新信息
         setTimeout(() => {
             this.updatePlayInfo()
@@ -284,6 +314,13 @@ class MusicManagement{
 
 
 }
+
+MusicManagement.setInfoInlocalStorage()//读取缓存中的数据
+
+MusicManagement.startMonitor() //开启监听
+
+
+
 
 
 

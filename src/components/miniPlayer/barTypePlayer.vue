@@ -6,8 +6,8 @@
                 <img src="../../assets/109951168730716074.jpg" alt="封面">
             </div>
             <div class="musicInfoBox">
-                <p>歌曲名</p>
-                <p>作者</p>
+                <p>{{songName}}</p>
+                <p>{{artists}}</p>
             </div>
         </div>
         <div class="twoBox">
@@ -50,7 +50,7 @@
             <div class="progressBarBox">
                 <div class=" timeText nowTime">0:30</div>
                 <div class="progressBar">
-                    <div class="schedule"></div>
+                    <div class="schedule" :style="scheduleStyle"></div>
                 </div>
                 <div class=" timeText totalHours">3:34</div>
             </div>
@@ -86,6 +86,9 @@ export default{
             recordVolume:0,//记录音量
             playModeSelect:false,//是否显示播放模式控件
             barMainBoxStyle:{},//主控件样式
+            scheduleStyle:{},//进度条样式
+            songName:"未知",//歌曲名,
+            artists:"未知", //艺术家
         }
     },
     props:{
@@ -172,7 +175,43 @@ export default{
         setTimeout(()=>{
             this.pattern=getGlobalStore('playMode')
         },300)
+
+        //监听当前音乐的数据变化
+        addEventListener('setItemEvent',(e)=>{
+            if(e.key === 'music_play_info'){
+                const newValue = JSON.parse(e.newValue)
+                this.scheduleStyle.width = `${(newValue.nowTime/newValue.endTime)*100}%`
+            }
+
+            if(e.key === 'MusicManagement_info'){
+                //当前音乐信息发生变化时，更改播放控件中的数据
+                
+                const newValue = JSON.parse(e.newValue)
+                console.log(newValue)
+                try{
+                    if(newValue.nowMusicInfo.artists) {
+                        this.artists = newValue.nowMusicInfo.artists.join('/')
+                    }
+                    else{
+                        this.artists = '未知'
+                    }
+                }
+                catch(e){
+                    this.artists = '未知'
+                }
+                
+             
+                if(newValue.nowMusicName) this.songName = newValue.nowMusicName;
+               
+                
+            }
+        })
+    
     }
+
+    
+
+
 }
 </script>
 <style scoped>
@@ -340,11 +379,11 @@ svg:hover{
 进度条内部的样式
  */
 .schedule{
-    width: 20%;
     height: 100%;
     background-color: var(--theme-colour);
     border-radius: 10px;
     position: relative;
+    transition: width 0.2s;
 }
 
 .volumeBox{
