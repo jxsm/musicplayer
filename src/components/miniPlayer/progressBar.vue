@@ -1,7 +1,7 @@
 <template>
     <!--这个是进度条组件-->
     <div class="progressBarBox">
-        <div class="progressBar"></div>
+        <div class="progressBar" :style="progressBarStyle"></div>
     </div>
 </template>
 
@@ -9,11 +9,22 @@
 export default {
     data(){
         return{
-
+            progressBarStyle:{
+                width: '0%',
+            }
         }
     },
     methods:{
 
+    },
+    mounted(){
+        addEventListener('setItemEvent',(e)=>{
+            if(e.key === 'music_play_info'){
+                const newValue = JSON.parse(e.newValue)
+                this.progressBarStyle.width = `${(newValue.nowTime/newValue.endTime)*100}%`
+            }
+        }
+        )
     }
 }
 
@@ -31,9 +42,9 @@ export default {
 }
 
 .progressBar{
-    width: 30%;
     height: 100%;
     background-color: var(--adjacent-theme-colour);
+    transition:width 0.2s ;
 }
 
 .progressBarBox:hover{

@@ -42,6 +42,8 @@ class MusicManagement{
 
     static #listeningState = false //是否正在监听 
 
+    static #volumeTimeId = []
+
 
     /**
      * 设置音乐播放列表
@@ -180,6 +182,13 @@ class MusicManagement{
         this.musicId += 1
         if(!info || !target) return;
         //解析出数据
+        let  img
+        try{
+            img = info.infos.picture
+        }
+        catch{
+            img = void 0
+        }
         const data = {
             path:info.path,//音乐路径
             position:info.position,//音乐位置
@@ -188,6 +197,7 @@ class MusicManagement{
             target:target,//目标类型
             tag:this.musicId,//识别id
             name:info.name,//名称
+            img:img,//歌曲的封面图片(如果有的话)
             artists:JSON.parse(JSON.stringify(info.infos.artists)),//作者
             headers:headers//请求头
         }
@@ -213,7 +223,7 @@ class MusicManagement{
                 console.error(data[2])
             }
             else if(data[1] == 'ok'){
-                MusicManagement.paly(data[2],data[3].name,data[3].artists)
+                MusicManagement.paly(data[2],data[3].name,data[3].artists,data[3].img)
             }
         }
     }
@@ -248,16 +258,19 @@ class MusicManagement{
 
 
     /**
-     * 播放音乐
+     * 播放音乐,如果不传递path则默认播放当前歌曲
      * @param {string} path 路径如果直接输入名称则默认在temp的根目录中查找
      * @param {string} name 播放名称
      * @param {Array} artists 作者人列表
      */
-    static paly(path,name,artists){
-        console.log(artists)
+    static paly(path,name,artists,img){
 
-        //TODO: 删除console
-        console.log("播放音乐:",path)
+        if(!path){
+                 //播放
+            this.#audioElement.play();
+            return
+        }
+     
         let nowPath = path;
         if(!path.startsWith("/")) nowPath =  '/' + path
         nowPath = this.URL_PATH + nowPath
@@ -272,9 +285,13 @@ class MusicManagement{
        this.#info.nowMusicName = name
        this.#info.nowMusicUri = path
        this.#info.nowMusicInfo.artists = artists?artists:"未知"
+       this.#info.img = img
        this.saveInfo();
 
+       
     }
+
+  
 
 
 
@@ -302,9 +319,65 @@ class MusicManagement{
 
     /**
      * 停止播放音乐
+     * 使用该方法停止播放音乐,音乐会先降低音量慢慢停止
      */
     static stop(){
-        void 0
+        //先记录当前音量
+        const nowVolume = this.#audioElement.volume;
+        this.setVolume(0,1000);
+
+        setTimeout(()=>{
+            this.setVolume(nowVolume)
+            this.#audioElement.pause();
+        },1000)
+
+        //暂停
+        
+    }
+
+
+    /**
+     * 设置音乐的音量
+     * 如果传递了time值则音量会在time秒内到达volume
+     * @param {number} volume 目标值 (音量值必须在0.0到1.0之间)
+     * @param {number} [time=0] 过程持续多少毫秒 默认为0,如果小于100毫秒则不会有过渡
+     */
+    static setVolume(volume,time = 0){
+
+        if(volume > 1 || volume < 0) throw new Error("音量值必须在0.0到1.0之间")
+        if(time < 0) console.error('时间必须大于等于0')
+        if(volume === this.#audioElement.volume) return
+
+        for(let i = 0;i<this.#volumeTimeId.length;i++){
+            clearTimeout(this.#volumeTimeId[i])
+        }
+        this.#volumeTimeId = []
+
+        if(time <= 100){
+            this.#audioElement.volume = volume
+        }
+        else{
+            //缓慢降低音量
+            let step = (this.#audioElement.volume - volume)/(time/100)
+        
+            //计算步数
+
+            let stepCount = Math.abs(this.#audioElement.volume - volume)/step
+            
+
+            for(let i = 0;i<stepCount;i++){
+                this.#volumeTimeId.push(setTimeout(()=>{
+                    if(this.#audioElement.volume>volume){
+                        this.#audioElement.volume -= step
+                    }
+                    else{
+                        this.#audioElement.volume += step
+                    }
+                } 
+                ,i*100))
+            }
+
+        }
     }
 
 

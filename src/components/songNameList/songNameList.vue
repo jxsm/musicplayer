@@ -102,7 +102,18 @@ export default {
                     artists = undefined
                 }
 
-                MusicManagement.paly(infos.path,infos.name,artists)
+                const name = infos.infos.title || infos.name
+                
+
+                let img
+
+                try{
+                    img = infos.infos.picture[0]
+                }catch{
+                    img = void 0
+                }
+
+                MusicManagement.paly(infos.path,name,artists,img)
             }
             
 

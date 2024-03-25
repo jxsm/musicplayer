@@ -145,6 +145,15 @@ export default {
         this.$refs.strip.addEventListener('mousedown',this.mouseDown)
         //监听鼠标抬起事件
         document.addEventListener('mouseup',this.mouseSeup)
+
+
+        //监听当公共变量中的音量发生变化的时候
+        addEventListener('globalStore:musicVolume',(e)=>{
+            this.volume = e.detail.value
+        })
+
+
+
     }
 }
 </script>

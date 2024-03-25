@@ -3,9 +3,9 @@
     <div class="barMainBox" ref="barMainBox" :style="barMainBoxStyle">
         <div class="oneBox">
             <div class="cover">
-                <img src="../../assets/109951168730716074.jpg" alt="封面">
+                <img :src="imgSrc" alt="封面">
             </div>
-            <div class="musicInfoBox">
+            <div class="musicInfoBox" :title="`歌曲名:${songName}\n作者:${artists}`">
                 <p>{{songName}}</p>
                 <p>{{artists}}</p>
             </div>
@@ -32,9 +32,9 @@
                 <!--播放/暂停-->
                 <div :title="isPlaying?'暂停':'播放'">
                     <!--播放-->
-                    <svg t="1704249243774" v-show="!isPlaying" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="11908" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200"><path d="M870.2 466.333333l-618.666667-373.28a53.333333 53.333333 0 0 0-80.866666 45.666667v746.56a53.206667 53.206667 0 0 0 80.886666 45.666667l618.666667-373.28a53.333333 53.333333 0 0 0 0-91.333334z" p-id="11909"></path></svg>
+                    <svg @click="startMusic" t="1704249243774" v-show="!isPlaying" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="11908" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200"><path d="M870.2 466.333333l-618.666667-373.28a53.333333 53.333333 0 0 0-80.866666 45.666667v746.56a53.206667 53.206667 0 0 0 80.886666 45.666667l618.666667-373.28a53.333333 53.333333 0 0 0 0-91.333334z" p-id="11909"></path></svg>
                     <!--暂停-->
-                    <svg t="1704249356127" v-show="isPlaying" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="12895" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200"><path d="M426.666667 138.666667v746.666666a53.393333 53.393333 0 0 1-53.333334 53.333334H266.666667a53.393333 53.393333 0 0 1-53.333334-53.333334V138.666667a53.393333 53.393333 0 0 1 53.333334-53.333334h106.666666a53.393333 53.393333 0 0 1 53.333334 53.333334z m330.666666-53.333334H650.666667a53.393333 53.393333 0 0 0-53.333334 53.333334v746.666666a53.393333 53.393333 0 0 0 53.333334 53.333334h106.666666a53.393333 53.393333 0 0 0 53.333334-53.333334V138.666667a53.393333 53.393333 0 0 0-53.333334-53.333334z" p-id="12896"></path></svg>
+                    <svg  @click="stopMusic" t="1704249356127" v-show="isPlaying" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="12895" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200"><path d="M426.666667 138.666667v746.666666a53.393333 53.393333 0 0 1-53.333334 53.333334H266.666667a53.393333 53.393333 0 0 1-53.333334-53.333334V138.666667a53.393333 53.393333 0 0 1 53.333334-53.333334h106.666666a53.393333 53.393333 0 0 1 53.333334 53.333334z m330.666666-53.333334H650.666667a53.393333 53.393333 0 0 0-53.333334 53.333334v746.666666a53.393333 53.393333 0 0 0 53.333334 53.333334h106.666666a53.393333 53.393333 0 0 0 53.333334-53.333334V138.666667a53.393333 53.393333 0 0 0-53.333334-53.333334z" p-id="12896"></path></svg>
                 </div>
                 <!--下一首-->
                 <div title="下一首">
@@ -75,6 +75,9 @@
 import adjustVolume from "./adjustVolume.vue"
 import playMode from "./playMode.vue"
 import {alterGlobalStore,getGlobalStore} from '../../assets/globalStore.js'
+import {MusicManagement} from "../../js/musicManagement.js"
+
+const NocoverImg = 'img/Nocover.jpg'
 export default{
     data(){
         return{
@@ -89,6 +92,7 @@ export default{
             scheduleStyle:{},//进度条样式
             songName:"未知",//歌曲名,
             artists:"未知", //艺术家
+            imgSrc:NocoverImg,//封面图片
         }
     },
     props:{
@@ -164,7 +168,21 @@ export default{
             //更改公共变量中的数据
             alterGlobalStore('playMode',mode,true)
         },
-       
+        /**
+         * 停止播放音乐
+         */
+        stopMusic(){
+            MusicManagement.stop()
+            this.isPlaying = false
+        },
+        /**
+         * 播放音乐
+         */
+        startMusic(){
+            MusicManagement.paly()
+            this.isPlaying = true
+        }
+
     },
     mounted(){
         //监听全局变量中的播放模式
@@ -185,9 +203,9 @@ export default{
 
             if(e.key === 'MusicManagement_info'){
                 //当前音乐信息发生变化时，更改播放控件中的数据
+                this.isPlaying = true
                 
                 const newValue = JSON.parse(e.newValue)
-                console.log(newValue)
                 try{
                     if(newValue.nowMusicInfo.artists) {
                         this.artists = newValue.nowMusicInfo.artists.join('/')
@@ -202,9 +220,18 @@ export default{
                 
              
                 if(newValue.nowMusicName) this.songName = newValue.nowMusicName;
-               
-                
+
+                //TODO:设置mini图片
+                if(newValue.img){
+                    let uint8Data = new Uint8Array(Object.values(newValue.img.data));
+                    let blob = new Blob([uint8Data], { type: 'image/png' });
+                    this.imgSrc = URL.createObjectURL(blob);
+                }else{
+                    this.imgSrc = NocoverImg;
+                }
+
             }
+
         })
     
     }
@@ -221,8 +248,7 @@ export default{
 .altPattern{
     top: -152px;
     transform: translateX(-30px);
-
-    }
+}
 
 
 *{

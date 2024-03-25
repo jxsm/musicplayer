@@ -100,6 +100,7 @@ class monitorDispose{
  * }} args 该对象传入的数据应该严格要这样
  */
 static ipc_ffmpeg_transcoding(event,args = {}){
+  console.log(args)
   //先检查传入的args是否正确
   if(!(args.path && args.position && args.sourceType && args.fileName && args.target && args.tag)){
     event.sender.send('return_ffmpeg_transcoding',[args.tag,'error','请检查传入的args的置是否正确(除了headers属性外都不能为空)'])
@@ -107,7 +108,12 @@ static ipc_ffmpeg_transcoding(event,args = {}){
   if(Transcoding.transcoding_list[args.sourceType]){
     let flag = Transcoding.transcoding_list[args.sourceType](args.path,args.fileName,args.position,args.target,args.headers)
     flag.then((res)=>{
-      event.sender.send('return_ffmpeg_transcoding',[args.tag,'ok',res,{name:args.name,artists:args.artists}])
+      event.sender.send('return_ffmpeg_transcoding',[args.tag,'ok',res,
+      {
+        name:args.name,//歌曲名称
+        artists:args.artists,//艺术家
+        img:args.img,//歌曲封面
+      }])
     })
     .catch((e)=>{
       event.sender.send('return_ffmpeg_transcoding',[args.tag,'error',e])
