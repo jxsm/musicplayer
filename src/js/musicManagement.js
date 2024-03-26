@@ -44,6 +44,8 @@ class MusicManagement{
 
     static #volumeTimeId = []
 
+    static #stopTimeId = 0
+
 
     /**
      * 设置音乐播放列表
@@ -265,8 +267,19 @@ class MusicManagement{
      */
     static paly(path,name,artists,img){
 
+        //先清除上一个音量控制器的延迟
+        if(this.#stopTimeId ){
+            clearTimeout(this.#stopTimeId)
+        }
+
+        //获取当前的音量
+        const infos = JSON.parse(localStorage.getItem('globalStore'))
+
+        this.setVolume(infos.musicVolume/100,1000)
+
+
         if(!path){
-                 //播放
+            //播放
             this.#audioElement.play();
             return
         }
@@ -280,7 +293,7 @@ class MusicManagement{
        this.#audioElement.src = nowPath;
        //播放
        this.#audioElement.play();
-
+       
        //更新缓存数据
        this.#info.nowMusicName = name
        this.#info.nowMusicUri = path
@@ -322,17 +335,22 @@ class MusicManagement{
      * 使用该方法停止播放音乐,音乐会先降低音量慢慢停止
      */
     static stop(){
-        //先记录当前音量
-        const nowVolume = this.#audioElement.volume;
         this.setVolume(0,1000);
-
-        setTimeout(()=>{
-            this.setVolume(nowVolume)
+        this.#stopTimeId =  setTimeout(()=>{
             this.#audioElement.pause();
         },1000)
 
         //暂停
         
+    }
+
+
+    /**
+     * 用于获取当前播放器的音量大小
+     * @returns {Number} 返回当前的音量[0.1-1]
+     */
+    static getNowVolume(){
+        return this.#audioElement.volume;
     }
 
 
@@ -343,10 +361,12 @@ class MusicManagement{
      * @param {number} [time=0] 过程持续多少毫秒 默认为0,如果小于100毫秒则不会有过渡
      */
     static setVolume(volume,time = 0){
+        
 
         if(volume > 1 || volume < 0) throw new Error("音量值必须在0.0到1.0之间")
         if(time < 0) console.error('时间必须大于等于0')
         if(volume === this.#audioElement.volume) return
+
 
         for(let i = 0;i<this.#volumeTimeId.length;i++){
             clearTimeout(this.#volumeTimeId[i])
@@ -358,11 +378,11 @@ class MusicManagement{
         }
         else{
             //缓慢降低音量
-            let step = (this.#audioElement.volume - volume)/(time/100)
+            let step = (Math.abs(this.#audioElement.volume - volume))/(time/100)
         
             //计算步数
 
-            let stepCount = Math.abs(this.#audioElement.volume - volume)/step
+            let stepCount = (Math.abs(this.#audioElement.volume - volume))/step
             
 
             for(let i = 0;i<stepCount;i++){
