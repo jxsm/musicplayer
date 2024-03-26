@@ -49,7 +49,8 @@
 
             <div class="progressBarBox">
                 <div class=" timeText nowTime">0:30</div>
-                <div class="progressBar">
+                <!--进度条-->
+                <div id="progressBar" class="progressBar" @mousemove="progressBarMouses" @mouseout="progressBarMouseOut" @click="clickProgressBar">
                     <div class="schedule" :style="scheduleStyle"></div>
                 </div>
                 <div class=" timeText totalHours">3:34</div>
@@ -92,7 +93,8 @@ export default{
             scheduleStyle:{},//进度条样式
             songName:"未知",//歌曲名,
             artists:"未知", //艺术家
-            imgSrc:NocoverImg,//封面图片
+            imgSrc:NocoverImg,//封面图片'
+            progressBarTimeId:0,//进度条计时器
         }
     },
     props:{
@@ -181,6 +183,56 @@ export default{
         startMusic(){
             MusicManagement.paly()
             this.isPlaying = true
+        },
+        /**
+         * 当鼠标处于进度条上时，执行该函数
+         */
+        progressBarMouses(e){
+            this.getMousesPlace(e)
+
+            if(this.progressBarTimeId){
+                clearTimeout(this.progressBarTimeId)
+            }
+
+            this.progressBarTimeId = setTimeout(()=>{
+                void 0
+            },500)
+        },
+        /**
+         * 当鼠标移出进度条时，执行该函数
+         */
+        progressBarMouseOut(){
+            if(this.progressBarTimeId){
+                clearTimeout(this.progressBarTimeId)
+         }
+        },
+        /**
+         * 当进度条被点击时，执行该函数
+         */
+        clickProgressBar(e){
+            MusicManagement.setProgress(this.getMousesPlace(e))
+        },
+        /**
+         * 获取鼠标在元素中的位置(获取到的是百分比)
+         * @param {Object} e  事件对象
+         * @returns {number} 鼠标在元素中的位置}(百分比)
+         */
+        getMousesPlace(e){
+            let left,width
+
+            for(let i =0;i<e.path.length;i++){
+                if(e.path[i].id === 'progressBar'){
+                    left = e.path[i].getBoundingClientRect().left
+                    width = e.path[i].getBoundingClientRect().width
+                }
+            }
+
+            let x = e.clientX
+            //计算数百哦
+            let hundreds = Math.floor((x-left)/width*100)
+            //计算百分比
+            let percent = hundreds/100
+            return percent
         }
 
     },
@@ -229,11 +281,16 @@ export default{
                 }else{
                     this.imgSrc = NocoverImg;
                 }
+            }
 
+            //音量调整
+            if(e.key === 'globalStore'){
+                const newValue = JSON.parse(e.newValue)
+                MusicManagement.setVolume(newValue.musicVolume/100)
             }
 
         })
-    
+
     }
 
     
