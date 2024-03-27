@@ -1,6 +1,6 @@
 <template>
     <!--TODO:音乐基础信息展示-->
-    <div class="infoBox" ref="infoBox"  :style="infoBoxStyle" @dblclick="clickedOn">
+    <div class="infoBox" ref="infoBox"  :style="infoBoxStyle" @dblclick="clickedOn" draggable="false">
         <div class="info">
             <p class="songNameInfo" :title="musicalName">{{musicalName}}</p>
             <p :title="singer">{{singer}}</p>
@@ -139,6 +139,7 @@ export default{
     text-overflow: ellipsis;
     white-space: nowrap;
     color: var(--adjacent-theme-colour);
+    user-select:none;
 }
 
 .info p:nth-child(1){

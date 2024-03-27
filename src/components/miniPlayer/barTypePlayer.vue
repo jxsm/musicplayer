@@ -1,6 +1,6 @@
 <template>
     <!--FIXME:该组件为页面底部的条形播放器,默认情况下不显示,只有当小播放器不显示的时候才会触发让其显示-->
-    <div class="barMainBox" ref="barMainBox" :style="barMainBoxStyle">
+    <div class="barMainBox" ref="barMainBox" :style="barMainBoxStyle" draggable="false">
         <div class="oneBox">
             <div class="cover">
                 <img :src="imgSrc" alt="封面">
@@ -48,12 +48,12 @@
 
 
             <div class="progressBarBox">
-                <div class=" timeText nowTime">0:30</div>
+                <div class=" timeText nowTime">{{nowTime}}</div>
                 <!--进度条-->
-                <div id="progressBar" class="progressBar" @mousemove="progressBarMouses" @mouseout="progressBarMouseOut" @click="clickProgressBar">
-                    <div class="schedule" :style="scheduleStyle"></div>
+                <div id="progressBar" class="progressBar" ref="progressBar">
+                    <div class="schedule" id="schedule" :style="scheduleStyle"></div>
                 </div>
-                <div class=" timeText totalHours">3:34</div>
+                <div class=" timeText totalHours">{{totalTime}}</div>
             </div>
 
         </div>
@@ -95,6 +95,9 @@ export default{
             artists:"未知", //艺术家
             imgSrc:NocoverImg,//封面图片'
             progressBarTimeId:0,//进度条计时器
+            progressBarDown:false,//进度条是否按下
+            nowTime:'0:00',//当前播放时间
+            totalTime:'0:00',//总播放时间
         }
     },
     props:{
@@ -190,6 +193,11 @@ export default{
         progressBarMouses(e){
             this.getMousesPlace(e)
 
+            if(this.progressBarDown){
+                //鼠标按下
+                this.setProgressBar(e)
+            }
+
             if(this.progressBarTimeId){
                 clearTimeout(this.progressBarTimeId)
             }
@@ -197,19 +205,23 @@ export default{
             this.progressBarTimeId = setTimeout(()=>{
                 void 0
             },500)
+
+
+            
         },
         /**
          * 当鼠标移出进度条时，执行该函数
          */
         progressBarMouseOut(){
+            this.progressBarDown = false
             if(this.progressBarTimeId){
                 clearTimeout(this.progressBarTimeId)
          }
         },
         /**
-         * 当进度条被点击时，执行该函数
+         * 当进度条条上,并且鼠标被按下的时候执行该函数
          */
-        clickProgressBar(e){
+        setProgressBar(e){
             MusicManagement.setProgress(this.getMousesPlace(e))
         },
         /**
@@ -218,25 +230,45 @@ export default{
          * @returns {number} 鼠标在元素中的位置}(百分比)
          */
         getMousesPlace(e){
-            let left,width
-
-            for(let i =0;i<e.path.length;i++){
-                if(e.path[i].id === 'progressBar'){
-                    left = e.path[i].getBoundingClientRect().left
-                    width = e.path[i].getBoundingClientRect().width
-                }
-            }
-
+            const {left,width} = this.$refs.progressBar.getBoundingClientRect()
             let x = e.clientX
             //计算数百哦
             let hundreds = Math.floor((x-left)/width*100)
-            //计算百分比
+            this.scheduleStyle.width = `${hundreds}%`
+
             let percent = hundreds/100
-            return percent
+
+            if(percent<0)return 0;
+            if(percent>1) return 1;
+            return percent;
         }
 
     },
     mounted(){
+        window.addEventListener('mouseup',(e)=>{
+            
+            //清除监听
+            window.removeEventListener('mousemove',this.getMousesPlace)
+            if(this.progressBarDown){
+                this.progressBarDown = false
+                this.setProgressBar(e)
+            }
+            this.scheduleStyle.transition = 'width 0.2s'
+            
+
+        })
+
+        window.addEventListener('mousedown',(e)=>{
+            if((e.target.id === "progressBar" || e.target.id === "schedule") && !this.progressBarDown){
+                this.progressBarDown = true
+                window.addEventListener('mousemove',this.getMousesPlace)
+            }
+
+            this.scheduleStyle.transition = 'width 0s'
+            
+        })
+
+
         //监听全局变量中的播放模式
         addEventListener('globalStore:playMode',(e)=>{
             this.pattern = e.detail.value
@@ -248,9 +280,18 @@ export default{
 
         //监听当前音乐的数据变化
         addEventListener('setItemEvent',(e)=>{
-            if(e.key === 'music_play_info'){
+            if(e.key === 'music_play_info' &&  !this.progressBarDown){
                 const newValue = JSON.parse(e.newValue)
                 this.scheduleStyle.width = `${(newValue.nowTime/newValue.endTime)*100}%`
+
+                const second  = parseInt(newValue.nowTime % 60)
+                const temp = second<10?'0'+second:second
+
+                const second2 = parseInt(newValue.endTime % 60)
+                const temp2 = second2<10?'0'+second2:second2
+                //设置当前时间
+                this.nowTime = `${parseInt(newValue.nowTime/60)}:${temp}`
+                this.totalTime = `${parseInt(newValue.endTime/60)}:${temp2}`
             }
 
             if(e.key === 'MusicManagement_info'){
@@ -273,7 +314,6 @@ export default{
              
                 if(newValue.nowMusicName) this.songName = newValue.nowMusicName;
 
-                //TODO:设置mini图片
                 if(newValue.img){
                     let uint8Data = new Uint8Array(Object.values(newValue.img.data));
                     let blob = new Blob([uint8Data], { type: 'image/png' });
@@ -287,6 +327,11 @@ export default{
             if(e.key === 'globalStore'){
                 const newValue = JSON.parse(e.newValue)
                 MusicManagement.setVolume(newValue.musicVolume/100)
+            }
+
+            //监听播放状态改变的时候
+            if(e.key === 'MusicIsPlay'){
+                this.isPlaying = e.newValue
             }
 
         })

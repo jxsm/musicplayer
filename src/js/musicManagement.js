@@ -31,6 +31,9 @@ class MusicManagement{
 
     static #audioElement = document.createElement("audio");//创建一个audio标签
 
+
+    
+
     static nowInTemp = []//现在在temp中的音乐信息
 
     static URL_PATH = 'http://localhost:4565' //音乐文件请求路径
@@ -241,8 +244,26 @@ class MusicManagement{
         if(!this.#listeningState){
             window.ipcRenderer.on('return_ffmpeg_transcoding',callback)
             this.#listeningState = true;
-            this.updatePlayInfo()
         }
+
+        this.#audioElement.addEventListener('pause',()=>{
+            //如果暂停了
+            localStorage.setItem("MusicIsPlay",!this.#audioElement.paused)
+        })
+
+        this.#audioElement.addEventListener('play',()=>{
+            //如果播放了
+            localStorage.setItem("MusicIsPlay",!this.#audioElement.paused)
+        })
+
+        this.#audioElement.addEventListener('ended',()=>{
+            void 0 //TODO: 播放结束切换歌曲
+        })
+
+        this.#audioElement.addEventListener('timeupdate',()=>{
+            this.updatePlayInfonNow()
+        })
+
 
     }
 
@@ -279,6 +300,7 @@ class MusicManagement{
 
 
         if(!path){
+            if(!this.#audioElement.src) return;
             //播放
             this.#audioElement.play();
             return
@@ -307,18 +329,6 @@ class MusicManagement{
   
 
     /**
-     * 循环更新音乐信息(在启动监听的时候会自动调用)
-     * 警告⚠:用户请不要自己调用该方法,以免出现不可预料的后果
-     */
-    static updatePlayInfo(){
-        this.updatePlayInfonNow()
-        //循环更新信息
-        setTimeout(() => {
-            this.updatePlayInfo()
-        },1000)
-    }
-
-    /**
      * 立刻更新音乐信息
      */
     static updatePlayInfonNow(){
@@ -328,6 +338,8 @@ class MusicManagement{
         this.playInfo.surplusTime = this.playInfo.endTime - this.playInfo.nowTime
         //将数据存入localStorage
         localStorage.setItem("music_play_info",JSON.stringify(this.playInfo))
+
+        
     }
 
 
@@ -398,7 +410,8 @@ class MusicManagement{
                     }
                     catch (e){
                         this.#audioElement.volume = 0
-                        console.error("音量设置失败,已自动归零")
+                        console.error("音量设置失败,重新设置")
+                        this.setVolume(volume,time)
                         console.error(e)
                     }
                 } 
@@ -414,6 +427,8 @@ class MusicManagement{
      * @param {Number} ratio 百分比(只能是0.0-1.0之间) 
      */
     static setProgress(ratio){
+        if(!this.#audioElement.src) return;
+
         if(ratio > 1 || ratio < 0) throw new Error("音量值必须在0.0到1.0之间")
         if(ratio === this.#audioElement.currentTime/this.#audioElement.duration) return
         this.#audioElement.currentTime = this.#audioElement.duration * ratio
