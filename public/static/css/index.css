@@ -3,3 +3,9 @@ body{
     background-color: #1a1a1a;
     overflow: hidden;
 }
+
+
+
+.unselectable {
+    user-select: none;
+}

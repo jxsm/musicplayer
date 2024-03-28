@@ -1,6 +1,6 @@
 <template>
     <!--TODO:音乐基础信息展示-->
-    <div class="infoBox" ref="infoBox"  :style="infoBoxStyle" @click="clickedOn">
+    <div class="infoBox" ref="infoBox"  :style="infoBoxStyle" @dblclick="clickedOn" draggable="false">
         <div class="info">
             <p class="songNameInfo" :title="musicalName">{{musicalName}}</p>
             <p :title="singer">{{singer}}</p>
@@ -11,10 +11,6 @@
 </template>
 
 <script>
-import {MusicManagement} from "../../js/musicManagement.js"
-
-void MusicManagement
-
 export default{
     data(){
         return{
@@ -49,6 +45,8 @@ export default{
             this.infoBoxStyle.left = "0px"
             this.infoBoxStyle.opacity = 1
         },this.sequence*10)
+
+
     },
     computed:{
         //音乐名称
@@ -96,10 +94,10 @@ export default{
          */
         clickedOn(){
             //console.log(this.infos.path)
+           
             const nowTime = Date.now()
             if((nowTime - this.clickedOnTime) > 500  ){
                 this.$emit("clickedOn",this.infos)
-                this.clickedOnTime = nowTime
             }
         }
     }
@@ -141,6 +139,7 @@ export default{
     text-overflow: ellipsis;
     white-space: nowrap;
     color: var(--adjacent-theme-colour);
+    user-select:none;
 }
 
 .info p:nth-child(1){
