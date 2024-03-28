@@ -33,3 +33,4 @@ ffmpeg
 
 #userFile
 userFile/*
+userFile/filePath.json
