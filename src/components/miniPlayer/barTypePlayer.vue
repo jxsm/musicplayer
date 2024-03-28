@@ -78,7 +78,7 @@ import playMode from "./playMode.vue"
 import {alterGlobalStore,getGlobalStore} from '../../assets/globalStore.js'
 import {MusicManagement} from "../../js/musicManagement.js"
 
-const NocoverImg = 'img/Nocover.jpg'
+const NocoverImg = 'img/Nocover.png'
 export default{
     data(){
         return{
@@ -98,6 +98,7 @@ export default{
             progressBarDown:false,//进度条是否按下
             nowTime:'0:00',//当前播放时间
             totalTime:'0:00',//总播放时间
+            listeningState:false,//监听状态
         }
     },
     props:{
@@ -112,6 +113,18 @@ export default{
                 this.barMainBoxStyle.bottom = '0px'
             }else{
                 this.barMainBoxStyle.bottom = '-100px'
+            }
+
+
+            if(!this.listeningState && newValue){
+                //TODO:
+                this.startMonitor_mouse()
+                
+            }
+
+            if(!newValue){
+                //清除监听时间
+               this.stopMonitor_mouse()
             }
         }
     },
@@ -241,32 +254,130 @@ export default{
             if(percent<0)return 0;
             if(percent>1) return 1;
             return percent;
-        }
-
-    },
-    mounted(){
-        window.addEventListener('mouseup',(e)=>{
-            
-            //清除监听
-            window.removeEventListener('mousemove',this.getMousesPlace)
+        },
+        /**
+         * 当鼠标在进度条上松开的时候执行
+         * @param {MouseEvent} e 
+         */
+        barMouseup(e){
+              //清除监听
+              window.removeEventListener('mousemove',this.getMousesPlace)
             if(this.progressBarDown){
                 this.progressBarDown = false
                 this.setProgressBar(e)
             }
             this.scheduleStyle.transition = 'width 0.2s'
-            
-
-        })
-
-        window.addEventListener('mousedown',(e)=>{
+        },
+         /**
+         * 当鼠标在进度条上按下的时候执行
+         * @param {MouseEvent} e 
+         */
+        barMousedown(e){
             if((e.target.id === "progressBar" || e.target.id === "schedule") && !this.progressBarDown){
                 this.progressBarDown = true
                 window.addEventListener('mousemove',this.getMousesPlace)
             }
 
             this.scheduleStyle.transition = 'width 0s'
+        },
+        /**
+         * 当数据发生变化的时候执行
+         * @param {*} e 
+         */
+        dataChange(e){
+
+            switch(e.key){
+                case 'music_play_info':
+                    music_play_info(this)
+                    break;
+                case 'MusicManagement_info':
+                 musicManagement_info(this)
+                    break;
+                case "globalStore":
+                    (()=>{
+                        const newValue = JSON.parse(e.newValue)
+                        MusicManagement.setVolume(newValue.musicVolume/100)
+                    })()
+                    break;
+                case "MusicIsPlay":
+                    this.isPlaying = e.newValue
+                    break;
+            }
+
+
+          function music_play_info(_this){
+            if(!_this.progressBarDown){
+                const newValue = JSON.parse(e.newValue)
+                _this.scheduleStyle.width = `${(newValue.nowTime/newValue.endTime)*100}%`
+
+                const second  = parseInt(newValue.nowTime % 60)
+                const temp = second<10?'0'+second:second
+
+                const second2 = parseInt(newValue.endTime % 60)
+                const temp2 = second2<10?'0'+second2:second2
+                //设置当前时间
+                _this.nowTime = `${parseInt(newValue.nowTime/60)}:${temp}`
+                _this.totalTime = `${parseInt(newValue.endTime/60)}:${temp2}`
+
+            }
             
-        })
+          }
+
+
+          function musicManagement_info(_this){
+            //当前音乐信息发生变化时，更改播放控件中的数据
+            _this.isPlaying = true
+                
+                const newValue = JSON.parse(e.newValue)
+                try{
+                    if(newValue.nowMusicInfo.artists) {
+                        _this.artists = newValue.nowMusicInfo.artists.join('/')
+                    }
+                    else{
+                        _this.artists = '未知'
+                    }
+                }
+                catch(e){
+                    _this.artists = '未知'
+                }
+                
+             
+                if(newValue.nowMusicName) _this.songName = newValue.nowMusicName;
+
+                if(newValue.img){
+                    let uint8Data = new Uint8Array(Object.values(newValue.img.data));
+                    let blob = new Blob([uint8Data], { type: 'image/png' });
+                    _this.imgSrc = URL.createObjectURL(blob);
+                }else{
+                    _this.imgSrc = NocoverImg;
+                }
+          }
+
+        },
+        /**
+         * 开始鼠标监听
+         */
+        startMonitor_mouse(){
+            window.addEventListener('mouseup',this.barMouseup)
+            window.addEventListener('mousedown',this.barMousedown)
+            this.listeningState = true
+        },
+        /**
+         * 停止鼠标监听
+         */
+        stopMonitor_mouse(){
+            window.removeEventListener('mouseup',this.barMouseup)
+            window.removeEventListener('mousedown',this.barMousedown)
+            this.listeningState = false
+        }
+
+
+    },
+    mounted(){
+        if(this.isShow && !this.listeningState){
+            this.startMonitor_mouse()
+        }
+        
 
 
         //监听全局变量中的播放模式
@@ -279,62 +390,7 @@ export default{
         },300)
 
         //监听当前音乐的数据变化
-        addEventListener('setItemEvent',(e)=>{
-            if(e.key === 'music_play_info' &&  !this.progressBarDown){
-                const newValue = JSON.parse(e.newValue)
-                this.scheduleStyle.width = `${(newValue.nowTime/newValue.endTime)*100}%`
-
-                const second  = parseInt(newValue.nowTime % 60)
-                const temp = second<10?'0'+second:second
-
-                const second2 = parseInt(newValue.endTime % 60)
-                const temp2 = second2<10?'0'+second2:second2
-                //设置当前时间
-                this.nowTime = `${parseInt(newValue.nowTime/60)}:${temp}`
-                this.totalTime = `${parseInt(newValue.endTime/60)}:${temp2}`
-            }
-
-            if(e.key === 'MusicManagement_info'){
-                //当前音乐信息发生变化时，更改播放控件中的数据
-                this.isPlaying = true
-                
-                const newValue = JSON.parse(e.newValue)
-                try{
-                    if(newValue.nowMusicInfo.artists) {
-                        this.artists = newValue.nowMusicInfo.artists.join('/')
-                    }
-                    else{
-                        this.artists = '未知'
-                    }
-                }
-                catch(e){
-                    this.artists = '未知'
-                }
-                
-             
-                if(newValue.nowMusicName) this.songName = newValue.nowMusicName;
-
-                if(newValue.img){
-                    let uint8Data = new Uint8Array(Object.values(newValue.img.data));
-                    let blob = new Blob([uint8Data], { type: 'image/png' });
-                    this.imgSrc = URL.createObjectURL(blob);
-                }else{
-                    this.imgSrc = NocoverImg;
-                }
-            }
-
-            //音量调整
-            if(e.key === 'globalStore'){
-                const newValue = JSON.parse(e.newValue)
-                MusicManagement.setVolume(newValue.musicVolume/100)
-            }
-
-            //监听播放状态改变的时候
-            if(e.key === 'MusicIsPlay'){
-                this.isPlaying = e.newValue
-            }
-
-        })
+        addEventListener('setItemEvent',this.dataChange)
 
     }
 
@@ -405,7 +461,6 @@ export default{
 .cover{
     width: 40px;
     height: 40px;
-    background-color: antiquewhite;
 }
 
 .cover img{

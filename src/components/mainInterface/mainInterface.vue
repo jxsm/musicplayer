@@ -4,7 +4,7 @@
         
         <miniPlayer @hideSmallPlayer="hideSmallPlayer" :showMiniPlayer="showMiniPlayer"></miniPlayer>
         <songNameList :showMiniPlayer="showMiniPlayer" :showBar="showBarTypePlayer"></songNameList>
-        <barTypePlayer :isShow="showBarTypePlayer" @conceal="concealBarTypePlayer"></barTypePlayer>
+        <barTypePlayer  :isShow="showBarTypePlayer" @conceal="concealBarTypePlayer"></barTypePlayer>
         <progressBar @mouseenter="shiftToBottom"></progressBar>
     </div>
 </template>

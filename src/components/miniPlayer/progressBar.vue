@@ -1,5 +1,5 @@
 <template>
-    <!--这个是进度条组件-->
+    <!--这个是大进度条组件-->
     <div class="progressBarBox">
         <div class="progressBar" :style="progressBarStyle"></div>
     </div>
@@ -11,7 +11,8 @@ export default {
         return{
             progressBarStyle:{
                 width: '0%',
-            }
+            },
+            progressBarDown:false,//进度条是否被按下
         }
     },
     methods:{

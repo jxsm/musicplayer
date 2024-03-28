@@ -89,12 +89,14 @@ class MusicManagement{
     }
 
     /**
-     * 从localStorage中获取数据并设置到对象中aa
+     * 从localStorage中获取数据并设置到对象中
+     * (当页面加载的时候加载上一次的记录)
      */
     static setInfoInlocalStorage(){
         const data = localStorage.getItem('MusicManagement_info')
         if(data){
             this.#info =  JSON.parse(data)
+            localStorage.setItem("MusicManagement_info",JSON.stringify(this.#info))
         }
     }
 
@@ -280,6 +282,16 @@ class MusicManagement{
     }
 
 
+    static #palyNow = ()=>{
+        try{
+            this.#audioElement.play();
+        }
+        catch(e){
+            console.error("播放失败")
+            console.error(e)
+        }
+    }
+
     /**
      * 播放音乐,如果不传递path则默认播放当前歌曲
      * @param {string} path 路径如果直接输入名称则默认在temp的根目录中查找
@@ -301,8 +313,7 @@ class MusicManagement{
 
         if(!path){
             if(!this.#audioElement.src) return;
-            //播放
-            this.#audioElement.play();
+            this.#palyNow()
             return
         }
      
@@ -314,7 +325,7 @@ class MusicManagement{
        //设置路径
        this.#audioElement.src = nowPath;
        //播放
-       this.#audioElement.play();
+       this.#palyNow()
        
        //更新缓存数据
        this.#info.nowMusicName = name
@@ -444,7 +455,12 @@ class MusicManagement{
 
 }
 
-MusicManagement.setInfoInlocalStorage()//读取缓存中的数据
+//页面加载完成后执行
+window.onload = ()=>{
+    MusicManagement.setInfoInlocalStorage()//读取缓存中的数据
+}
+
+
 
 MusicManagement.startMonitor() //开启监听
 
