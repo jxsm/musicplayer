@@ -163,6 +163,7 @@ export default{
          * 鼠标移出更改音量的位置
          */
         mouseOut(){
+
             this.stopMouseOutTime()
             this.shiftOutTimeID =  setTimeout(()=>{
                 this.alterAdjustVolume(false)
@@ -326,7 +327,6 @@ export default{
 
           function musicManagement_info(_this){
             //当前音乐信息发生变化时，更改播放控件中的数据
-            _this.isPlaying = true
                 
                 const newValue = JSON.parse(e.newValue)
                 try{

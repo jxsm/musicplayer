@@ -97,6 +97,15 @@ class MusicManagement{
         if(data){
             this.#info =  JSON.parse(data)
             localStorage.setItem("MusicManagement_info",JSON.stringify(this.#info))
+            
+            if(this.#info.nowMusicUri){
+                //TODO:
+                let nowPath = this.#info.nowMusicUri;
+                if(!this.#info.nowMusicUri.startsWith("/")) nowPath =  '/' + this.#info.nowMusicUri;
+                nowPath = this.URL_PATH + nowPath
+                //设置路径
+                this.#audioElement.src = nowPath;
+            }
         }
     }
 
