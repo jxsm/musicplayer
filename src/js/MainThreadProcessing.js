@@ -18,7 +18,7 @@ class monitorDispose{
     /**
      * 获取一个文件夹下指定类型的音乐的信息
      * @param {*} event 
-     * @param {Array} arg [路径,类型['mp3'],标识] 
+     * @param {[]} arg [路径,类型['mp3'],标识] 
      */
     static getFolderMusicInfo(event,arg){
         const path = arg[0];//文件夹路径，如'E:\\青鸟2\\音乐测试'，注意：路径中需要使用
@@ -94,17 +94,32 @@ class monitorDispose{
  * fileName:string,
  * target:string,
  * tag:string,
+ * name:string,
+ * artists:Array,
  * headers:object
  * }} args 该对象传入的数据应该严格要这样
  */
 static ipc_ffmpeg_transcoding(event,args = {}){
+  console.log(args)
   //先检查传入的args是否正确
   if(!(args.path && args.position && args.sourceType && args.fileName && args.target && args.tag)){
     event.sender.send('return_ffmpeg_transcoding',[args.tag,'error','请检查传入的args的置是否正确(除了headers属性外都不能为空)'])
   }
   if(Transcoding.transcoding_list[args.sourceType]){
     let flag = Transcoding.transcoding_list[args.sourceType](args.path,args.fileName,args.position,args.target,args.headers)
-    event.sender.send('return_ffmpeg_transcoding',[args.tag,flag])
+    flag.then((res)=>{
+      event.sender.send('return_ffmpeg_transcoding',[args.tag,'ok',res,
+      {
+        name:args.name,//歌曲名称
+        artists:args.artists,//艺术家
+        img:args.img,//歌曲封面
+      }])
+    })
+    .catch((e)=>{
+      event.sender.send('return_ffmpeg_transcoding',[args.tag,'error',e])
+    })
+
+    
   }
   else{
     event.sender.send('return_ffmpeg_transcoding',[args.tag,'error',"没有相对应的转码器,如果您是开发者您可以尝试更改sourceType属性为其他类型"])
@@ -187,8 +202,7 @@ static testTemp() {
 
 
 /**
- * 
- * 
+ * 获取音乐信息并返回
  */
 function setMusicInfo(infos){
   let prList = []//异步数据列表
@@ -210,6 +224,9 @@ function setMusicInfo(infos){
 
   return [prList,infos]
 }
+
+
+//TODO: 添加读取音频二进制文件的的功能
 
 
 

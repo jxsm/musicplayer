@@ -1,13 +1,13 @@
 <template>
     <!--FIXME:该组件为页面底部的条形播放器,默认情况下不显示,只有当小播放器不显示的时候才会触发让其显示-->
-    <div class="barMainBox" ref="barMainBox" :style="barMainBoxStyle">
+    <div class="barMainBox" ref="barMainBox" :style="barMainBoxStyle" draggable="false">
         <div class="oneBox">
             <div class="cover">
-                <img src="../../assets/109951168730716074.jpg" alt="封面">
+                <img :src="imgSrc" alt="封面">
             </div>
-            <div class="musicInfoBox">
-                <p>歌曲名</p>
-                <p>作者</p>
+            <div class="musicInfoBox" :title="`歌曲名:${songName}\n作者:${artists}`">
+                <p>{{songName}}</p>
+                <p>{{artists}}</p>
             </div>
         </div>
         <div class="twoBox">
@@ -32,9 +32,9 @@
                 <!--播放/暂停-->
                 <div :title="isPlaying?'暂停':'播放'">
                     <!--播放-->
-                    <svg t="1704249243774" v-show="!isPlaying" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="11908" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200"><path d="M870.2 466.333333l-618.666667-373.28a53.333333 53.333333 0 0 0-80.866666 45.666667v746.56a53.206667 53.206667 0 0 0 80.886666 45.666667l618.666667-373.28a53.333333 53.333333 0 0 0 0-91.333334z" p-id="11909"></path></svg>
+                    <svg @click="startMusic" t="1704249243774" v-show="!isPlaying" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="11908" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200"><path d="M870.2 466.333333l-618.666667-373.28a53.333333 53.333333 0 0 0-80.866666 45.666667v746.56a53.206667 53.206667 0 0 0 80.886666 45.666667l618.666667-373.28a53.333333 53.333333 0 0 0 0-91.333334z" p-id="11909"></path></svg>
                     <!--暂停-->
-                    <svg t="1704249356127" v-show="isPlaying" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="12895" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200"><path d="M426.666667 138.666667v746.666666a53.393333 53.393333 0 0 1-53.333334 53.333334H266.666667a53.393333 53.393333 0 0 1-53.333334-53.333334V138.666667a53.393333 53.393333 0 0 1 53.333334-53.333334h106.666666a53.393333 53.393333 0 0 1 53.333334 53.333334z m330.666666-53.333334H650.666667a53.393333 53.393333 0 0 0-53.333334 53.333334v746.666666a53.393333 53.393333 0 0 0 53.333334 53.333334h106.666666a53.393333 53.393333 0 0 0 53.333334-53.333334V138.666667a53.393333 53.393333 0 0 0-53.333334-53.333334z" p-id="12896"></path></svg>
+                    <svg  @click="stopMusic" t="1704249356127" v-show="isPlaying" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="12895" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200"><path d="M426.666667 138.666667v746.666666a53.393333 53.393333 0 0 1-53.333334 53.333334H266.666667a53.393333 53.393333 0 0 1-53.333334-53.333334V138.666667a53.393333 53.393333 0 0 1 53.333334-53.333334h106.666666a53.393333 53.393333 0 0 1 53.333334 53.333334z m330.666666-53.333334H650.666667a53.393333 53.393333 0 0 0-53.333334 53.333334v746.666666a53.393333 53.393333 0 0 0 53.333334 53.333334h106.666666a53.393333 53.393333 0 0 0 53.333334-53.333334V138.666667a53.393333 53.393333 0 0 0-53.333334-53.333334z" p-id="12896"></path></svg>
                 </div>
                 <!--下一首-->
                 <div title="下一首">
@@ -48,11 +48,12 @@
 
 
             <div class="progressBarBox">
-                <div class=" timeText nowTime">0:30</div>
-                <div class="progressBar">
-                    <div class="schedule"></div>
+                <div class=" timeText nowTime">{{nowTime}}</div>
+                <!--进度条-->
+                <div id="progressBar" class="progressBar" ref="progressBar">
+                    <div class="schedule" id="schedule" :style="scheduleStyle"></div>
                 </div>
-                <div class=" timeText totalHours">3:34</div>
+                <div class=" timeText totalHours">{{totalTime}}</div>
             </div>
 
         </div>
@@ -75,6 +76,9 @@
 import adjustVolume from "./adjustVolume.vue"
 import playMode from "./playMode.vue"
 import {alterGlobalStore,getGlobalStore} from '../../assets/globalStore.js'
+import {MusicManagement} from "../../js/musicManagement.js"
+
+const NocoverImg = 'img/Nocover.png'
 export default{
     data(){
         return{
@@ -86,6 +90,15 @@ export default{
             recordVolume:0,//记录音量
             playModeSelect:false,//是否显示播放模式控件
             barMainBoxStyle:{},//主控件样式
+            scheduleStyle:{},//进度条样式
+            songName:"未知",//歌曲名,
+            artists:"未知", //艺术家
+            imgSrc:NocoverImg,//封面图片'
+            progressBarTimeId:0,//进度条计时器
+            progressBarDown:false,//进度条是否按下
+            nowTime:'0:00',//当前播放时间
+            totalTime:'0:00',//总播放时间
+            listeningState:false,//监听状态
         }
     },
     props:{
@@ -100,6 +113,18 @@ export default{
                 this.barMainBoxStyle.bottom = '0px'
             }else{
                 this.barMainBoxStyle.bottom = '-100px'
+            }
+
+
+            if(!this.listeningState && newValue){
+                //TODO:
+                this.startMonitor_mouse()
+                
+            }
+
+            if(!newValue){
+                //清除监听时间
+               this.stopMonitor_mouse()
             }
         }
     },
@@ -138,6 +163,7 @@ export default{
          * 鼠标移出更改音量的位置
          */
         mouseOut(){
+
             this.stopMouseOutTime()
             this.shiftOutTimeID =  setTimeout(()=>{
                 this.alterAdjustVolume(false)
@@ -161,9 +187,199 @@ export default{
             //更改公共变量中的数据
             alterGlobalStore('playMode',mode,true)
         },
-       
+        /**
+         * 停止播放音乐
+         */
+        stopMusic(){
+            MusicManagement.stop()
+            this.isPlaying = false
+        },
+        /**
+         * 播放音乐
+         */
+        startMusic(){
+            MusicManagement.paly()
+            this.isPlaying = true
+        },
+        /**
+         * 当鼠标处于进度条上时，执行该函数
+         */
+        progressBarMouses(e){
+            this.getMousesPlace(e)
+
+            if(this.progressBarDown){
+                //鼠标按下
+                this.setProgressBar(e)
+            }
+
+            if(this.progressBarTimeId){
+                clearTimeout(this.progressBarTimeId)
+            }
+
+            this.progressBarTimeId = setTimeout(()=>{
+                void 0
+            },500)
+
+
+            
+        },
+        /**
+         * 当鼠标移出进度条时，执行该函数
+         */
+        progressBarMouseOut(){
+            this.progressBarDown = false
+            if(this.progressBarTimeId){
+                clearTimeout(this.progressBarTimeId)
+         }
+        },
+        /**
+         * 当进度条条上,并且鼠标被按下的时候执行该函数
+         */
+        setProgressBar(e){
+            MusicManagement.setProgress(this.getMousesPlace(e))
+        },
+        /**
+         * 获取鼠标在元素中的位置(获取到的是百分比)
+         * @param {Object} e  事件对象
+         * @returns {number} 鼠标在元素中的位置}(百分比)
+         */
+        getMousesPlace(e){
+            const {left,width} = this.$refs.progressBar.getBoundingClientRect()
+            let x = e.clientX
+            //计算数百哦
+            let hundreds = Math.floor((x-left)/width*100)
+            this.scheduleStyle.width = `${hundreds}%`
+
+            let percent = hundreds/100
+
+            if(percent<0)return 0;
+            if(percent>1) return 1;
+            return percent;
+        },
+        /**
+         * 当鼠标在进度条上松开的时候执行
+         * @param {MouseEvent} e 
+         */
+        barMouseup(e){
+              //清除监听
+              window.removeEventListener('mousemove',this.getMousesPlace)
+            if(this.progressBarDown){
+                this.progressBarDown = false
+                this.setProgressBar(e)
+            }
+            this.scheduleStyle.transition = 'width 0.2s'
+        },
+         /**
+         * 当鼠标在进度条上按下的时候执行
+         * @param {MouseEvent} e 
+         */
+        barMousedown(e){
+            if((e.target.id === "progressBar" || e.target.id === "schedule") && !this.progressBarDown){
+                this.progressBarDown = true
+                window.addEventListener('mousemove',this.getMousesPlace)
+            }
+
+            this.scheduleStyle.transition = 'width 0s'
+        },
+        /**
+         * 当数据发生变化的时候执行
+         * @param {*} e 
+         */
+        dataChange(e){
+
+            switch(e.key){
+                case 'music_play_info':
+                    music_play_info(this)
+                    break;
+                case 'MusicManagement_info':
+                 musicManagement_info(this)
+                    break;
+                case "globalStore":
+                    (()=>{
+                        const newValue = JSON.parse(e.newValue)
+                        MusicManagement.setVolume(newValue.musicVolume/100)
+                    })()
+                    break;
+                case "MusicIsPlay":
+                    this.isPlaying = e.newValue
+                    break;
+            }
+
+
+          function music_play_info(_this){
+            if(!_this.progressBarDown){
+                const newValue = JSON.parse(e.newValue)
+                _this.scheduleStyle.width = `${(newValue.nowTime/newValue.endTime)*100}%`
+
+                const second  = parseInt(newValue.nowTime % 60)
+                const temp = second<10?'0'+second:second
+
+                const second2 = parseInt(newValue.endTime % 60)
+                const temp2 = second2<10?'0'+second2:second2
+                //设置当前时间
+                _this.nowTime = `${parseInt(newValue.nowTime/60)}:${temp}`
+                _this.totalTime = `${parseInt(newValue.endTime/60)}:${temp2}`
+
+            }
+            
+          }
+
+
+          function musicManagement_info(_this){
+            //当前音乐信息发生变化时，更改播放控件中的数据
+                
+                const newValue = JSON.parse(e.newValue)
+                try{
+                    if(newValue.nowMusicInfo.artists) {
+                        _this.artists = newValue.nowMusicInfo.artists.join('/')
+                    }
+                    else{
+                        _this.artists = '未知'
+                    }
+                }
+                catch(e){
+                    _this.artists = '未知'
+                }
+                
+             
+                if(newValue.nowMusicName) _this.songName = newValue.nowMusicName;
+
+                if(newValue.img){
+                    let uint8Data = new Uint8Array(Object.values(newValue.img.data));
+                    let blob = new Blob([uint8Data], { type: 'image/png' });
+                    _this.imgSrc = URL.createObjectURL(blob);
+                }else{
+                    _this.imgSrc = NocoverImg;
+                }
+          }
+
+        },
+        /**
+         * 开始鼠标监听
+         */
+        startMonitor_mouse(){
+            window.addEventListener('mouseup',this.barMouseup)
+            window.addEventListener('mousedown',this.barMousedown)
+            this.listeningState = true
+        },
+        /**
+         * 停止鼠标监听
+         */
+        stopMonitor_mouse(){
+            window.removeEventListener('mouseup',this.barMouseup)
+            window.removeEventListener('mousedown',this.barMousedown)
+            this.listeningState = false
+        }
+
+
     },
     mounted(){
+        if(this.isShow && !this.listeningState){
+            this.startMonitor_mouse()
+        }
+        
+
+
         //监听全局变量中的播放模式
         addEventListener('globalStore:playMode',(e)=>{
             this.pattern = e.detail.value
@@ -172,7 +388,15 @@ export default{
         setTimeout(()=>{
             this.pattern=getGlobalStore('playMode')
         },300)
+
+        //监听当前音乐的数据变化
+        addEventListener('setItemEvent',this.dataChange)
+
     }
+
+    
+
+
 }
 </script>
 <style scoped>
@@ -182,8 +406,7 @@ export default{
 .altPattern{
     top: -152px;
     transform: translateX(-30px);
-
-    }
+}
 
 
 *{
@@ -238,7 +461,6 @@ export default{
 .cover{
     width: 40px;
     height: 40px;
-    background-color: antiquewhite;
 }
 
 .cover img{
@@ -340,11 +562,11 @@ svg:hover{
 进度条内部的样式
  */
 .schedule{
-    width: 20%;
     height: 100%;
     background-color: var(--theme-colour);
     border-radius: 10px;
     position: relative;
+    transition: width 0.2s;
 }
 
 .volumeBox{

@@ -70,14 +70,11 @@ class MinWindowHint{
     /**
      * 页面底部的小弹窗提示
      * @param {string} hintText 提示文字 
-     * @param {Number} time  持续时间
+     * @param {Number} [time = 1000]  持续时间
      */
-    static hint(hintText,time){
+    static hint(hintText,time=1000){
         this.general(hintText,"var(--theme-colour)","var(--opposite-theme-colour)",time)
     }
-
-
-   
 
 
     /**
