@@ -1,5 +1,4 @@
 <template>
-    <!--TODO:制作播放模式切换组件-->
     <div class="playModeBox" ref="playModeBox" :style="playModeBoxStyle">
         <!--顺序播放-->
         <div title="顺序播放" @click="select(1)" :style="bakColor(1)">
@@ -26,6 +25,7 @@
 </template>
 
 <script>
+import {alterGlobalStore} from "../../assets/globalStore"
 export default{
     data(){
         return{
@@ -33,6 +33,7 @@ export default{
             playModeBoxStyle:{
 
             },//播放模式盒子样式
+            pattern:1,//播放模式
         }
     },
     methods:{
@@ -40,7 +41,8 @@ export default{
          * 用户单击选择了播放模式
          */
         select(text){
-            this.$emit('alterPlayMode',text)
+            this.pattern = text;
+            alterGlobalStore('playMode',text,true)
         }
         ,
         //计算属性背景色
@@ -52,10 +54,6 @@ export default{
         playModeSelect:{
             type:Boolean,
             default:false
-        },
-        pattern:{
-            type:Number,
-            default:1
         }
     },
     watch:{

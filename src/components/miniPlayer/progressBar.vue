@@ -1,6 +1,6 @@
 <template>
     <!--这个是大进度条组件-->
-    <div class="progressBarBox" id="progressBarBox" ref="progressBarBox">
+    <div class="progressBarBox" id="progressBarBox" ref="progressBarBox" :style="progressBarBoxStyle">
         <div class="progressBar" :style="progressBarStyle" id="progressBar"></div>
     </div>
 </template>
@@ -15,6 +15,13 @@ export default {
             },
             progressBarDown:false,//进度条是否被按下,
             isMonitor:false,//是否为监听状态
+            progressBarBoxStyle:{
+
+            },//进度条盒子样式
+            PROGRESSBARBOXHEIGHT:{
+              MAX:'15px',
+              MIN:'7px'  
+            }
         }
     },
     methods:{
@@ -28,6 +35,8 @@ export default {
                 window.addEventListener('mousemove',this.getMousesPlace)
             }
             this.progressBarStyle.transition = 'width 0s'
+
+            this.progressBarBoxStyle.height = this.PROGRESSBARBOXHEIGHT.MAX //设置进度条的宽度
         },
         /**
          * 鼠标抬起的时候执行
@@ -41,6 +50,8 @@ export default {
                     this.setProgressBar(e)
                 }
                 this.progressBarStyle.transition = 'width 0.2s'
+
+                this.progressBarBoxStyle.height = this.PROGRESSBARBOXHEIGHT.MIN
         },
         /**
          * 获取鼠标在进度条中的百分比,并且设置进度条的长度
@@ -49,7 +60,7 @@ export default {
             const {left,width} = this.$refs.progressBarBox.getBoundingClientRect()
             let x = e.clientX
             //计算数百哦
-            let hundreds = Math.floor((x-left)/width*100)
+            let hundreds = (x-left)/width*100
             this.progressBarStyle.width = `${hundreds}%`
 
             let percent = hundreds/100
@@ -95,6 +106,7 @@ export default {
                 window.removeEventListener('mousedown',this.mousedownBar)
                 window.removeEventListener('mouseup',this.mouseupBar)
                 this.isMonitor = false
+                this.progressBarBoxStyle.height = this.PROGRESSBARBOXHEIGHT.MIN
             }
             else if(!this.isMonitor){
                 //进行监听
@@ -126,7 +138,7 @@ export default {
 }
 
 .progressBarBox:hover{
-    height:15px;
+    height:15px !important; 
 }
 
 

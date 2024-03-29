@@ -12,19 +12,9 @@
         </div>
         <div class="twoBox">
             <div class="controlBox">
-                <playMode :pattern="pattern" class="altPattern" @alterPlayMode="alterPlayMode" :playModeSelect="playModeSelect" @mouseleave="playModeSelect = false"></playMode>
+                <playMode :pattern="pattern" class="altPattern" :playModeSelect="playModeSelect" @mouseleave="playModeSelect = false"></playMode>
                 <!--播放模式-->
-                <div @click="this.playModeSelect = !this.playModeSelect" class="pattern" :title="pattern === 1?'顺序播放':pattern ===2?'列表循环':pattern ===3?'单曲循环':'随机播放' ">
-                    <!--顺序播放-->
-                    <svg t="1704251873827" class="icon"  v-if="pattern===1" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4241" width="200" height="200"><path d="M106 85.5c-22.1 0-40 17.9-40 40v760.6c0 22.1 17.9 40 40 40s40-17.9 40-40V125.5c0-22.1-17.9-40-40-40zM457.3 85.5c-22.1 0-40 17.9-40 40v760.6c0 22.1 17.9 40 40 40s40-17.9 40-40V125.5c0-22.1-17.9-40-40-40zM955.1 661.4c-7.1-12.4-20.3-20-34.6-20h-72c0-0.8 0.1-1.5 0.1-2.3V125.5c0-22.1-17.9-40-40-40s-40 17.9-40 40v513.6c0 0.8 0 1.5 0.1 2.3h-87c-14.3 0-27.5 7.6-34.6 20-7.1 12.4-7.1 27.6 0 40l119.4 206.8c7.1 12.4 20.3 20 34.6 20s27.5-7.6 34.6-20l119.4-206.8c7.2-12.4 7.2-27.7 0-40z m-154 146.8L751 721.4h100.2l-50.1 86.8z" p-id="4242"></path></svg>
-                    <!--列表循环-->
-                    <svg t="1704249123977" title="列表循环" v-if="pattern===2" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="7103" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200"><path d="M361.5 727.8c-119.1 0-215.9-96.9-215.9-215.9 0-119.1 96.9-215.9 215.9-215.9 2.3 0 4.6-0.2 6.8-0.6v58.3c0 12.3 14 19.4 23.9 12.1l132.6-97.6c8.1-6 8.1-18.2 0-24.2l-132.6-97.6c-9.9-7.3-23.9-0.2-23.9 12.1v58.1c-2.2-0.4-4.5-0.6-6.8-0.6-39.8 0-78.5 7.9-115 23.4-35.2 15-66.8 36.3-94 63.5s-48.6 58.8-63.5 94c-15.5 36.5-23.4 75.2-23.4 115s7.9 78.5 23.4 115c15 35.2 36.3 66.8 63.5 94s58.8 48.6 94 63.5c36.5 15.5 75.2 23.4 115 23.4 22.1 0 40-17.9 40-40s-17.9-40-40-40z m576.7-330.9c-15-35.2-36.3-66.8-63.5-94s-58.8-48.6-94-63.5c-36.5-15.5-75.2-23.4-115-23.4-22.1 0-40 17.9-40 40s17.9 40 40 40c119.1 0 215.9 96.9 215.9 215.9 0 119.1-96.9 215.9-215.9 215.9-4.1 0-8.1 0.6-11.8 1.8v-60.8c0-12.3-14-19.4-23.9-12.1l-132.6 97.6c-8.1 6-8.1 18.2 0 24.2L629.9 876c9.9 7.3 23.9 0.2 23.9-12.1V806c3.7 1.2 7.7 1.8 11.8 1.8 39.8 0 78.5-7.9 115-23.4 35.2-15 66.8-36.3 94-63.5s48.6-58.8 63.5-94c15.5-36.5 23.4-75.2 23.4-115s-7.8-78.5-23.3-115z" p-id="7104"></path></svg>
-                    <!--单曲循环-->
-                    <svg t="1704249146369" title="单曲循环" v-if="pattern===3" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="8113" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200"><path d="M361.5 727.8c-119.1 0-215.9-96.9-215.9-215.9 0-119.1 96.9-215.9 215.9-215.9 2.3 0 4.6-0.2 6.8-0.6v58.3c0 12.3 14 19.4 23.9 12.1l132.6-97.6c8.1-6 8.1-18.2 0-24.2l-132.6-97.6c-9.9-7.3-23.9-0.2-23.9 12.1v58.1c-2.2-0.4-4.5-0.6-6.8-0.6-39.8 0-78.5 7.9-115 23.4-35.2 15-66.8 36.3-94 63.5s-48.6 58.8-63.5 94c-15.5 36.5-23.4 75.2-23.4 115s7.9 78.5 23.4 115c15 35.2 36.3 66.8 63.5 94s58.8 48.6 94 63.5c36.5 15.5 75.2 23.4 115 23.4 22.1 0 40-17.9 40-40s-17.9-40-40-40z m576.7-330.9c-15-35.2-36.3-66.8-63.5-94s-58.8-48.6-94-63.5c-36.5-15.5-75.2-23.4-115-23.4-22.1 0-40 17.9-40 40s17.9 40 40 40c119.1 0 215.9 96.9 215.9 215.9 0 119.1-96.9 215.9-215.9 215.9-4.1 0-8.1 0.6-11.8 1.8v-60.8c0-12.3-14-19.4-23.9-12.1l-132.6 97.6c-8.1 6-8.1 18.2 0 24.2L629.9 876c9.9 7.3 23.9 0.2 23.9-12.1V806c3.7 1.2 7.7 1.8 11.8 1.8 39.8 0 78.5-7.9 115-23.4 35.2-15 66.8-36.3 94-63.5s48.6-58.8 63.5-94c15.5-36.5 23.4-75.2 23.4-115s-7.8-78.5-23.3-115z" p-id="8114"></path><path d="M512.8 660.6c22.1-0.1 39.9-18.1 39.8-40.2l-1.2-214.1c-0.1-22-18-39.8-40-39.8h-0.2c-22.1 0.1-39.9 18.1-39.8 40.2l1.2 214.1c0.1 22 18 39.8 40 39.8h0.2z" p-id="8115"></path></svg>
-                    <!--随机播放-->
-                    <svg t="1704249178758" title="随机播放" v-if="pattern===4" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="10060" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200"><path d="M914.2 705L796.4 596.8c-8.7-8-22.7-1.8-22.7 10V688c-69.5-1.8-134-39.7-169.3-99.8l-45.1-77 47-80.2c34.9-59.6 98.6-97.4 167.4-99.8v60.1c0 11.8 14 17.9 22.7 10l117.8-108.1c5.8-5.4 5.8-14.6 0-19.9L796.4 165c-8.7-8-22.7-1.8-22.7 10v76H758c-4.7 0-9.3 0.8-13.5 2.3-36.5 4.7-72 16.6-104.1 35-42.6 24.4-78.3 59.8-103.1 102.2L513 432l-24.3-41.5c-24.8-42.4-60.5-77.7-103.1-102.2C343 263.9 294.5 251 245.3 251H105c-22.1 0-40 17.9-40 40s17.9 40 40 40h140.3c71.4 0 138.3 38.3 174.4 99.9l47 80.2-45.1 77c-36.2 61.7-103 99.9-174.4 99.9H105c-22.1 0-40 17.9-40 40s17.9 40 40 40l142 0.1h0.2c49.1 0 97.6-12.9 140.2-37.3 42.7-24.4 78.3-59.8 103.2-102.2l22.4-38.3 22.4 38.3c24.8 42.4 60.5 77.8 103.2 102.2 33.1 18.9 69.6 30.9 107.3 35.4 3.8 1.2 7.8 1.8 11.9 1.8l15.9 0.1v55c0 11.8 14 17.9 22.7 10L914.2 725c5.9-5.5 5.9-14.7 0-20z" p-id="10061"></path></svg>
-
-                </div>
+               <playbackMode  @click="playModeSelect = !playModeSelect"  ></playbackMode>
                 <!--上一首-->
                 <div title="上一首" >
                     <svg t="1704249396846"  class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="15208" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200"><path d="M518.4 598.4c-19.2-19.2-41.6-51.2-41.6-86.4 0-32 19.2-57.6 41.6-86.4l275.2-281.6c32-32 32-86.4 0-121.6-16-12.8-38.4-22.4-60.8-22.4s-41.6 9.6-60.8 25.6L256 451.2c-32 32-32 86.4 0 121.6l419.2 425.6c32 32 86.4 32 118.4 0s32-86.4 0-121.6l-275.2-278.4z"  p-id="15209"></path></svg>
@@ -77,12 +67,12 @@ import adjustVolume from "./adjustVolume.vue"
 import playMode from "./playMode.vue"
 import {alterGlobalStore,getGlobalStore} from '../../assets/globalStore.js'
 import {MusicManagement} from "../../js/musicManagement.js"
+import playbackMode from "./playbackMode.vue"
 
 const NocoverImg = 'img/Nocover.png'
 export default{
     data(){
         return{
-            pattern:1,//播放模式
             isPlaying:false,//是否播放
             showAdjustVolume:false,//是否显示音频控件
             shiftOutTimeID:0,//鼠标移出计时器记录
@@ -113,6 +103,7 @@ export default{
                 this.barMainBoxStyle.bottom = '0px'
             }else{
                 this.barMainBoxStyle.bottom = '-100px'
+                this.playModeSelect = false
             }
 
 
@@ -130,7 +121,8 @@ export default{
     },
     components:{
         adjustVolume,
-        playMode
+        playMode,
+        playbackMode
     },
     methods:{
         /**
@@ -178,14 +170,6 @@ export default{
                 clearTimeout(this.shiftOutTimeID)
                 this.shiftOutTimeID = 0
             }
-        },
-        /**
-         * 更改播放模式
-         * @param {*} mode 播放模式
-         */
-        alterPlayMode(mode){
-            //更改公共变量中的数据
-            alterGlobalStore('playMode',mode,true)
         },
         /**
          * 停止播放音乐
@@ -247,7 +231,7 @@ export default{
             const {left,width} = this.$refs.progressBar.getBoundingClientRect()
             let x = e.clientX
             //计算数百哦
-            let hundreds = Math.floor((x-left)/width*100)
+            let hundreds = (x-left)/width*100
             this.scheduleStyle.width = `${hundreds}%`
 
             let percent = hundreds/100
