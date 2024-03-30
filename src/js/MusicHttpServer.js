@@ -1,17 +1,17 @@
 var net = require('net')
 const path = require('path');
 
-class musicHttpServer {
+class MusicHttpServer {
 
     
 
     //进行单例函数
     constructor(){
-        if(musicHttpServer.establish){
-          return musicHttpServer.establish
+        if(MusicHttpServer.establish){
+          return MusicHttpServer.establish
         }
         else{
-          musicHttpServer.establish = this
+          MusicHttpServer.establish = this
         }
     }
 
@@ -161,4 +161,4 @@ class musicHttpServer {
 }
 
 
-module.exports = musicHttpServer
+module.exports = MusicHttpServer

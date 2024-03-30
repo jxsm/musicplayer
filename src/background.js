@@ -6,8 +6,9 @@ import { app, protocol, BrowserWindow ,contextBridge, ipcMain,dialog} from 'elec
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
-import {monitorDispose} from "./js/MainThreadProcessing"
-import musicHttpServer from "./js/musicHttpServer"
+import {MonitorDispose} from "./js/MainThreadProcessing"
+import MusicHttpServer from "./js/MusicHttpServer"
+import ProgramCycle from "./js/ProgramCycle" 
 
 
 //ffmpeg的路径,如果您要为特定的平台构建则只需要指定特定平台的ffmpeg就可以了
@@ -18,6 +19,8 @@ let ffmpegPath = {
 }
 
 void ffmpegPath
+
+ProgramCycle.executePriority()
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
@@ -64,6 +67,7 @@ app.on('window-all-closed', () => {
   // On macOS it is common for applications and their menu bar
   // to stay active until the user quits explicitly with Cmd + Q
   if (process.platform !== 'darwin') {
+    ProgramCycle.executeClosed()
     app.quit()
   }
 })
@@ -105,7 +109,14 @@ if (isDevelopment) {
 }
 
 
+ProgramCycle.executeProcess()
 
+
+/**
+ * 获取歌曲列表
+ * @param {Electron.IpcMainEvent} event 
+ * @param {*} arg 
+ */
 function getSonglist(event ,arg){
   let path = arg[0]
   let names = arg[1]
@@ -165,25 +176,25 @@ ipcMain.on('open-Directory', function (event, p) {
 
 //检查temp文件夹是否存在,如果不存在则进行创建
 
-monitorDispose.testTemp()
+MonitorDispose.testTemp()
 
 //监听歌曲信息获取事件
-ipcMain.on('getFolderMusicInfo',monitorDispose.getFolderMusicInfo)
+ipcMain.on('getFolderMusicInfo',MonitorDispose.getFolderMusicInfo)
 
 //监听写入设置文件信息
-ipcMain.on('globalSetSave',monitorDispose.globalSetSave)
+ipcMain.on('globalSetSave',MonitorDispose.globalSetSave)
 
 //监听读取设置文件信息
 
-ipcMain.on('getGlobalSet',monitorDispose.getGlobalSet)
+ipcMain.on('getGlobalSet',MonitorDispose.getGlobalSet)
 
 //删除临时文件下的所有文件
-ipcMain.on("clearTempAll",(event,arg)=>{monitorDispose.clear_Temp_File()})
+ipcMain.on("clearTempAll",(event,arg)=>{MonitorDispose.clear_Temp_File()})
 
 //使用ffmpeg进行转码率
-ipcMain.on("ffpegTranscoding",monitorDispose.ipc_ffmpeg_transcoding)
+ipcMain.on("ffpegTranscoding",MonitorDispose.ipc_ffmpeg_transcoding)
 
 
 //开启一个http服务,用于音乐播放服务
-const musicServer = new musicHttpServer()
+const musicServer = new MusicHttpServer()
 musicServer.startServer('userFile/temp')

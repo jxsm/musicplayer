@@ -13,7 +13,7 @@ const tempPath = "./userFile/temp/";//临时文件夹
 /**
  * 处理一些文件
  */
-class monitorDispose{
+class MonitorDispose{
 
     /**
      * 获取一个文件夹下指定类型的音乐的信息
@@ -233,7 +233,7 @@ function setMusicInfo(infos){
 
 
 module.exports = {
-  monitorDispose
+  MonitorDispose
 }
 
 
