@@ -33,7 +33,13 @@ export default{
         //将数据转换为对象
         const infosObj = JSON.parse(infos)
         //获取当前播放模式
-        this.pattern = infosObj.playMode
+        try{
+            this.pattern = infosObj.playMode
+        }
+        catch{
+            this.pattern = 1
+        }
+        
 
         //设置监听公共变量的更改
         addEventListener('globalStore:playMode',(e)=>{
@@ -52,7 +58,6 @@ export default{
 <style scoped>
 .pattern{
     width: 20px;
-    height: 20px;
 }
 
 .pattern svg{

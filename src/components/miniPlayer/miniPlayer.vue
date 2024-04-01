@@ -3,7 +3,7 @@
         <div class="mainBox">
             <div class="upBox" ref="upBox" :style="upBoxStyle" >
                 <div class="songCover" >
-
+                    <img :src="imgSrc"/>
                 </div>
                
 
@@ -36,6 +36,16 @@
                 </div>
 
 
+                <!--音量控件-->
+                <div class="volumeBox" title="调节音量" ref="volumeBox">
+                    <adjustVolume class="barAdjustVolume" :muteVolume="muteVolume" @noMuteVolume=" muteVolume= false" @muteVolume="mute(true)" :isShow="showAdjustVolume" :mouseOut="mouseOut" :stopMouseOutTime="stopMouseOutTime"></adjustVolume>
+                    <div @mouseenter="alterAdjustVolume(true)" @dblclick="muteVolume?mute(false):mute(true)" @mouseleave="mouseOut" >
+                        <div class="slash" v-if="muteVolume"></div>
+                        <svg  t="1704266368648" class="miniPlSvgaSvg" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="6314" id="mx_n_1704266368648" width="200" height="200"><path d="M619.5 1004.595c-9.6 0-19.3-1.1-29-3.4l-6.8-1.6-328.3-226.3c-7.2-3.1-15.1-4-22.9-2.8l-6.1 0.5h-98.5c-64.5 0-127.9-67.4-127.9-136.2v-249.2c0-62.2 56.2-111 127.9-111h96.4c9.4-1.2 18.1-5 25.4-11.1l2.1-1.6 331.5-237.2 7-1.7c9.4-2.3 19-3.5 28.7-3.6 32.7-0.1 64.7 12.5 88.5 35.9 23.8 23.4 37 54.6 37.2 88v736.7c0 9.6-1.2 19.2-3.4 28.5-13.7 57.4-65.2 96.1-121.8 96.1z m-5.8-74.8c24.8 2.8 49.1-13.4 55.1-38.6 0.9-3.7 1.3-7.5 1.4-11.3v-736.4c-0.1-13.2-5.4-25.8-15-35.2-9.5-9.3-22-14.5-35.3-14.5-2.3 0.1-3.9 0.1-5.8 0.3l-318 227.6c-19 15.4-41.8 24.8-66.2 27.2l-3.6 0.2h-98.4c-22.2 0-53.4 11.3-53.4 36.5v249.3c0 27.1 29.9 61.7 53.4 61.7h95.7c23-3.2 46 0.6 66.9 10.9l4.6 2.7 318.6 219.6zM874.9 796.895c-9.5 0-19.1-3.6-26.3-10.9-14.5-14.5-14.5-38.1 0-52.7 66.1-66.1 101-143.1 101-223s-34.9-156.9-101-223c-14.5-14.5-14.5-38.1 0-52.7s38.1-14.5 52.7 0c80.3 80.3 122.8 175.6 122.8 275.6 0 100-42.5 195.3-122.8 275.6-7.3 7.5-16.9 11.1-26.4 11.1z" p-id="6315"></path></svg>
+                    </div>
+                    
+                </div>
+
             </div>
         </div>
     </div>
@@ -44,13 +54,24 @@
 <script>
 import playMode from "./playMode.vue"
 import playbackMode from "./playbackMode.vue"
+import {alterGlobalStore,getGlobalStore} from '../../assets/globalStore.js'
+import adjustVolume from "./adjustVolume.vue"
+import {MusicManagement} from "../../js/musicManagement.js"
+const NocoverImg = 'img/Nocover.png'
 export default{
     data(){
         return{
             pattern:1,//播放模式
             miniPlayerWaiBoxStyle :{},//miniPlayerWaiBox的样式
             upBoxStyle :{},//upBox的样式
-            playModeSelect:false
+            playModeSelect:false,//是否显示播放模式选择
+            showAdjustVolume:false,//是否显示音量调节
+            muteVolume:false,//是否静音
+            recordVolume:0,//音量记录
+            shiftOutTimeID:0,//鼠标移出计时器记录
+            isPlaying:false,//是否在播放
+            songName:"未知",//当前的歌曲名
+            imgSrc:NocoverImg,//歌曲封面突破
         }
     },
     methods:{
@@ -61,25 +82,122 @@ export default{
         resizeFn(){
             const upBoxWidth =  this.$refs.upBox.offsetWidth
             const upBoxHeight =  this.$refs.upBox.offsetHeight
+            const ratios = upBoxWidth/upBoxHeight
+
             //根据元素的大小判断看需不需要隐藏小播放器
-            if(this.showMiniPlayer && (upBoxWidth<330 || upBoxHeight<230)){
-                this.$emit('hideSmallPlayer',false)
-            }
-            else if(!this.showMiniPlayer && upBoxWidth>=330 && upBoxHeight>=230){
+            if(ratios.toFixed(2) >= 1.4 && ratios.toFixed(2) <= 1.67 ){
                 this.$emit('hideSmallPlayer',true)
+            }
+            else {
+                this.$emit('hideSmallPlayer',false)
             }   
             //取最小值
             const min = upBoxWidth>upBoxHeight?upBoxHeight:upBoxWidth
             //设置公共变量到upBoxWidth上
             this.upBoxStyle["--minWidth"] = (min-20+'px')
         },
-      
+        alterAdjustVolume(isShow){
+            this.showAdjustVolume = isShow
+        },
+          /**
+         * 静音事件
+         * @param {*} state 是否静音
+         */
+        mute(state){
+            if(state){
+                //静音
+                const v = getGlobalStore('musicVolume')
+                if(v>0){
+                    this.recordVolume = v
+                }
+                alterGlobalStore('musicVolume',0,true)
+                this.muteVolume = true
+            }else{
+                //恢复音量
+                alterGlobalStore('musicVolume',this.recordVolume,true)
+                this.muteVolume = false
+            }
+           
+        },
+         /**
+         * 鼠标移出更改音量的位置
+         */
+         mouseOut(){
+            this.stopMouseOutTime()
+            this.shiftOutTimeID =  setTimeout(()=>{
+                this.alterAdjustVolume(false)
+                this.shiftOutTimeID = 0
+            },400)
+        },
+        /**
+         * 停止鼠标移出的计时器事件
+         */
+         stopMouseOutTime(){
+            if(this.shiftOutTimeID){
+                clearTimeout(this.shiftOutTimeID)
+                this.shiftOutTimeID = 0
+            }
+        },
+        /**
+         * 播放音乐
+         */
+        startMusic(){
+            MusicManagement.paly()
+            this.isPlaying = true
+        },
+        /**
+         * 停止播放音乐
+         */
+         stopMusic(){
+            MusicManagement.stop()
+            this.isPlaying = false
+        },
+         /**
+         * 当数据发生变化的时候执行
+         * @param {*} e 
+         */
+         dataChange(e){
+            switch(e.key){
+                case "MusicIsPlay":
+                    this.isPlaying = e.newValue
+                    break;
+                case 'MusicManagement_info':
+                 musicManagement_info(this)
+                 break;  
+        }
+
+        function musicManagement_info(_this){
+            //当前音乐信息发生变化时，更改播放控件中的数据
+                
+                const newValue = JSON.parse(e.newValue)
+               
+                
+             
+                if(newValue.nowMusicName) _this.songName = newValue.nowMusicName;
+
+                if(newValue.img){
+                    let uint8Data = new Uint8Array(Object.values(newValue.img.data));
+                    let blob = new Blob([uint8Data], { type: 'image/png' });
+                    _this.imgSrc = URL.createObjectURL(blob);
+                }else{
+                    _this.imgSrc = NocoverImg;
+                }
+          }
+    }
 
     },
     mounted(){
         //监听页面大小改变事件
         this.resizeFn()
         window.addEventListener('resize',this.resizeFn)
+
+        if(getGlobalStore("musicVolume") == 0) {
+            this.mute(true)
+        }
+        
+        //监听当前音乐的数据变化
+        addEventListener('setItemEvent',this.dataChange)
+
     },
     props:{
         showMiniPlayer:{
@@ -99,7 +217,8 @@ export default{
     },
     components:{
         playMode,
-        playbackMode
+        playbackMode,
+        adjustVolume
     }
         
 }
@@ -143,6 +262,12 @@ export default{
     height: var(--minWidth);
     border-radius: 100%;
     background-color: black;
+    overflow: hidden;
+}
+
+.songCover img{
+    width: 100%;
+    height: 100%;
 }
 
 .musicInfo{
@@ -158,17 +283,18 @@ export default{
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: center;
+    justify-content: space-evenly;
 }
 
 .altPattern{
-    top: 0px;
-    transform: translateX(0px);
+    position: absolute;
+    bottom: 14%;
+    left: 12%;
 }
 
 .miniPlSvgaSvg{
-    width: 40px;
-    height: 40px;
+    width: 30px;
+    height: 30px;
     transition:fill 0.2s ;
     fill: var(--theme-colour);
 }
@@ -176,4 +302,29 @@ export default{
 .miniPlSvgaSvg:hover{
     fill: var(--adjacent-theme-colour);
 }
+
+.barAdjustVolume{
+    bottom: 14%;
+}
+
+
+/**音频斜杠 */
+.slash{
+    transition: background-color 0.2s;
+    position: absolute;
+    bottom: 85px;
+    width: 30px;
+    height: 6px;
+    background-color: var(--theme-colour);
+    border-radius: 15px;
+    transform: rotateZ(40deg) translateY(-5%);
+}
+
+.volumeBox:hover .slash{
+    background-color: var(--adjacent-theme-colour);
+}
+.volumeBox:hover svg{
+    fill: var(--adjacent-theme-colour);
+}
+
 </style>

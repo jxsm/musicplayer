@@ -47,7 +47,13 @@ export default {
             }
         },
         volume(newValue){
-            alterGlobalStore('musicVolume',newValue,true)
+            let setValue = newValue
+
+            if(setValue > 100) setValue = 100;
+
+            if(setValue<0) setValue = 0;
+
+            alterGlobalStore('musicVolume',setValue,true)
              //设置音量条应该对应的位置
               this.controlStripStyle.height = (newValue+8) +'%'
              if(newValue <= 2){

@@ -376,6 +376,10 @@ export default{
         //监听当前音乐的数据变化
         addEventListener('setItemEvent',this.dataChange)
 
+        if(getGlobalStore("musicVolume") == 0) {
+            this.mute(true)
+        }
+
     }
 
     
