@@ -36,7 +36,10 @@ export default {
             }
             this.progressBarStyle.transition = 'width 0s'
 
-            this.progressBarBoxStyle.height = this.PROGRESSBARBOXHEIGHT.MAX //设置进度条的宽度
+            if(e.target.id === "progressBarBox" || e.target.id === "progressBar"){
+                this.progressBarBoxStyle.height = this.PROGRESSBARBOXHEIGHT.MAX //设置进度条的宽度
+            }
+           
         },
         /**
          * 鼠标抬起的时候执行
@@ -50,7 +53,6 @@ export default {
                     this.setProgressBar(e)
                 }
                 this.progressBarStyle.transition = 'width 0.2s'
-
                 this.progressBarBoxStyle.height = this.PROGRESSBARBOXHEIGHT.MIN
         },
         /**

@@ -12,9 +12,8 @@
     
     <!--设置页面-->
     <global_set @goset="startSet" v-if="showSet" :show="GlobalSetAnimation" ></global_set>
-     <!--主页面-->
+    <!--主页面-->
     <MainInterface ></MainInterface>
-
 </template>
 
 
@@ -182,6 +181,7 @@ export default {
             //加载设置文件
             window.ipcRenderer.send('getGlobalSet',1)
 
+
             function setGlobalSet(event,data){
                 void event
 
@@ -308,6 +308,7 @@ function SetItemEvent(){
 </script>
 
 <style scoped>
+
 .shadeBox{
     top: 0;
     width: 100%;

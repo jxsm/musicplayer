@@ -1,7 +1,6 @@
 //FIXME: 该组件用于管理全局播放的音乐
 import localForage from "localforage"
-
-
+import {proceedHint} from "../../public/static/proceedHint"
 
 
 /**
@@ -457,6 +456,11 @@ class MusicManagement{
     }
 
 
+    static setUri(uri){
+        if(!uri) return;
+        this.URL_PATH =  uri
+    }
+
 
 
 
@@ -474,8 +478,22 @@ window.onload = ()=>{
 MusicManagement.startMonitor() //开启监听
 
 
+window.ipcRenderer.send('getMusicServerPort')
 
 
+window.ipcRenderer.on('getMusicServerPort',setUrl)
 
+
+function setUrl(event,data){
+    void event;
+    if(data){
+        MusicManagement.setUri("http://localhost:"+data)
+    }
+    else{
+        proceedHint.warning('端口被占用,无法开启服务')
+    }
+    
+    window.ipcRenderer.removeListener('getMusicServerPort',setUrl)
+}
 
 export {MusicManagement};

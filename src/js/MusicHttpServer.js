@@ -1,5 +1,4 @@
 var net = require('net')
-const path = require('path');
 
 class MusicHttpServer {
 
@@ -58,7 +57,7 @@ class MusicHttpServer {
      * @returns {Promise(resolve,reject)}
      */
      findPort(startPort,endPort) {
-      if(this.port !== -1){
+      if(this.port){
         return new Promise((resolve)=>{
           resolve(this.port)
         })

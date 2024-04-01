@@ -37,6 +37,9 @@ async function createWindow() {
     height: 600,
     minWidth:800,
     minHeight:560,
+    transparent: true,
+    backgroundColor: '#00000000',
+    frame: false,
     webPreferences: {
       // Use pluginOptions.nodeIntegration, leave this alone
       // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
@@ -198,3 +201,7 @@ ipcMain.on("ffpegTranscoding",MonitorDispose.ipc_ffmpeg_transcoding)
 //开启一个http服务,用于音乐播放服务
 const musicServer = new MusicHttpServer()
 musicServer.startServer('userFile/temp')
+
+ipcMain.on('getMusicServerPort',(event)=>{
+  event.sender.send('getMusicServerPort',musicServer.getPort())
+})
