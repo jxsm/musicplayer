@@ -5,6 +5,8 @@ let  globalStore = {
    'currentPath':{},//当前选中的文件路径
 }
 
+let firstTime = true
+
 /**
  * 更改全局变量的指定方法,
 * 并可以选择是否通知其他组件
@@ -49,6 +51,11 @@ function alterGlobalStore(key,value,inform = false){
  * @param {String} key 
  */
 function getGlobalStore(key){
+   if(firstTime){
+      localLoading()
+      firstTime = false
+   }
+   
     return globalStore[key]
 }
 
@@ -78,6 +85,15 @@ function save(){
    localStorage.setItem("globalStore",JSON.stringify(globalStore))
 }
 
+/**
+ * 加载缓存中的数据到内存中
+ */
+function localLoading(){
+   const data =  localStorage.getItem("globalStore")
+   if(data){
+      globalStore = JSON.parse(data)
+   }
+}
 
 
 

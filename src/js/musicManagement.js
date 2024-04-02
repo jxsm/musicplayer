@@ -53,7 +53,7 @@ class MusicManagement{
      * 设置音乐播放列表
      * 可在如切换歌单的时候使用，这将作为歌曲的播放顺序列表进行播放
      * - confuseMusicList 如果您想要随机打乱该列表可以使用该方法
-     * @param {Array} data 列表信息 
+     * @param {Array<MusicListInfor>} data 列表信息 
      */
     static setMusicList(data){
         if(typeof(data) != "object"){
@@ -64,6 +64,19 @@ class MusicManagement{
         this.#info.musicList = data;
 
         this.saveInfo()
+    }
+
+    /**
+     * 在音乐类表中添加东西
+     * @param {MusicListInfor} info 
+     */
+    static addMusicList(info){
+        if(Object.getPrototypeOf(info).constructor === MusicListInfor){
+            this.#info.musicList.push(info);
+        }
+        else{
+            throw new Error("传入的需要是MusicListInfor的数据对象");
+        }
     }
 
 
@@ -496,4 +509,70 @@ function setUrl(event,data){
     window.ipcRenderer.removeListener('getMusicServerPort',setUrl)
 }
 
-export {MusicManagement};
+
+window.addEventListener('globalStore:currentPath',(e)=>{
+    const keyName =  Object.keys(e.detail.value)
+    for(let i in keyName){
+        const data = new MusicListInfor()
+        data.setTypeIndex(i)
+        MusicManagement.addMusicList(data)
+    }
+})
+
+
+/**
+ * 音乐列表信息类
+ */
+class MusicListInfor{
+    #index = void 0;//索引,只有在当type = index 的时候才会有值,否则为void 0 
+    #type = void 0;//数据来源
+    #value = void 0;//数据,只有当type = data 的时候这里才会有值,否则为void 0 
+    #maxValue = 0;//最大长度,从1开始,如果为0则说明无数据
+    /**
+     * 设置type类型为index的数据
+     * 该数据为音乐信息在indexDB中的索引
+     * @param {string} key 在indexDB中的key
+     */
+    setTypeIndex(key){
+        this.#type = 'index'
+        this.#index = key
+
+        localForage.getItem(key).then((data)=>{
+            if(!data){
+                console.warn(`indexDB中:${key}为空(设置音乐类表时发生错误)\n请检查key值传入是否正确,如果确实为空数据可无视,不影响使用`)
+                return
+            }
+            else{
+                this.#maxValue  = Object.keys(data).length
+            }
+
+        })
+        .catch((e)=>{
+            console.error(e)
+        })
+    }
+
+    /**
+     * 设置type为data的数据
+     * 该数据为音乐文件被解析后的数据，
+     * 在设置前请检查数据是否正确,这会影响到播放的
+     * @param {Object} data 
+     */
+    setTyepData(data){
+        //检查一些重要的参数是否携带
+        if(data.position && data.type && data.path){
+            this.#value = data
+            this.#type = 'data'
+            this.#maxValue = 1
+        }
+        else{
+            throw new Error('数据不完整无法创将')
+        }
+    }
+    
+}
+
+
+
+
+export {MusicManagement,MusicListInfor};

@@ -3,6 +3,9 @@
         <div class="mainBox">
             <div class="upBox" ref="upBox" :style="upBoxStyle" >
                 <div class="songCover" >
+                    <div class="centralBox"> 
+                        <div class="centralCircle"></div>
+                    </div>
                     <img :src="imgSrc"/>
                 </div>
                
@@ -251,13 +254,13 @@ export default{
 .upBox{
     width: 100%;
     height: 40%;
-    border: 1px solid red;
     display: flex;
     align-items: center;
     justify-content: space-around;
 }
 
 .songCover{
+    position: absolute;
     width: var(--minWidth);
     height: var(--minWidth);
     border-radius: 100%;
@@ -325,6 +328,24 @@ export default{
 }
 .volumeBox:hover svg{
     fill: var(--adjacent-theme-colour);
+}
+
+/** 中心圆 */
+.centralCircle{
+    width: 30px;
+    height: 30px;
+    background-color: black;
+    position: absolute;
+    border-radius: 100%;
+}
+
+.centralBox{
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 </style>
