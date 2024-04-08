@@ -78,7 +78,8 @@ function getFolderList(path,names) {
           obj.name = fileName; // 文件名
           obj.path = filePath; // 文件绝对路径
           obj.type = fileType; // 文件类型
-          obj.position = "local" //设置位置信息
+          obj.position = "local"; //设置位置信息
+          obj.fileLocation = path; // 设置文件位置信息
           filesList.push(obj);
         }
       }

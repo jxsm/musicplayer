@@ -7,7 +7,7 @@
             <p>时长</p>
         </div>
         <div v-for="(i,t) in musicInformation" :key="t" class="info_list_box">
-            <songInfo v-for="(item,index) in i " :key="index" :sequence="index" :infos="item" :songHeight="songHeight" v-show="temp" @clickedOn="clickedOn"></songInfo>
+            <songInfo v-for="(item,index) in i " :key="index" :indexName="t" :sequence="index" :infos="item" :songHeight="songHeight" v-show="temp" @clickedOn="clickedOn"></songInfo>
         </div>
         
         
@@ -19,6 +19,7 @@ import songInfo from "./songInfo.vue"
 import {GetMusicInfo} from "../../js/MusicInformationAcquisition"
 import localForage from "localforage"
 import {MusicManagement} from "../../js/musicManagement.js"
+
 
 export default {
     data(){
@@ -82,42 +83,8 @@ export default {
          * 当有歌曲被点击时或执行这里的函数
          * @param {Object} infos 音乐信息
          */
-        clickedOn(infos){
-            MusicManagement.addHistoricalRecord(infos)
-            
-
-            //播放音乐
-
-
-            //先判断格式
-            if(this.noTranscoding.indexOf(infos.type) === -1){
-                this.musicId = MusicManagement.ffpegTranscoding(infos,"mp3")
-            }
-            else{
-                let artists
-                try{
-                    artists = JSON.parse(JSON.stringify(infos.infos.artists))
-                }
-                catch(e){
-                    artists = undefined
-                }
-
-                const name = infos.infos.title || infos.name
-                
-
-                let img
-
-                try{
-                    img = infos.infos.picture[0]
-                }catch{
-                    img = void 0
-                }
-
-                MusicManagement.paly(infos.path,name,artists,img)
-            }
-            
-
-
+        clickedOn(infos,sequence){
+            MusicManagement.play(infos,sequence)
         }
     },
     components:{
@@ -149,10 +116,9 @@ export default {
         },
         showBar(){
             this.resizeFn()
-        }
+        },      
     },
     mounted(){
-
         //监听窗口发生变化
         window.addEventListener('resize',this.resizeFn)
 
@@ -178,8 +144,6 @@ export default {
                     })
                     pathListIndex++;
                 }
-
-                
             },300)
         })
 

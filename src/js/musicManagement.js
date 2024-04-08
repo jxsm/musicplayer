@@ -15,9 +15,11 @@ class MusicManagement{
         nowMusicName:"",//当前音乐名称
         nowMusicUri:"",//当前音乐路径
         nowMusicInfo:{},//当前音乐信息
-        musicList:[],//音乐列表
+        nowIndex:0,//当前播放的索引
+        fileLocation:"",//文件夹位置
     }
 
+    static #musicList = []//音乐播放列表
     
 
 
@@ -48,12 +50,14 @@ class MusicManagement{
 
     static #stopTimeId = 0
 
+    static noTranscoding = ['wav','mp3','ogg','aac','webm']
+
 
     /**
      * 设置音乐播放列表
      * 可在如切换歌单的时候使用，这将作为歌曲的播放顺序列表进行播放
      * - confuseMusicList 如果您想要随机打乱该列表可以使用该方法
-     * @param {Array<MusicListInfor>} data 列表信息 
+     * @param {Array} data 列表信息 
      */
     static setMusicList(data){
         if(typeof(data) != "object"){
@@ -61,22 +65,28 @@ class MusicManagement{
             console.error("music list must be an array(setMusicList传入的数据需要是列表)");
             return;
         }
-        this.#info.musicList = data;
-
-        this.saveInfo()
+        this.#musicList = data;
+        this.saveMusicList();
     }
 
     /**
      * 在音乐类表中添加东西
-     * @param {MusicListInfor} info 
+     * @param {{
+     * path,
+     * indexName,
+     * index
+     * }} info 
      */
     static addMusicList(info){
-        if(Object.getPrototypeOf(info).constructor === MusicListInfor){
-            this.#info.musicList.push(info);
-        }
-        else{
-            throw new Error("传入的需要是MusicListInfor的数据对象");
-        }
+        this.#musicList.push(info);
+        this.saveMusicList();
+    }
+
+    /**
+     * 保存音乐播放列表
+     */
+    static saveMusicList(){
+        localForage.setItem("musicList",this.#musicList)
     }
 
 
@@ -84,13 +94,21 @@ class MusicManagement{
      * 打乱音乐列表
      */
     static confuseMusicList(){
-        if(!this.#info.musicList || !this.#info.musicList.length) return;
-        for(let i = this.#info.musicList.length - 1;i>0;i--){
+        if(!this.#musicList || !this.#musicList.length) return;
+        for(let i = this.#musicList.length - 1;i>0;i--){
             const randomIndex = Math.floor(Math.random()*(i+1));
-            [this.#info.musicList[i],this.#info.musicList[randomIndex]] = [this.#info.musicList[randomIndex],this.#info.musicList[i]];
+            [this.#musicList[i],this.#musicList[randomIndex]] = [this.#musicList[randomIndex],this.#musicList[i]];
         }
-        this.saveInfo()
+        this.saveMusicList();
         
+    }
+
+    /**
+     * 清空播放列表
+     */
+    static clearMusicList(){
+        this.#musicList = [];
+        this.saveInfo()
     }
 
     /**
@@ -106,7 +124,9 @@ class MusicManagement{
      */
     static setInfoInlocalStorage(){
         const data = localStorage.getItem('MusicManagement_info')
+        
         if(data){
+            
             this.#info =  JSON.parse(data)
             localStorage.setItem("MusicManagement_info",JSON.stringify(this.#info))
             
@@ -251,7 +271,7 @@ class MusicManagement{
                 console.error(data[2])
             }
             else if(data[1] == 'ok'){
-                MusicManagement.paly(data[2],data[3].name,data[3].artists,data[3].img)
+                MusicManagement.pathPlay(data[2],data[3].name,data[3].artists,data[3].img)
             }
         }
     }
@@ -280,7 +300,7 @@ class MusicManagement{
         })
 
         this.#audioElement.addEventListener('ended',()=>{
-            void 0 //TODO: 播放结束切换歌曲
+           this.playNext()
         })
 
         this.#audioElement.addEventListener('timeupdate',()=>{
@@ -314,23 +334,32 @@ class MusicManagement{
     }
 
     /**
-     * 播放音乐,如果不传递path则默认播放当前歌曲
-     * @param {string} path 路径如果直接输入名称则默认在temp的根目录中查找
-     * @param {string} name 播放名称
-     * @param {Array} artists 作者人列表
+     * 恢复音量,恢复到localStorage中记录的音量的值
      */
-    static paly(path,name,artists,img){
-
+    static recoverVolume(){
         //先清除上一个音量控制器的延迟
         if(this.#stopTimeId ){
             clearTimeout(this.#stopTimeId)
         }
+
 
         //获取当前的音量
         const infos = JSON.parse(localStorage.getItem('globalStore'))
 
         this.setVolume(infos.musicVolume/100,1000)
 
+    }
+
+    /**
+     * 播放音乐,如果不传递path则默认播放当前歌曲
+     * @param {string} path 路径如果直接输入名称则默认在temp的根目录中查找
+     * @param {string} name 播放名称
+     * @param {Array} artists 作者人列表
+     * @param {Int8Array} img 图片信息 
+     * @param {string} fileLocation 文件路径
+     */
+    static pathPlay(path,name,artists,img,fileLocation,sequence){
+        this.recoverVolume()
 
         if(!path){
             if(!this.#audioElement.src) return;
@@ -353,9 +382,51 @@ class MusicManagement{
        this.#info.nowMusicUri = path
        this.#info.nowMusicInfo.artists = artists?artists:"未知"
        this.#info.img = img
+       this.#info.fileLocation = fileLocation
+       this.#info.nowIndex = this.getPathInMusicList(fileLocation,sequence)
        this.saveInfo();
+    }
 
-       
+
+    /**
+     * 播放方法,使用该方法进行播放会更新传入的格式来判断是否需要转码
+     * @param {Object} infos 音乐信心
+     * @param {int} sequence 音乐在页面中列表中的第几个
+     */
+    static play(infos,sequence){
+        if(infos === undefined && sequence == undefined){
+            this.recoverVolume()
+            this.#palyNow();
+        }
+        else{
+            this.addHistoricalRecord(infos)
+            //先判断格式
+            if(this.noTranscoding.indexOf(infos.type) === -1){
+                this.musicId = MusicManagement.ffpegTranscoding(infos,"mp3")
+            }
+            else{
+                let artists
+                try{
+                    artists = JSON.parse(JSON.stringify(infos.infos.artists))
+                }
+                catch(e){
+                    artists = undefined
+                }
+
+                const name = infos.infos.title || infos.name
+                
+
+                let img
+
+                try{
+                    img = infos.infos.picture[0]
+                }catch{
+                    img = void 0
+                }
+
+                this.pathPlay(infos.path,name,artists,img,infos.fileLocation, sequence)
+            }
+        }
     }
 
   
@@ -398,6 +469,60 @@ class MusicManagement{
         return this.#audioElement.volume;
     }
 
+    /**
+     * 播放下一首歌曲
+     */
+    static playNext(){
+        if(this.#musicList.length-1 == this.#info.nowIndex){
+            //已经是最后一首了
+            return;
+        }
+        else{
+            this.getNextMusic()
+            .then((e)=>{
+                this.play(e,this.#info.nowIndex+1)
+                this.#info.nowIndex +=1
+            })
+            
+        }
+    }
+
+    /**
+     * 获取下一首歌曲
+     * @returns 
+     */
+    static getNextMusic(){
+        if(this.#musicList.length-1 == this.#info.nowIndex){
+            //已经是最后一首了
+            return;
+        }
+        else{
+            const data = this.#musicList[this.#info.nowIndex+1]
+            return new Promise((resolve,reject)=>{
+                    localForage.getItem(data.indexName)
+                    .then(e=>{
+                        resolve(e[data.index])
+                    }).catch(e=>{
+                        reject(e)
+                    })
+                
+                
+            })
+        }
+    }
+
+
+    /**
+     * 获取指定文件夹下指定所以在音乐播放列表中的索引位置
+     * @param {*} path 
+     * @param {*} index 
+     * @returns {int}
+     */
+    static getPathInMusicList(path,index){
+        return this.#musicList.findIndex(e=>{
+            return e.index == index && e.indexName == 'musicListInfo:'+path
+        })
+    }
 
     /**
      * 设置音乐的音量
@@ -474,18 +599,9 @@ class MusicManagement{
         this.URL_PATH =  uri
     }
 
-
-
-
-
-
 }
 
-//页面加载完成后执行
-window.onload = ()=>{
-    MusicManagement.setInfoInlocalStorage()//读取缓存中的数据
-}
-
+MusicManagement.setInfoInlocalStorage()//读取缓存中的数据
 
 
 MusicManagement.startMonitor() //开启监听
@@ -511,68 +627,28 @@ function setUrl(event,data){
 
 
 window.addEventListener('globalStore:currentPath',(e)=>{
-    const keyName =  Object.keys(e.detail.value)
-    for(let i in keyName){
-        const data = new MusicListInfor()
-        data.setTypeIndex(i)
-        MusicManagement.addMusicList(data)
-    }
+   const paths =  Object.keys(e.detail.value)
+   MusicManagement.clearMusicList()
+   for(let i in paths){
+    localForage.getItem(`musicListInfo:${paths[i]}`)
+    .then(e=>{
+        for(let j = 0;j<e.length;j++){
+           const data =  {
+                indexName:`musicListInfo:${paths[i]}`,
+                index:j
+            }
+
+            MusicManagement.addMusicList(data)
+        }
+    })
+
+   }
+    
 })
 
 
-/**
- * 音乐列表信息类
- */
-class MusicListInfor{
-    #index = void 0;//索引,只有在当type = index 的时候才会有值,否则为void 0 
-    #type = void 0;//数据来源
-    #value = void 0;//数据,只有当type = data 的时候这里才会有值,否则为void 0 
-    #maxValue = 0;//最大长度,从1开始,如果为0则说明无数据
-    /**
-     * 设置type类型为index的数据
-     * 该数据为音乐信息在indexDB中的索引
-     * @param {string} key 在indexDB中的key
-     */
-    setTypeIndex(key){
-        this.#type = 'index'
-        this.#index = key
-
-        localForage.getItem(key).then((data)=>{
-            if(!data){
-                console.warn(`indexDB中:${key}为空(设置音乐类表时发生错误)\n请检查key值传入是否正确,如果确实为空数据可无视,不影响使用`)
-                return
-            }
-            else{
-                this.#maxValue  = Object.keys(data).length
-            }
-
-        })
-        .catch((e)=>{
-            console.error(e)
-        })
-    }
-
-    /**
-     * 设置type为data的数据
-     * 该数据为音乐文件被解析后的数据，
-     * 在设置前请检查数据是否正确,这会影响到播放的
-     * @param {Object} data 
-     */
-    setTyepData(data){
-        //检查一些重要的参数是否携带
-        if(data.position && data.type && data.path){
-            this.#value = data
-            this.#type = 'data'
-            this.#maxValue = 1
-        }
-        else{
-            throw new Error('数据不完整无法创将')
-        }
-    }
-    
-}
 
 
 
 
-export {MusicManagement,MusicListInfor};
+export {MusicManagement};

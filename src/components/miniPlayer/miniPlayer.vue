@@ -145,7 +145,7 @@ export default{
          * 播放音乐
          */
         startMusic(){
-            MusicManagement.paly()
+            MusicManagement.play()
             this.isPlaying = true
         },
         /**
