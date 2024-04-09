@@ -1,7 +1,7 @@
 //FIXME: 该组件用于管理全局播放的音乐
 import localForage from "localforage"
 import {proceedHint} from "../../public/static/proceedHint"
-
+import {getGlobalStore} from "../assets/globalStore"
 
 /**
  * 管理全局的音乐播放,所有有关播放的控制器都在该类中
@@ -64,7 +64,7 @@ class MusicManagement{
                 target[`TimeIdCachet${key}`] = setTimeout(()=>{
                     delete target[`TimeIdCachet${key}`]
                     delete target[key]
-                },2000)
+                },5000)
                 return target[key]
             }
             else{
@@ -75,7 +75,7 @@ class MusicManagement{
             target[`TimeIdCachet${key}`] = setTimeout(()=>{
                 delete target[`TimeIdCachet${key}`]
                 delete target[key]
-            },2000)
+            },5000)
             target[key] = value
             return true
         }
@@ -328,7 +328,13 @@ class MusicManagement{
         })
 
         this.#audioElement.addEventListener('ended',()=>{
-           this.playNext()
+            //这一首歌播放结束了,判读以下播放模式
+            if(getGlobalStore('playMode') == 3){
+                //单曲循环
+                this.#palyNow()
+                return;
+            }
+            this.playNext()
         })
 
         this.#audioElement.addEventListener('timeupdate',()=>{
@@ -408,13 +414,10 @@ class MusicManagement{
             this.saveInfo();
        },500)
        //播放
-       
-       
        //更新缓存数据
        this.#info.nowMusicName = name
        this.#info.nowMusicUri = path
        this.#info.nowMusicInfo.artists = artists?artists:"未知"
-       
        this.#info.fileLocation = fileLocation
        this.#info.nowIndex = this.getPathInMusicList(fileLocation,sequence)
        
@@ -505,7 +508,7 @@ class MusicManagement{
      * 播放下一首歌曲
      */
     static playNext(){
-        
+        //TODO: 向下播放会回到第一首歌,这是列表循环才有的功能,需要修复
         if(this.#musicList.length-1 == this.#info.nowIndex){
             //已经是最后一首了
             return;
