@@ -21,7 +21,7 @@ class MusicManagement{
 
     static #musicList = []//音乐播放列表
     
-
+    static palyNowTimeId = 0
 
     static playInfo ={
         nowTime:0,//当前时间
@@ -50,8 +50,36 @@ class MusicManagement{
 
     static #stopTimeId = 0
 
-    static noTranscoding = ['wav','mp3','ogg','aac','webm']
+    static noTranscoding = ['wav','mp3','ogg','aac','webm'] //不需要转码的文件类型
 
+
+
+    static #musicInfoListCache  = new Proxy((()=>{
+        let musicInfoListCache = {}
+        return musicInfoListCache
+    })(),{
+        get(target,key){
+            if(key in target){
+                clearTimeout(target[`TimeIdCachet${key}`])
+                target[`TimeIdCachet${key}`] = setTimeout(()=>{
+                    delete target[`TimeIdCachet${key}`]
+                    delete target[key]
+                },2000)
+                return target[key]
+            }
+            else{
+                return void 0
+            }
+        },
+        set(target,key,value){
+            target[`TimeIdCachet${key}`] = setTimeout(()=>{
+                delete target[`TimeIdCachet${key}`]
+                delete target[key]
+            },2000)
+            target[key] = value
+            return true
+        }
+    })
 
     /**
      * 设置音乐播放列表
@@ -131,7 +159,7 @@ class MusicManagement{
             localStorage.setItem("MusicManagement_info",JSON.stringify(this.#info))
             
             if(this.#info.nowMusicUri){
-                //TODO:
+                
                 let nowPath = this.#info.nowMusicUri;
                 if(!this.#info.nowMusicUri.startsWith("/")) nowPath =  '/' + this.#info.nowMusicUri;
                 nowPath = this.URL_PATH + nowPath
@@ -371,20 +399,25 @@ class MusicManagement{
         if(!path.startsWith("/")) nowPath =  '/' + path
         nowPath = this.URL_PATH + nowPath
 
-       
+       clearTimeout(this.palyNowTimeId)
        //设置路径
-       this.#audioElement.src = nowPath;
+       this.palyNowTimeId = setTimeout(()=>{
+            this.#audioElement.src = nowPath;
+            this.#info.img = img
+            this.#palyNow()
+            this.saveInfo();
+       },500)
        //播放
-       this.#palyNow()
+       
        
        //更新缓存数据
        this.#info.nowMusicName = name
        this.#info.nowMusicUri = path
        this.#info.nowMusicInfo.artists = artists?artists:"未知"
-       this.#info.img = img
+       
        this.#info.fileLocation = fileLocation
        this.#info.nowIndex = this.getPathInMusicList(fileLocation,sequence)
-       this.saveInfo();
+       
     }
 
 
@@ -423,7 +456,6 @@ class MusicManagement{
                 }catch{
                     img = void 0
                 }
-
                 this.pathPlay(infos.path,name,artists,img,infos.fileLocation, sequence)
             }
         }
@@ -473,6 +505,7 @@ class MusicManagement{
      * 播放下一首歌曲
      */
     static playNext(){
+        
         if(this.#musicList.length-1 == this.#info.nowIndex){
             //已经是最后一首了
             return;
@@ -481,32 +514,85 @@ class MusicManagement{
             this.getNextMusic()
             .then((e)=>{
                 this.play(e,this.#info.nowIndex+1)
-                this.#info.nowIndex +=1
             })
             
+        }
+        console.log("这一歌的索引:",this.#info.nowIndex+1)
+    }
+
+    /**
+     * 播放上一首歌曲
+     */
+    static previousMusic(){
+        //TODO:播放时索引有误
+        if(this.#info.nowIndex == 0){
+            //已经是第一首了
+            return;
+        }
+        else{
+            this.getPreviousMusic()
+            .then((e)=>{
+                this.play(e,this.#info.nowIndex-1)
+            })
         }
     }
 
     /**
      * 获取下一首歌曲
-     * @returns 
+     * @returns {Promise}
      */
     static getNextMusic(){
         if(this.#musicList.length-1 == this.#info.nowIndex){
             //已经是最后一首了
-            return;
+            return new Promise((resolve)=>{
+                resolve(void 0)
+            });
         }
         else{
             const data = this.#musicList[this.#info.nowIndex+1]
             return new Promise((resolve,reject)=>{
+                if(this.#musicInfoListCache[data.indexName]){
+                    resolve(this.#musicInfoListCache[data.indexName][data.index])
+                }
+                else{
+                    //如果缓存中没有数据则去读取数据
+                    localForage.getItem(data.indexName)
+                    .then(e=>{
+                        this.#musicInfoListCache[data.indexName] = e
+                        resolve(e[data.index])
+                    }).catch(e=>{
+                        reject(e)
+                    })
+                }
+            })
+        }
+    }
+
+
+    /**
+     * 获取上一首歌曲
+     * @returns {Promise}
+     */
+    static getPreviousMusic(){
+        if(this.#info.nowIndex == 0){
+            //已经是最后一首了
+            return new Promise((resolve)=>{
+                resolve(void 0)
+            });
+        }
+        else{
+            const data = this.#musicList[this.#info.nowIndex-1]
+            return new Promise((resolve,reject)=>{
+                
+                    if(this.#musicInfoListCache[data.indexName]){
+                        resolve(this.#musicInfoListCache[data.indexName][data.index])
+                    }
                     localForage.getItem(data.indexName)
                     .then(e=>{
                         resolve(e[data.index])
                     }).catch(e=>{
                         reject(e)
                     })
-                
-                
             })
         }
     }
@@ -514,8 +600,8 @@ class MusicManagement{
 
     /**
      * 获取指定文件夹下指定所以在音乐播放列表中的索引位置
-     * @param {*} path 
-     * @param {*} index 
+     * @param {string} path 
+     * @param {int} index 
      * @returns {int}
      */
     static getPathInMusicList(path,index){
@@ -629,19 +715,29 @@ function setUrl(event,data){
 window.addEventListener('globalStore:currentPath',(e)=>{
    const paths =  Object.keys(e.detail.value)
    MusicManagement.clearMusicList()
-   for(let i in paths){
-    localForage.getItem(`musicListInfo:${paths[i]}`)
-    .then(e=>{
-        for(let j = 0;j<e.length;j++){
-           const data =  {
-                indexName:`musicListInfo:${paths[i]}`,
-                index:j
-            }
-
-            MusicManagement.addMusicList(data)
+   const lode = ()=>{
+        for(let i in paths){
+            localForage.getItem(`musicListInfo:${paths[i]}`)
+            .then(e=>{
+                for(let j = 0;j<e.length;j++){
+                const data =  {
+                        indexName:`musicListInfo:${paths[i]}`,
+                        index:j
+                    }
+        
+                    MusicManagement.addMusicList(data)
+                }
+            })
+        
         }
-    })
+   }
 
+   try{
+    lode()
+   }catch{
+    setTimeout(()=>{
+        lode()
+    },1000)
    }
     
 })

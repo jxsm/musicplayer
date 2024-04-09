@@ -16,7 +16,7 @@
                 <!--播放模式-->
                <playbackMode  @click="playModeSelect = !playModeSelect"  ></playbackMode>
                 <!--上一首-->
-                <div title="上一首" >
+                <div title="上一首" @click="previousMusic">
                     <svg t="1704249396846"  class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="15208" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200"><path d="M518.4 598.4c-19.2-19.2-41.6-51.2-41.6-86.4 0-32 19.2-57.6 41.6-86.4l275.2-281.6c32-32 32-86.4 0-121.6-16-12.8-38.4-22.4-60.8-22.4s-41.6 9.6-60.8 25.6L256 451.2c-32 32-32 86.4 0 121.6l419.2 425.6c32 32 86.4 32 118.4 0s32-86.4 0-121.6l-275.2-278.4z"  p-id="15209"></path></svg>
                 </div>
                 <!--播放/暂停-->
@@ -27,7 +27,7 @@
                     <svg  @click="stopMusic" t="1704249356127" v-show="isPlaying" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="12895" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200"><path d="M426.666667 138.666667v746.666666a53.393333 53.393333 0 0 1-53.333334 53.333334H266.666667a53.393333 53.393333 0 0 1-53.333334-53.333334V138.666667a53.393333 53.393333 0 0 1 53.333334-53.333334h106.666666a53.393333 53.393333 0 0 1 53.333334 53.333334z m330.666666-53.333334H650.666667a53.393333 53.393333 0 0 0-53.333334 53.333334v746.666666a53.393333 53.393333 0 0 0 53.333334 53.333334h106.666666a53.393333 53.393333 0 0 0 53.333334-53.333334V138.666667a53.393333 53.393333 0 0 0-53.333334-53.333334z" p-id="12896"></path></svg>
                 </div>
                 <!--下一首-->
-                <div title="下一首">
+                <div title="下一首" @click="playNext">
                     <svg t="1704249438522" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2712" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200"><path d="M268.8 876.8c-32 32-32 86.4 0 121.6 32 32 86.4 32 118.4 0l419.2-425.6c32-32 32-86.4 0-121.6L387.2 25.6c-16-16-38.4-25.6-60.8-25.6S284.8 9.6 265.6 25.6c-32 32-32 86.4 0 121.6l275.2 281.6c22.4 25.6 41.6 51.2 41.6 86.4s-22.4 64-41.6 86.4l-272 275.2z"  p-id="2713"></path></svg>
                 </div>
 
@@ -353,9 +353,13 @@ export default{
             window.removeEventListener('mouseup',this.barMouseup)
             window.removeEventListener('mousedown',this.barMousedown)
             this.listeningState = false
+        },
+        previousMusic(){
+            MusicManagement.previousMusic()
+        },
+        playNext(){
+            MusicManagement.playNext()
         }
-
-
     },
     mounted(){
         if(this.isShow && !this.listeningState){
