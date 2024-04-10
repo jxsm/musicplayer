@@ -179,6 +179,9 @@ class MusicManagement{
      * }} info 
      */
     static addHistoricalRecord(info){
+        if(!info){
+            return
+        }
         //添加历史记录
         //先读出来
         this.getHistoricalRecord()
@@ -430,11 +433,13 @@ class MusicManagement{
      * @param {int} sequence 音乐在页面中列表中的第几个
      */
     static play(infos,sequence){
+        
         if(infos === undefined && sequence == undefined){
             this.recoverVolume()
             this.#palyNow();
         }
         else{
+            if(!infos.type) return;
             this.addHistoricalRecord(infos)
             //先判断格式
             if(this.noTranscoding.indexOf(infos.type) === -1){
@@ -504,23 +509,42 @@ class MusicManagement{
         return this.#audioElement.volume;
     }
 
+    static #playInexRecord;
     /**
      * 播放下一首歌曲
      */
     static playNext(){
         //TODO: 向下播放会回到第一首歌,这是列表循环才有的功能,需要修复
-        if(this.#musicList.length-1 == this.#info.nowIndex){
+        this.clearPlayInexRecord(1)
+        if(this.#musicList.length == this.#info.nowIndex){
             //已经是最后一首了
+            this.#info.nowIndex = this.#musicList.length -1
             return;
         }
         else{
-            this.getNextMusic()
-            .then((e)=>{
-                this.play(e,this.#info.nowIndex+1)
-            })
             
+            this.#playInexRecord= setTimeout(()=>{
+                this.getMusicListIndex(this.#info.nowIndex)
+                .then((e)=>{
+                    this.play(e,this.#info.nowIndex)
+                })
+            },200)
         }
-        console.log("这一歌的索引:",this.#info.nowIndex+1)
+    }
+
+
+    /**
+     * 清除 #playInexRecord历史记录
+     * @param {Number} num 给音乐索引增加多所
+     */
+    static clearPlayInexRecord(num=0){
+        if(this.#playInexRecord){
+            clearTimeout(this.#playInexRecord)
+            this.#info.nowIndex += num
+            this.#playInexRecord = undefined
+        }else{
+            this.#info.nowIndex += num
+        }
     }
 
     /**
@@ -528,15 +552,19 @@ class MusicManagement{
      */
     static previousMusic(){
         //TODO:播放时索引有误
-        if(this.#info.nowIndex == 0){
+        this.clearPlayInexRecord(-1)
+        if(this.#info.nowIndex == -1){
             //已经是第一首了
+            this.#info.nowIndex = 0
             return;
         }
         else{
-            this.getPreviousMusic()
-            .then((e)=>{
-                this.play(e,this.#info.nowIndex-1)
-            })
+            this.#playInexRecord= setTimeout(()=>{
+                this.getMusicListIndex(this.#info.nowIndex)
+                .then((e)=>{
+                    this.play(e,this.#info.nowIndex)
+                })
+            },200)
         }
     }
 
@@ -559,18 +587,43 @@ class MusicManagement{
                 }
                 else{
                     //如果缓存中没有数据则去读取数据
-                    localForage.getItem(data.indexName)
-                    .then(e=>{
-                        this.#musicInfoListCache[data.indexName] = e
-                        resolve(e[data.index])
-                    }).catch(e=>{
-                        reject(e)
-                    })
-                }
+                        localForage.getItem(data.indexName)
+                        .then(e=>{
+                            this.#musicInfoListCache[data.indexName] = e
+                            resolve(e[data.index])
+                        }).catch(e=>{
+                            reject(e)
+                        })
+                        }
             })
         }
     }
 
+    /**
+     * 获取音乐列表在指定索引位置的音乐信息
+     * @param {Number} index 
+     * @returns {Promise}
+     */
+    static getMusicListIndex(index){
+        if(index < 0 || index >= this.#musicList.length) {
+            return new Promise((resolve,reject)=>{
+                void resolve
+                reject(new Error("索引超出范围"))
+            })
+        }
+        const data = this.#musicList[index]
+            return new Promise((resolve,reject)=>{
+                    if(this.#musicInfoListCache[data.indexName]){
+                        resolve(this.#musicInfoListCache[data.indexName][data.index])
+                    }
+                    localForage.getItem(data.indexName)
+                    .then(e=>{
+                        resolve(e[data.index])
+                    }).catch(e=>{
+                        reject(e)
+                    })
+            })
+    }
 
     /**
      * 获取上一首歌曲
@@ -715,11 +768,14 @@ function setUrl(event,data){
 }
 
 
+//TODO: 优化未读取到配置时进行重复读取,尝试3次,如果三次过后仍然没有读取到信息则弹窗提醒用户
 window.addEventListener('globalStore:currentPath',(e)=>{
    const paths =  Object.keys(e.detail.value)
    MusicManagement.clearMusicList()
+   let isErr = false
    const lode = ()=>{
         for(let i in paths){
+            if(isErr) return;
             localForage.getItem(`musicListInfo:${paths[i]}`)
             .then(e=>{
                 for(let j = 0;j<e.length;j++){
@@ -727,22 +783,16 @@ window.addEventListener('globalStore:currentPath',(e)=>{
                         indexName:`musicListInfo:${paths[i]}`,
                         index:j
                     }
-        
                     MusicManagement.addMusicList(data)
                 }
             })
-        
+            .catch(()=>{
+                isErr = true
+            })
         }
    }
 
-   try{
-    lode()
-   }catch{
-    setTimeout(()=>{
-        lode()
-    },1000)
-   }
-    
+   lode();
 })
 
 

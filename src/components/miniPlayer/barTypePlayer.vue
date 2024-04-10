@@ -329,6 +329,7 @@ export default{
                 if(newValue.nowMusicName) _this.songName = newValue.nowMusicName;
 
                 if(newValue.img){
+                     window.URL.revokeObjectURL(_this.imgSrc)
                     let uint8Data = new Uint8Array(Object.values(newValue.img.data));
                     let blob = new Blob([uint8Data], { type: 'image/png' });
                     _this.imgSrc = URL.createObjectURL(blob);
