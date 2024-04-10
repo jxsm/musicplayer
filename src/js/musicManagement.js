@@ -171,6 +171,17 @@ class MusicManagement{
 
 
     /**
+     * 加载播放模式
+     */
+    static lodePlayMode(){
+        //加载播放模式
+        if(getGlobalStore('playMode') ===4){
+            this.confuseMusicList()
+        }
+        console.log("获取播放模式",getGlobalStore('playMode'))
+    }
+
+    /**
      * 添加历史信息
      * @param {{
      * path:string,
@@ -307,7 +318,16 @@ class MusicManagement{
         }
     }
 
-    
+    /**
+     * 类表循环情况下的下一首
+     */
+    static listLoopNext(){
+        if(this.#info.nowIndex >= this.#musicList.length-1){
+            this.#info.nowIndex = -1;
+        }
+        this.playNext()
+    }
+
 
 
     /**
@@ -332,12 +352,27 @@ class MusicManagement{
 
         this.#audioElement.addEventListener('ended',()=>{
             //这一首歌播放结束了,判读以下播放模式
-            if(getGlobalStore('playMode') == 3){
-                //单曲循环
-                this.#palyNow()
-                return;
+            const playMode = getGlobalStore('playMode')
+            switch (playMode){
+                case 1:
+                    //顺序播放
+                    this.playNext()
+                    break
+                case 2:
+                    //列表循环
+                    this.listLoopNext()
+                    break
+                case 3:
+                    //单曲循环
+                    this.#palyNow()
+                    break
+                case 4:
+                    //随机播放
+                    this.listLoopNext()
+                    break
             }
-            this.playNext()
+
+            
         })
 
         this.#audioElement.addEventListener('timeupdate',()=>{
@@ -396,6 +431,7 @@ class MusicManagement{
      * @param {string} fileLocation 文件路径
      */
     static pathPlay(path,name,artists,img,fileLocation,sequence){
+        void sequence
         this.recoverVolume()
 
         if(!path){
@@ -422,8 +458,7 @@ class MusicManagement{
        this.#info.nowMusicUri = path
        this.#info.nowMusicInfo.artists = artists?artists:"未知"
        this.#info.fileLocation = fileLocation
-       this.#info.nowIndex = this.getPathInMusicList(fileLocation,sequence)
-       
+       this.#info.nowIndex = this.getPathInMusicList(fileLocation,path)
     }
 
 
@@ -514,9 +549,13 @@ class MusicManagement{
      * 播放下一首歌曲
      */
     static playNext(){
+        
         //TODO: 向下播放会回到第一首歌,这是列表循环才有的功能,需要修复
         this.clearPlayInexRecord(1)
-        if(this.#musicList.length == this.#info.nowIndex){
+        console.log(this.#musicList.length,this.#info.nowIndex
+            ,(this.#info.nowIndex < 0 || this.#info.nowIndex >= this.#musicList.length)
+            ,this.#info.nowIndex)
+        if( this.#info.nowIndex>=this.#musicList.length){
             //已经是最后一首了
             this.#info.nowIndex = this.#musicList.length -1
             return;
@@ -538,13 +577,9 @@ class MusicManagement{
      * @param {Number} num 给音乐索引增加多所
      */
     static clearPlayInexRecord(num=0){
-        if(this.#playInexRecord){
-            clearTimeout(this.#playInexRecord)
-            this.#info.nowIndex += num
-            this.#playInexRecord = undefined
-        }else{
-            this.#info.nowIndex += num
-        }
+        this.#info.nowIndex += num
+        clearTimeout(this.#playInexRecord)
+        this.#playInexRecord = undefined
     }
 
     /**
@@ -614,6 +649,7 @@ class MusicManagement{
         const data = this.#musicList[index]
             return new Promise((resolve,reject)=>{
                     if(this.#musicInfoListCache[data.indexName]){
+                        
                         resolve(this.#musicInfoListCache[data.indexName][data.index])
                     }
                     localForage.getItem(data.indexName)
@@ -657,12 +693,13 @@ class MusicManagement{
     /**
      * 获取指定文件夹下指定所以在音乐播放列表中的索引位置
      * @param {string} path 
-     * @param {int} index 
+     * @param {string} filePath 
      * @returns {int}
      */
-    static getPathInMusicList(path,index){
+    static getPathInMusicList(path,filePath){
+        console.log(path,filePath)
         return this.#musicList.findIndex(e=>{
-            return e.index == index && e.indexName == 'musicListInfo:'+path
+            return e.path == filePath && e.indexName == 'musicListInfo:'+path
         })
     }
 
@@ -773,26 +810,39 @@ window.addEventListener('globalStore:currentPath',(e)=>{
    const paths =  Object.keys(e.detail.value)
    MusicManagement.clearMusicList()
    let isErr = false
-   const lode = ()=>{
+   const lode =async ()=>{
         for(let i in paths){
             if(isErr) return;
-            localForage.getItem(`musicListInfo:${paths[i]}`)
-            .then(e=>{
+            let e
+            try{
+                e = await localForage.getItem(`musicListInfo:${paths[i]}`)
                 for(let j = 0;j<e.length;j++){
-                const data =  {
-                        indexName:`musicListInfo:${paths[i]}`,
-                        index:j
-                    }
-                    MusicManagement.addMusicList(data)
+                    const data =  {
+                            indexName:`musicListInfo:${paths[i]}`,
+                            index:j,
+                            path:e[j].path
+                        }
+                        MusicManagement.addMusicList(data)
                 }
-            })
-            .catch(()=>{
+            }
+            catch(err){
                 isErr = true
-            })
+                console.error(err)
+            }
+            
+            
         }
    }
 
    lode();
+   setTimeout(()=>{
+    MusicManagement.lodePlayMode()
+   },500)
+})
+
+
+window.addEventListener('globalStore:playMode',()=>{
+    MusicManagement.lodePlayMode()
 })
 
 
