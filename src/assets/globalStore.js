@@ -16,7 +16,7 @@ let firstTime = true
  * @param {Boll} [false]
  */
 function alterGlobalStore(key,value,inform = false){
-   let tempOldValue = {...globalStore[key]}
+   let tempOldValue = JSON.parse(JSON.stringify(globalStore[key]))
    try{
       if(value != null){
          globalStore[key] = value

@@ -178,7 +178,7 @@ class MusicManagement{
         if(getGlobalStore('playMode') ===4){
             this.confuseMusicList()
         }
-        console.log("获取播放模式",getGlobalStore('playMode'))
+        
     }
 
     /**
@@ -805,9 +805,11 @@ function setUrl(event,data){
 }
 
 
-//TODO: 优化未读取到配置时进行重复读取,尝试3次,如果三次过后仍然没有读取到信息则弹窗提醒用户
-window.addEventListener('globalStore:currentPath',(e)=>{
-   const paths =  Object.keys(e.detail.value)
+/**
+ * 加载播放列表
+ * @param {[]} paths 
+ */
+function lodeMusicList(paths){
    MusicManagement.clearMusicList()
    let isErr = false
    const lode =async ()=>{
@@ -838,15 +840,23 @@ window.addEventListener('globalStore:currentPath',(e)=>{
    setTimeout(()=>{
     MusicManagement.lodePlayMode()
    },500)
+}
+
+
+//TODO: 优化未读取到配置时进行重复读取,尝试3次,如果三次过后仍然没有读取到信息则弹窗提醒用户
+window.addEventListener('globalStore:currentPath',(e)=>{
+    lodeMusicList(Object.keys(e.detail.value))
 })
 
 
-window.addEventListener('globalStore:playMode',()=>{
-    MusicManagement.lodePlayMode()
+window.addEventListener('globalStore:playMode',(e)=>{
+    const value = e.detail
+    if(value.oldValue === 4 && value.value != 4){
+        lodeMusicList(Object.keys(getGlobalStore('currentPath')))
+    }else{
+        MusicManagement.lodePlayMode()
+    }
 })
-
-
-
 
 
 
