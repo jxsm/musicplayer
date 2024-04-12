@@ -6,7 +6,7 @@
                     <div class="centralBox"> 
                         <div class="centralCircle"></div>
                     </div>
-                    <img :src="imgSrc"/>
+                    <img :src="imgSrc" ref="miniBoxImg"/>
                 </div>
                
 
@@ -60,6 +60,8 @@ import playbackMode from "./playbackMode.vue"
 import {alterGlobalStore,getGlobalStore} from '../../assets/globalStore.js'
 import adjustVolume from "./adjustVolume.vue"
 import {MusicManagement} from "../../js/musicManagement.js"
+import ThemeColorSetting from "../../js/render/ThemeColorSetting.js"
+import {ThemeColors} from "../../js/ThemeColors.js"
 const NocoverImg = 'img/Nocover.png'
 export default{
     data(){
@@ -166,18 +168,14 @@ export default{
                     break;
                 case 'MusicManagement_info':
                  musicManagement_info(this)
+                 
                  break;  
             }
 
             function musicManagement_info(_this){
                 //当前音乐信息发生变化时，更改播放控件中的数据
-                    
                     const newValue = JSON.parse(e.newValue)
-                
-                    
-                
                     if(newValue.nowMusicName) _this.songName = newValue.nowMusicName;
-
                     if(newValue.img){
                         window.URL.revokeObjectURL(_this.imgSrc)
                         let uint8Data = new Uint8Array(Object.values(newValue.img.data));
@@ -186,6 +184,11 @@ export default{
                     }else{
                         _this.imgSrc = NocoverImg;
                     }
+                    //设置主题色
+                    setTimeout(()=>{
+                        _this.setThemeColor()
+                    },500)
+                    
             }
         },
         previousMusic(){
@@ -193,7 +196,19 @@ export default{
         },
         playNext(){
             MusicManagement.playNext()
-        }
+        },
+        /**
+         * 通过该组件中的图片进行设置主题色(前提是用户开启了自动主题色)
+         */
+        setThemeColor(){
+            ThemeColorSetting.getImgThemeColor(this.$refs.miniBoxImg)
+            .then((e)=>{
+                void ThemeColors.set(ThemeColorSetting.rgbToHex(...e))
+            })
+            .catch((e)=>{
+                console.error(e)
+            })
+        },
 
     },
     mounted(){

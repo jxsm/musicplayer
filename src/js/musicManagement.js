@@ -552,9 +552,6 @@ class MusicManagement{
         
         //TODO: 向下播放会回到第一首歌,这是列表循环才有的功能,需要修复
         this.clearPlayInexRecord(1)
-        console.log(this.#musicList.length,this.#info.nowIndex
-            ,(this.#info.nowIndex < 0 || this.#info.nowIndex >= this.#musicList.length)
-            ,this.#info.nowIndex)
         if( this.#info.nowIndex>=this.#musicList.length){
             //已经是最后一首了
             this.#info.nowIndex = this.#musicList.length -1
@@ -697,7 +694,6 @@ class MusicManagement{
      * @returns {int}
      */
     static getPathInMusicList(path,filePath){
-        console.log(path,filePath)
         return this.#musicList.findIndex(e=>{
             return e.path == filePath && e.indexName == 'musicListInfo:'+path
         })
