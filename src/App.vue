@@ -26,7 +26,7 @@ import hintModule from "./components/publicModule/hintModule.vue"//提示框
 import  songList  from "./components/songList/songList.vue"//歌单列表
 import MainInterface from "./components/mainInterface/mainInterface.vue"//主页面
 import miniPopUpWindow from "./components/publicModule/miniPopUpWindow.vue"//迷你弹窗
-import {ThemeColors} from "./js/ThemeColors.js"
+import ThemeColors from "./js/ThemeColors.js"
 import {globalStore_Object,getGlobalStore, alterGlobalStore} from './assets/globalStore.js'
 import globalSet from "./assets/globalSet.js"
 

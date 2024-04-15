@@ -50,7 +50,7 @@ class MusicManagement{
 
     static #stopTimeId = 0
 
-    static noTranscoding = ['wav','mp3','ogg','aac','webm'] //不需要转码的文件类型
+    static noTranscoding = ['wav','mp3','ogg','aac','webm','flac'] //不需要转码的文件类型
 
 
 
@@ -258,6 +258,7 @@ class MusicManagement{
         })
     }
 
+    //TODO: 临时文件需要删除
     /**
      * 主线程调用ffmpeg进行转码
      * @param {Object} info 歌曲信息
@@ -279,6 +280,33 @@ class MusicManagement{
         catch{
             img = void 0
         }
+        let artists
+        try{
+            artists = JSON.parse(JSON.stringify(info.infos.artists))//作者
+        }
+        catch{
+            artists = "未知"
+        }
+
+        let songName
+        try{
+            if(info.infos.title){
+               songName = info.infos.title//歌曲名 
+            }
+            else{
+               throw new Error("歌曲名获取失败")
+            }
+            
+        }
+        catch{
+            if(info.name){
+                songName = info.name
+            }
+            else{
+                songName = "未知"
+            }
+           
+        }
         const data = {
             path:info.path,//音乐路径
             position:info.position,//音乐位置
@@ -286,10 +314,11 @@ class MusicManagement{
             fileName:info.name,//名称
             target:target,//目标类型
             tag:this.musicId,//识别id
-            name:info.name,//名称
+            name:songName,//歌曲名
             img:img,//歌曲的封面图片(如果有的话)
-            artists:JSON.parse(JSON.stringify(info.infos.artists)),//作者
-            headers:headers//请求头
+            artists:artists,//作者
+            headers:headers,//请求头
+            fileLocation:info.fileLocation,//文件夹路径
         }
         window.ipcRenderer.send('ffpegTranscoding',data)
         return this.musicId;
@@ -313,7 +342,8 @@ class MusicManagement{
                 console.error(data[2])
             }
             else if(data[1] == 'ok'){
-                MusicManagement.pathPlay(data[2],data[3].name,data[3].artists,data[3].img)
+
+                MusicManagement.pathPlay(data[2],data[3].name,data[3].artists,data[3].img,data[3].fileLocation,data[3].path)
             }
         }
     }
@@ -429,9 +459,9 @@ class MusicManagement{
      * @param {Array} artists 作者人列表
      * @param {Int8Array} img 图片信息 
      * @param {string} fileLocation 文件路径
+     * @param {string} OriginalPath 原完整路径(在最终播放的音乐和音乐数据来源不同时传入该参数)
      */
-    static pathPlay(path,name,artists,img,fileLocation,sequence){
-        void sequence
+    static pathPlay(path,name,artists,img,fileLocation,OriginalPath){
         this.recoverVolume()
 
         if(!path){
@@ -458,7 +488,13 @@ class MusicManagement{
        this.#info.nowMusicUri = path
        this.#info.nowMusicInfo.artists = artists?artists:"未知"
        this.#info.fileLocation = fileLocation
-       this.#info.nowIndex = this.getPathInMusicList(fileLocation,path)
+       if(OriginalPath){
+        this.#info.nowIndex = this.getPathInMusicList(fileLocation,OriginalPath)
+       }
+       else{
+        this.#info.nowIndex = this.getPathInMusicList(fileLocation,path)
+       }
+       
     }
 
 
@@ -499,7 +535,7 @@ class MusicManagement{
                 }catch{
                     img = void 0
                 }
-                this.pathPlay(infos.path,name,artists,img,infos.fileLocation, sequence)
+                this.pathPlay(infos.path,name,artists,img,infos.fileLocation)
             }
         }
     }
@@ -549,13 +585,10 @@ class MusicManagement{
      * 播放下一首歌曲
      */
     static playNext(){
-        
-        //TODO: 向下播放会回到第一首歌,这是列表循环才有的功能,需要修复
         this.clearPlayInexRecord(1)
         if( this.#info.nowIndex>=this.#musicList.length){
             //已经是最后一首了
-            this.#info.nowIndex = this.#musicList.length -1
-            return;
+            this.#info.nowIndex = 0
         }
         else{
             
@@ -590,11 +623,18 @@ class MusicManagement{
             this.#info.nowIndex = 0
             return;
         }
+        if(this.#info.nowIndex  >= this.#musicList.length){
+            this.#info.nowIndex = 0
+        }
+
         else{
             this.#playInexRecord= setTimeout(()=>{
                 this.getMusicListIndex(this.#info.nowIndex)
                 .then((e)=>{
                     this.play(e,this.#info.nowIndex)
+                })
+                .catch(e=>{
+                    console.error(e)
                 })
             },200)
         }

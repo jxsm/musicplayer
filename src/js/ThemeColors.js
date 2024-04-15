@@ -22,9 +22,6 @@ class ThemeColors{
         //临近色2
         let newColour = Color.rgb(ad(color.color)) 
         
-
-
-
         document.documentElement.style.setProperty('--adjacentColour-theme-two',newColour.toString())
 
 
@@ -59,7 +56,7 @@ class ThemeColors{
 }
 
 
-module.exports = {ThemeColors} // 导出ThemeColors类
+
 
 
 
@@ -84,3 +81,5 @@ function ad(rgb){
 
     return adjacentColors
 }
+
+export default ThemeColors

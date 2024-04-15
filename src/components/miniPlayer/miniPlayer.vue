@@ -61,7 +61,7 @@ import {alterGlobalStore,getGlobalStore} from '../../assets/globalStore.js'
 import adjustVolume from "./adjustVolume.vue"
 import {MusicManagement} from "../../js/musicManagement.js"
 import ThemeColorSetting from "../../js/render/ThemeColorSetting.js"
-import {ThemeColors} from "../../js/ThemeColors.js"
+import ThemeColors from "../../js/ThemeColors.js"
 const NocoverImg = 'img/Nocover.png'
 export default{
     data(){

@@ -97,6 +97,7 @@ class MonitorDispose{
  * name:string,
  * artists:Array,
  * headers:object
+ * fileLocation:string,
  * }} args 该对象传入的数据应该严格要这样
  */
 static ipc_ffmpeg_transcoding(event,args = {}){
@@ -113,6 +114,8 @@ static ipc_ffmpeg_transcoding(event,args = {}){
         name:args.name,//歌曲名称
         artists:args.artists,//艺术家
         img:args.img,//歌曲封面
+        path:args.path,//歌曲路径
+        fileLocation:args.fileLocation//歌曲文件夹路径
       }])
     })
     .catch((e)=>{
