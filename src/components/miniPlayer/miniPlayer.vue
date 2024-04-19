@@ -12,7 +12,7 @@
 
             </div>
             <div class="musicInfo">
-                <!--歌词和歌曲信息的区域-->
+                <lyricList/>
             </div>
             <div class="musicControl">
                 <!--歌曲控件-->
@@ -63,6 +63,7 @@ import {MusicManagement} from "../../js/musicManagement.js"
 import ThemeColorSetting from "../../js/render/ThemeColorSetting.js"
 import ThemeColors from "../../js/ThemeColors.js"
 const NocoverImg = 'img/Nocover.png'
+import lyricList from "./lyricList.vue"
 export default{
     data(){
         return{
@@ -243,7 +244,8 @@ export default{
     components:{
         playMode,
         playbackMode,
-        adjustVolume
+        adjustVolume,
+        lyricList,
     }
         
 }

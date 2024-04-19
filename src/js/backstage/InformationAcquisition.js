@@ -1,5 +1,3 @@
-
-
 const request = require('request');
 
 let tempCookie = {}
@@ -13,7 +11,7 @@ class InformationAcquisitionAtNetwork{
      * @param {string} name 
      */
     static  get163MusicId(name){
-
+    
         const sendRequest = (url,data,headers)=>{
             return new Promise((resolve,reject)=>{
                 request.post({url:url, form: data,headers: headers}, function(err,httpResponse,body){
@@ -71,6 +69,7 @@ class InformationAcquisitionAtNetwork{
                             })
                         }
                         else if(data['code'] == 200){
+                            
                             //请求成功解析数据
                             let id = data['result']['songs'][0]['id']
                             resolve(id)
@@ -136,7 +135,7 @@ class InformationAcquisitionAtNetwork{
             request.get(url, (err, response, body) => {
                 void body;
                 if (err) {
-                    console.log(err);
+                    console.err(err);
                     reject(new Error("获取网易云的临时Cookie失败"))
                 }
                 let data = response.toJSON();
@@ -165,6 +164,94 @@ class InformationAcquisitionAtNetwork{
             return data
         }
     }
+
+
+    /**
+     * 将Lyric字符串转换为对象
+     * @param {string} str 
+     * @returns {Object} 
+     */
+    static  lrcToObject(str){
+        if(!str){
+            return {}
+        }
+        let r = {}
+        let arr = str.split('\n')
+    
+        arr.forEach(element => {
+            //先分离歌词
+            let arr = element.split("]")
+            let ci = arr[1]
+            let time = arr[0].split('[')[1]
+            //分离时间
+    
+            if(time){
+                let timeArr = time.split(':')
+                let m = parseInt(timeArr[0])
+    
+                let s = Number(timeArr[1])
+               
+                //转为毫秒
+    
+                let time1 = parseInt(m*60*1000 + s*1000)
+    
+                r[time1] = ci
+                //分离时间
+            }
+        });
+    
+        return r
+    }  /**
+     * 获取网易云所对应的歌曲的歌词,并转为歌词对象
+     * @param {string} songName
+     * @returns {Promise}
+     */
+    static  get163LyricObject(songName){
+        return new Promise((resolve,reject)=>{
+            this.get163MusicId(songName)
+            .then(id => {
+                this.get163LyricAtId(id)
+                .then(lyric => {
+                    resolve(this.lrcToObject(lyric))
+                })
+                .catch(err => {
+                    reject(err)
+                })
+            })
+            .catch(err => {
+                reject(err)
+            })
+        })
+    }
+
+
+
+
+      /**
+     * 获取网易云所对应的歌曲的歌词,并转为歌词对象
+     * @param {string} songName
+     * @returns {Promise}
+     */
+      static  get163LyricObject(songName){
+        return new Promise((resolve,reject)=>{
+            this.get163MusicId(songName)
+            .then(id => {
+                this.get163LyricAtId(id)
+                .then(lyric => {
+                    resolve(this.lrcToObject(lyric))
+                })
+                .catch(err => {
+                    reject(err)
+                })
+            })
+            .catch(err => {
+                reject(err)
+            })
+        })
+    }
+
+
+    
 }
 
 export default InformationAcquisitionAtNetwork;

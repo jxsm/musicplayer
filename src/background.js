@@ -9,7 +9,7 @@ const isDevelopment = process.env.NODE_ENV !== 'production'
 import {MonitorDispose} from "./js/MainThreadProcessing"
 import MusicHttpServer from "./js/MusicHttpServer"
 import ProgramCycle from "./js/ProgramCycle" 
-
+import {IpcLyric} from "./js/backstage/ipcLyric"
 
 //ffmpeg的路径,如果您要为特定的平台构建则只需要指定特定平台的ffmpeg就可以了
 let ffmpegPath = {
@@ -205,3 +205,6 @@ musicServer.startServer('userFile/temp')
 ipcMain.on('getMusicServerPort',(event)=>{
   event.sender.send('getMusicServerPort',musicServer.getPort())
 })
+
+//获取歌词
+ipcMain.on('ipcLyric',IpcLyric.Ipcentry)
