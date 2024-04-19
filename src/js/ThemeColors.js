@@ -63,6 +63,10 @@ class ThemeColors{
           adjacentColour.color[2] = adjacentColour.color[2] * 0.8;
           document.documentElement.style.setProperty('--adjacent-theme-colour',adjacentColour.toString())
 
+          //邻近色高亮度版本
+          adjacentColour.color[2] = 100
+          document.documentElement.style.setProperty('--adjacent-HighBrightness-colour',adjacentColour.toString())
+
           //邻近色2
           let adjacentColour2 = Color(colour).hsv();
           adjacentColour2.color[0] = adjacentColour.color[0] - 60

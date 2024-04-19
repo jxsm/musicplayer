@@ -11,7 +11,14 @@
                
 
             </div>
+            <div class="songName" :title="`歌曲名:${songName}`" @click="UserCopy.copyWithMiniHint(songName,'歌名复制成功','歌名复制失败')">
+                    {{songName}}
+            </div>
+            <div class="songArtist" :title="`歌手:${artists}`"  @click="UserCopy.copyWithMiniHint(artists,'歌手名复制成功','歌手名复制失败')">
+                    {{artists}}
+            </div>
             <div class="musicInfo">
+               
                 <lyricList/>
             </div>
             <div class="musicControl">
@@ -64,6 +71,7 @@ import ThemeColorSetting from "../../js/render/ThemeColorSetting.js"
 import ThemeColors from "../../js/ThemeColors.js"
 const NocoverImg = 'img/Nocover.png'
 import lyricList from "./lyricList.vue"
+import UserCopy from "../../js/render/UserCopy"
 export default{
     data(){
         return{
@@ -78,6 +86,8 @@ export default{
             isPlaying:false,//是否在播放
             songName:"未知",//当前的歌曲名
             imgSrc:NocoverImg,//歌曲封面突破
+            artists:"未知",//艺术家
+            UserCopy:UserCopy,//用户复制
         }
     },
     methods:{
@@ -174,8 +184,23 @@ export default{
             }
 
             function musicManagement_info(_this){
+
+                
                 //当前音乐信息发生变化时，更改播放控件中的数据
                     const newValue = JSON.parse(e.newValue)
+                    try{
+                    if(newValue.nowMusicInfo.artists) {
+                        _this.artists = newValue.nowMusicInfo.artists.join('/')
+                    }
+                    else{
+                        _this.artists = '未知'
+                    }
+                    }
+                    catch(e){
+                        _this.artists = '未知'
+                    }
+                
+
                     if(newValue.nowMusicName) _this.songName = newValue.nowMusicName;
                     if(newValue.img){
                         window.URL.revokeObjectURL(_this.imgSrc)
@@ -210,6 +235,8 @@ export default{
                 console.error(e)
             })
         },
+    
+        
 
     },
     mounted(){
@@ -299,7 +326,7 @@ export default{
 
 .musicInfo{
     width: 100%;
-    height: 50%;
+    height: 43%;
     border: 2px solid rgb(16, 210, 197);
 }
 
@@ -371,5 +398,29 @@ export default{
     align-items: center;
     justify-content: center;
 }
+
+.songName{
+    width: 100%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size:150%;
+    color: var(--adjacent-theme-colour);
+    font-weight: bold;
+}
+
+.songArtist{
+    width: 100%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size:100%;
+    color: var(--adjacent-theme-colour);
+    font-weight: bold;
+}
+
+
 
 </style>

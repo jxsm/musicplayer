@@ -28,12 +28,10 @@ export default {
          * @param {CustomEvent} e 
          */
         miniHintEvent(e){
-            console.log(e)
             this.hintText =  e.detail.hintText
             this.window_box_style.backgroundColor = e.detail.backgroundColor
             this.window_box_style.color = e.detail.color
             this.showHint(e.detail.time)
-            console.log(e.detail.time)
             e.stopPropagation();
         },
         /**
@@ -57,7 +55,7 @@ export default {
         autoPosition(){
             this.window_box_style.width = "auto"
             this.window_box_style.height = "auto"
-            console.log("元素宽度" + this.$refs.window_box.offsetWidth)
+            // console.log("元素宽度" + this.$refs.window_box.offsetWidth)
             setTimeout(()=>{
                 this.window_box_style.width = this.$refs.window_box.offsetWidth + 30 + "px"
                 this.window_box_style.height = this.$refs.window_box.offsetHeight + 10 + "px"
@@ -81,5 +79,6 @@ export default {
     border-radius: 10px;
     transition: opacity 0.5s ease-in-out;
     box-shadow: 0px 5px 5px  #00000070;
+    font-weight: bold;
 }
 </style>
