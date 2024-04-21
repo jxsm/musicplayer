@@ -70,7 +70,7 @@ import {MusicManagement} from "../../js/musicManagement.js"
 import ThemeColorSetting from "../../js/render/ThemeColorSetting.js"
 import ThemeColors from "../../js/ThemeColors.js"
 const NocoverImg = 'img/Nocover.png'
-import lyricList from "./lyricList.vue"
+import lyricList from "./lyric/lyricList.vue"
 import UserCopy from "../../js/render/UserCopy"
 export default{
     data(){
@@ -327,13 +327,11 @@ export default{
 .musicInfo{
     width: 100%;
     height: 43%;
-    border: 2px solid rgb(16, 210, 197);
 }
 
 .musicControl{
     width: 100%;
     height: 8.8%;
-    border: 2px solid rgb(39, 246, 16);
     display: flex;
     flex-direction: row;
     align-items: center;

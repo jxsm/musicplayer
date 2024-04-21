@@ -801,9 +801,26 @@ class MusicManagement{
     static setProgress(ratio){
         if(!this.#audioElement.src) return;
 
-        if(ratio > 1 || ratio < 0) throw new Error("音量值必须在0.0到1.0之间")
+        if(ratio > 1 || ratio < 0) throw new Error("传入的音乐进度的百分比必须在0.0到1.0之间\n如果您是想通过毫秒数进行设置请使用setProgressAtValue方法")
         if(ratio === this.#audioElement.currentTime/this.#audioElement.duration) return
         this.#audioElement.currentTime = this.#audioElement.duration * ratio
+
+        this.updatePlayInfonNow()
+    }
+
+    /**
+     * 设置音乐进度到指定的值
+     * @param {Number} value 音乐的秒数
+     */
+    static setProgressAtValue(value){
+        if(!this.#audioElement.src) return;
+        if(value > this.#audioElement.endTime || value<0) 
+        {
+            console.error(`该歌曲的时间为${this.#audioElement.endTime},传入的时间为${value}不在范围内`)
+            return;
+        }
+        if(value === this.#audioElement.currentTime) return
+        this.#audioElement.currentTime = value
 
         this.updatePlayInfonNow()
     }
