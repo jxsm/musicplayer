@@ -121,6 +121,8 @@ class InformationAcquisitionAtNetwork{
                     }
 
                 })
+            }).catch((err)=>{
+                reject(err)
             })
        })
     }
@@ -135,8 +137,9 @@ class InformationAcquisitionAtNetwork{
             request.get(url, (err, response, body) => {
                 void body;
                 if (err) {
-                    console.err(err);
+                    console.error(err)
                     reject(new Error("获取网易云的临时Cookie失败"))
+                    return;
                 }
                 let data = response.toJSON();
                 const Cookies = data['headers']['set-cookie'];
@@ -153,16 +156,24 @@ class InformationAcquisitionAtNetwork{
      * 如果已经获取，则直接返回
      * 如果您的请求需要用到Cookie建议使用这个
      * （但是该方法不能保证Cookie是否过期...）
+     * @returns {Promise}
      */
-    static async guarantee163Cookie(){
-        if(tempCookie['cookie163']){
-            return tempCookie['cookie163']
-        }
-        else{
-            const data = await this.get163TempCookie()
-            console.log("获取到的" + data)
-            return data
-        }
+    static  guarantee163Cookie(){
+        return new Promise((resolve,reject)=>{
+            if(tempCookie['cookie163']){
+                resolve(tempCookie['cookie163'])
+            }
+            else{
+                this.get163TempCookie()
+                .then(data=>{
+                    resolve(data)
+                })
+                .catch((err)=>{
+                    reject(err)
+                })
+                
+            }
+        })
     }
 
 

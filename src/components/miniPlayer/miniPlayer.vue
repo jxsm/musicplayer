@@ -285,7 +285,6 @@ export default{
     position: absolute;
     width: 34%;
     height: 96%;
-    border: 1px solid black;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -379,14 +378,7 @@ export default{
     fill: var(--adjacent-theme-colour);
 }
 
-/** 中心圆 */
-.centralCircle{
-    width: 30px;
-    height: 30px;
-    background-color: black;
-    position: absolute;
-    border-radius: 100%;
-}
+
 
 .centralBox{
     width: 100%;
@@ -414,7 +406,7 @@ export default{
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size:100%;
+    font-size:110%;
     color: var(--adjacent-theme-colour);
     font-weight: bold;
 }

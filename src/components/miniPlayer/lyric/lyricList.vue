@@ -1,7 +1,15 @@
 <template>
-    <div class="borderBox" ref="borderBox">
+    <div class="borderBox" ref="borderBox" @wheel="borderBoxWheel">
         <div class="lyricHead" ref="lyricHead" id="lyric-1"></div>
-        <lyricString @lyricClick="rollBorderBoxToId" v-for="(item,key,index) in lyric['lyric']" :key="key" :lyric="item" :lyricIndex="index" :lyricKey="Number(key)"></lyricString>
+        <div class="initiationBar" v-if="nowTime*1000<oneTime">
+            <div class="initiationBarItem" :style="initiationBarItemStyle(nowTime)">
+            </div>
+        </div>
+        <lyricString @lyricClick="rollBorderBoxToId" v-for="(item,key,index) in lyric['lyric']" 
+        :key="key" :lyric="item" :lyricIndex="index" :lyricKey="Number(key)"
+        :startTime="Number(key)" :endTime="lyricStringEndTime(lyric,index)"
+        :nowTime="nowTime"
+        ></lyricString>
         <div class="lyricFoot" ></div>
     </div>
 </template>
@@ -14,7 +22,12 @@ export default {
     data(){
         return{
             lyric:{},
-            nowLyricKey:""//当前歌词的key
+            nowLyricKey:"",//当前歌词的key
+            isWhell:false,//是否正触发滚动事件
+            WhellTimer:null,//滚轮事件防抖定时器
+            nowTime:0,//当前时间
+            endTime:0,//结束事件
+            oneTime:0,//第一句歌词出来的时间
         }
     },
     mounted(){
@@ -28,6 +41,7 @@ export default {
 
 
         window.ipcRenderer.on('ipcLyric',(e,data)=>{
+            
             void e
             if(data.status == 'ok'){
                 localForage.getItem('lyric')
@@ -45,10 +59,11 @@ export default {
                 })
                 .catch(err=>{
                     console.log(err)
+                    
                 })
             }
             else{
-                console.error(data.message)
+                this.lyric['lyric'] = {0:"获取歌词失败"}
             }
         })
 
@@ -105,6 +120,7 @@ export default {
          * @param {*} e 
          */
         musicManagement_info(e){
+            this.lyric['lyric'] = {0:"正在请求"}
             const data =  JSON.parse(e.newValue)
             this.sendLyric(data.nowMusicName,data.nowMusicUri,data.lyricHandle)
         },
@@ -201,18 +217,23 @@ export default {
         rollBorderBoxToId(index){
             this.resetLyricStyle()
             //该函数会自动设置样式和滚动到的位置
-            this.setBorderBoxToId(index);
             this.setLyricStyle(index);
+            if(this.isWhell) return; //如果当前处于用户滚动状态则不执行自动滚动
+            this.setBorderBoxToId(index);
         },
         /**
          * 当播放进度发生变化时触发
          * @param {*} e 
          */
         music_play_info(e){
+            
             const data =  JSON.parse(e.newValue)
             void data
             const keyList = Object.keys(this.lyric['lyric'])
             let nowTime = data.nowTime//当前播放到的时间
+            this.nowTime = nowTime
+            this.endTime = data.endTime
+            this.oneTime = Number(keyList[0])
             //查找当前所在的歌词
             for(let i=0;i<keyList.length;i++){
                 
@@ -240,6 +261,28 @@ export default {
                 
             }
 
+        },
+        borderBoxWheel(){
+            if(this.isWhell) clearTimeout(this.WhellTimer);
+            this.isWhell = true;
+            this.WhellTimer = setTimeout(()=>{
+                this.isWhell = false;
+            },2000)
+        },
+        lyricStringEndTime(lyric,index){
+            const keyList = Object.keys(lyric['lyric'])
+            if(keyList[index+1]){
+                return Number(keyList[index+1])
+            }
+            else{
+                return Number(this.endTime*1000)
+            }
+        },
+        initiationBarItemStyle(nowTime){
+            return {
+                    width: (nowTime/this.oneTime*1000)*100 + '%',
+                }
+           
         }
 
     },
@@ -251,7 +294,6 @@ export default {
 
 <style scoped>
 .borderBox{
-    border: 1px solid red;
     width: 100%;
     height: 100%;
     display: flex;
@@ -259,8 +301,18 @@ export default {
     align-items: center;
     overflow: scroll;
     position: relative;
-
 }
+
+.shadowBoxUp{
+    width: 30.6%;
+    height: 8%;
+    position: fixed;
+    display: block;
+    
+    background: linear-gradient(to bottom,var(--oppositeAdjacent-theme-colour),rgba(255, 253, 253, 0));
+}
+
+、
 
 .borderBox::-webkit-scrollbar{
     display: none;
@@ -275,6 +327,21 @@ export default {
 .lyricFoot{
     display: block;
     padding-top: 30%;
+}
+
+.initiationBar{
+    width: 80%;
+    height: 4px;
+    border-radius: 5px;
+    background-color: var(--adjacent-theme-colour);
+    overflow: hidden;
+    padding-bottom: 4px;
+}
+
+.initiationBarItem{
+    transition:width 0.5s ;
+    height: 4px;
+    background-color: var(--oppositeAdjacent-theme-colour);
 }
 
 </style>

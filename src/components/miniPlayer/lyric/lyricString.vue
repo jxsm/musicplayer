@@ -1,6 +1,10 @@
 <template>
-    <div class="lyric" @click="lyricClick" :id="`lyric${lyricIndex}`" >{{ lyric }}</div>
-    <div class="schedule"></div>
+    <div class="lyric" @click="lyricClick" :id="`lyric${lyricIndex}`" >
+    {{ lyric }}
+    <div class="schedule" v-if="isShow()">
+        <div class="scheduleItem" :style="scheduleItemStyle(nowTime)"></div>
+    </div>
+    </div>
 </template>
 
 <script>
@@ -18,18 +22,43 @@ export default {
         lyricKey:{//歌词的key
             type:Number,
             default:0
+        },
+        startTime:{//歌词的起始时间
+            type:Number,
+            default:0
+        },
+        endTime:{//歌词的结束时间
+            type:Number,
+            default:0
+        },
+        nowTime:{
+            type:Number,
+            default:0
         }
     },
     mounted(){
-        
     },
     methods:{
         lyricClick(){
             MusicManagement.setProgressAtValue(this.lyricKey/1000)
             this.$emit("lyricClick",this.lyricIndex)
+        },
+        scheduleItemStyle(){
+            if(this.nowTime*1000>=this.startTime&&this.nowTime*1000<=this.endTime){
+                return {width:((this.nowTime*1000-this.startTime)/(this.endTime-this.startTime))*100+'%'}
+            }
+            else{
+                return {width:0}
+            }
+        },
+        isShow(){
+            return this.nowTime*1000>=this.startTime&&this.nowTime*1000<=this.endTime
         }
     },
     computed:{
+        
+    },
+    watch:{
         
     }
 }
@@ -59,6 +88,17 @@ export default {
 .schedule{
     border-radius: 5px;
     background-color: var(--adjacent-theme-colour);
+    width: 100%;
+    height: 3px;
+    overflow: hidden;
 }
+.scheduleItem{
+    transition:width 0.5s ;
+    height: 100%;
+    background-color: var(--adjacent-HighBrightness-colour);
+    border-radius: 5px;
+}
+
+
 
 </style>
