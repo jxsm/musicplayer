@@ -1,8 +1,8 @@
 <template>
-    <div class="lyric" @click="lyricClick" :id="`lyric${lyricIndex}`" >
+    <div class="lyric" :style="lyricWeight" @click="lyricClick" :id="`lyric${lyricIndex}`" >
     {{ lyric }}
     <div class="schedule" v-if="isShow()">
-        <div class="scheduleItem" :style="scheduleItemStyle(nowTime)"></div>
+        <div class="scheduleItem" :style="scheduleItemStyle(nowTime)" ></div>
     </div>
     </div>
 </template>
@@ -56,7 +56,12 @@ export default {
         }
     },
     computed:{
-        
+        lyricWeight(){
+            if(this.lyric.trim().length === 0){
+                return {width:"50%"}
+            }
+            return undefined
+        }
     },
     watch:{
         

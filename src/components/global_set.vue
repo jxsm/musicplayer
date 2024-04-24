@@ -31,6 +31,10 @@
                         <filenameExtension></filenameExtension>
                     </div>
 
+                    <!--主题设置-->
+                    <div class="themeBox">
+                        <themeSetting></themeSetting>
+                    </div>
                 </div>
             </div>
             
@@ -46,12 +50,14 @@ import fillList from "./fillList.vue"
 import filenameExtension from "./setPage/filenameExtension.vue"
 import {proceedHint} from "../../public/static/proceedHint"
 import localForage from "localforage"
+import themeSetting from "./setPage/themeSetting.vue"
 export default{
     data(){
         return{
             files:[],//文件列表
             firstTime:true,//是否为第一次查询
-            mainBoxStyle :{}//mainBox的Style
+            mainBoxStyle :{},//mainBox的Style
+            test:true
         }
     },
     methods:{
@@ -155,6 +161,7 @@ export default{
         selectFile,//添加文件设置
         fillList,//文件夹列表
         filenameExtension,//文件扩展名设置2
+        themeSetting,//主题设置
     }
    
 }

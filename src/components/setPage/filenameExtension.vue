@@ -1,6 +1,6 @@
 <template>
     <div class="frameBox">
-        <textarea :value="textareaValue" @input="updateInfo"></textarea>
+        <textarea spellcheck="false" :value="textareaValue" @input="updateInfo"></textarea>
     </div>
 </template>
 

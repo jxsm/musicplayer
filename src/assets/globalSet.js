@@ -4,7 +4,8 @@
 //设置通用的调用文件
 class globalSet{
     static #setInfo = {
-        'readFileType':['mp3','ogg','acc','wav',"flac"]
+        'readFileType':['mp3','ogg','acc','wav',"flac"],
+        'autoColor':true,
     }
 
     /**
@@ -48,7 +49,7 @@ class globalSet{
 
 
     /**
-     * 直接进行设置(会替换所有的设置内容,建议只在建在的时候才用)
+     * 直接进行设置(会替换所有的设置内容,建议只在初始化的时候用)
      * @param {Object} infos  
      */
     static set(infos){

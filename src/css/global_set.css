@@ -43,7 +43,7 @@
 
 /*关闭设置的svg*/
 .closeSet{
-    position: fixed;
+    position: sticky;
     width: 20px;
     height: 20px;
     margin-left: 96%;
@@ -59,7 +59,6 @@
 
 .contentBox{
     width: 99%;
-    height: 600px;
     border: 1px solid red;
     display: flex;
     flex-direction: column;
@@ -106,4 +105,14 @@
     flex-direction: column;
     color: var(--theme-colour);
     font-weight: bold;
+}
+
+/*主题设置*/
+
+.themeBox{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 40px;
 }
