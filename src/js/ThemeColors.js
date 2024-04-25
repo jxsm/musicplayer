@@ -9,12 +9,18 @@ import Color from 'color'
 /**
  * 主题颜色管理
  */
+import globalSet from "../assets/globalSet"
 class ThemeColors{
     /**
      * 设置主题颜色
      * @param {String} colour 
      */
     static set(colour){
+        //看自动主题色是否器用
+        if(!globalSet.getKey('autoColor')){
+            return
+        }
+
 
         //判断是浅色还是深色
         const color = Color(colour).hsv()

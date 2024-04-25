@@ -3,24 +3,34 @@
         <div class="subjectColor">
             <p class="autoColorText">{{ autoColor?"自动主题色已启用":"自动主题色已关闭" }}</p>
             <switchButton width="60px" height="20px" :isOn="autoColor" @beClick="alterAutoColorSet"></switchButton>
-            <div class="showSubjectColor" title="点击调整主特色">
+            <!-- <div class="showSubjectColor" title="点击调整主特色">
+            </div> -->
 
-            </div>
+            <pick-colors :size="150" :value="themeColor" class="showSubjectColor" :z-index="99992" @change="setThemeColor">
+
+            </pick-colors>
         </div>
         <div class="showColor" ref="showColor">
-            <div title="点击设置颜色"></div>
-            <div title="点击设置颜色"></div>
-            <div title="点击设置颜色"></div>
-            <div title="点击设置颜色"></div>
-            <div title="点击设置颜色"></div>
-            <div title="点击设置颜色"></div>
+     
+
+
+            <pick-colors class="pickColorsStyle" v-for="(item,index) in colorList" :z-index="99992" :key="index"
+            :size="80" :value="colorRecord[item]"  @change="(e)=>{setDColor(e,item)}" >
+        
+            </pick-colors>
+
         </div>
+        
     </div>
+    
 </template>
 
 <script>
 import switchButton from "../universal/switchButton.vue"
 import globalSet from "../../assets/globalSet"
+import proceedHint from "../../js/render/proceedHint"
+import PickColors from 'vue-pick-colors'
+
 export default{
     data(){
         return{
@@ -33,25 +43,21 @@ export default{
                 '--oppositeAdjacent-theme-colour'
             ],
             autoColor:false,
+            colorRecord:{},
+            themeColor:'',//主题色
         }
     },
     components:{
         switchButton,
+        PickColors,
     },
     mounted(){
-        this.setShowColorDiv()
+        // this.setShowColorDiv()
 
         this.getGlobaValue()
-
+        this.lodeColorRecord()
     },
     methods:{
-        setShowColorDiv(){
-            const divList =  this.$refs.showColor.querySelectorAll("div")
-            for(let i = 0;i<this.colorList.length;i++){
-                divList[i].style.backgroundColor = `var(${this.colorList[i]})`
-            }
-
-        },
         getGlobaValue(){
             this.autoColor = Boolean(globalSet.getKey('autoColor'))
         },
@@ -60,8 +66,46 @@ export default{
          */
         alterAutoColorSet(){
             this.autoColor = !this.autoColor
+            if(this.autoColor) proceedHint.proceedHint.warn("在切换歌曲后生效")
             globalSet.update('autoColor',this.autoColor,false)
+        },
+        /**
+         * 设置主题颜色
+         * @param {Sting} color 颜色的名称
+         * @param {String} name 颜色的名称
+         */
+        setDColor(color,name){
+            if(this.autoColor){
+                proceedHint.MinWindowHint.hint("自动主题启用中,无法设置",2000)
+                return
+            }
+            this.colorRecord[name] = color
+            document.documentElement.style.setProperty(name,color)
+        },
+        /**
+         * 获取主题色的值
+         * @param {String} name 主题色颜色的名称
+         */
+        getColorListValue(name){
+            return document.documentElement.style.getPropertyValue(name)
+        },
+        lodeColorRecord(){
+            this.colorList.forEach((i)=>{
+                this.colorRecord[i] = this.getColorListValue(i)  
+            })
+
+            this.themeColor = this.getColorListValue('--theme-colour')
+
+        },
+        /**
+         * 设置主题色
+         * @param {String} color 颜色
+         */
+        setThemeColor(color){
+            this.themeColor = color
+            document.documentElement.style.setProperty('--theme-colour',color)
         }
+
     }
 }
 
@@ -94,31 +138,29 @@ export default{
     align-items: center;
 }
 
-.showColor div{
-    border: 4px solid rgb(255, 255, 255);
-    width: 6rem;
-    height: 6rem;
-    border-radius: 15px;
-}
+
+
 
 
 
 
 
 .showSubjectColor{
-border: 4px solid rgb(255, 255, 255);
+    border: 4px solid rgb(255, 255, 255);
     border-radius: 15px;
     margin-top: 30px;
     display: flex;
-    width: 10rem;
-    height: 10rem;
-    background-color: var(--theme-colour);
-    
 }
 
 .autoColorText{
     font-weight: bold;
     color: var(--theme-colour);
+}
+
+
+.pickColorsStyle{
+    border: 4px solid white;
+    border-radius: 10px;
 }
 
 

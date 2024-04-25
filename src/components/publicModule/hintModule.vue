@@ -5,8 +5,8 @@
 
         </div>
 
-        <div class="mainBox" ref="mainBox">
-            <div class="title" ref="titleBox" :style="titleBox">
+        <div class="mainBox" ref="mainBox" :style="mainBackgroundColor">
+            <div class="title" ref="titleBox" :style="titleBoxStyle">
                 {{title}}
             </div>
             <div class="text" ref="content">
@@ -34,6 +34,7 @@
                 progressBarStyle:{},//进度条样式
                 hintBoxStyle:{},//通知框样式
                 whiteBarStyle:{},//白色条样式
+                mainBackgroundColor:{},//背景颜色
             }
         },
         methods:{
@@ -48,8 +49,8 @@
                 }
                 this.title = e.detail.title
                 this.titleBoxStyle.backgroundColor = e.detail.titleColor
-                this.titleBoxStyle.backgroundColor = e.detail.background
                 this.content = e.detail.content
+                this.mainBackgroundColor.backgroundColor = e.detail.background
                 this.startAnimation(e.detail.time)
                 e.stopPropagation();
             },

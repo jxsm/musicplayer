@@ -34,7 +34,10 @@
                     <!--主题设置-->
                     <div class="themeBox">
                         <themeSetting></themeSetting>
+                        <!--预设主题-->
+                        <Presuppose></Presuppose>
                     </div>
+
                 </div>
             </div>
             
@@ -51,13 +54,13 @@ import filenameExtension from "./setPage/filenameExtension.vue"
 import {proceedHint} from "../../public/static/proceedHint"
 import localForage from "localforage"
 import themeSetting from "./setPage/themeSetting.vue"
+import Presuppose from "./setPage/themeColoerPresuppose"
 export default{
     data(){
         return{
             files:[],//文件列表
             firstTime:true,//是否为第一次查询
             mainBoxStyle :{},//mainBox的Style
-            test:true
         }
     },
     methods:{
@@ -162,6 +165,7 @@ export default{
         fillList,//文件夹列表
         filenameExtension,//文件扩展名设置2
         themeSetting,//主题设置
+        Presuppose,//预设主题
     }
    
 }
