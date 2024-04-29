@@ -3,7 +3,7 @@
 <div :style="boxStyle" class="mainBox">
     <div class="fillText" v-for="(item,index) in files" :key="index" >
         <div>{{item.path}}</div>
-        <svg @click="$emit('del',item.path)" t="1703577149845" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5308" xmlns:xlink="http://www.w3.org/1999/xlink" width="20" height="20"><path d="M256 298.666667h512v554.666666H256V298.666667z m85.333333 85.333333v384h341.333334V384H341.333333z m42.666667 85.333333h85.333333v213.333334H384v-213.333334z m170.666667 0h85.333333v213.333334h-85.333333v-213.333334zM213.333333 298.666667h597.333334v85.333333H213.333333V298.666667z m170.666667-128h256v85.333333H384V170.666667z" p-id="5309"></path></svg>
+        <svg @click="$emit('del',item.path)" t="1703577149845" class="svgIcom" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5308" xmlns:xlink="http://www.w3.org/1999/xlink" width="20" height="20"><path d="M256 298.666667h512v554.666666H256V298.666667z m85.333333 85.333333v384h341.333334V384H341.333333z m42.666667 85.333333h85.333333v213.333334H384v-213.333334z m170.666667 0h85.333333v213.333334h-85.333333v-213.333334zM213.333333 298.666667h597.333334v85.333333H213.333333V298.666667z m170.666667-128h256v85.333333H384V170.666667z" p-id="5309"></path></svg>
     </div>
     
 </div>
@@ -88,5 +88,7 @@ export default{
     fill: var(--theme-colour);
 }
 
-
+.svgIcom{
+    cursor: pointer;
+}
 </style>

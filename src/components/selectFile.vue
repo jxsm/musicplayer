@@ -70,6 +70,7 @@ export default{
 </script>
 <style scoped>
 .outer{
+    cursor: pointer;
     border-radius: 15px;   
     display: flex;
     align-items: center;

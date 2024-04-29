@@ -3,10 +3,9 @@
         <div class="subjectColor">
             <p class="autoColorText">{{ autoColor?"自动主题色已启用":"自动主题色已关闭" }}</p>
             <switchButton width="60px" height="20px" :isOn="autoColor" @beClick="alterAutoColorSet"></switchButton>
-            <!-- <div class="showSubjectColor" title="点击调整主特色">
-            </div> -->
+            
 
-            <pick-colors :size="150" :value="themeColor" class="showSubjectColor" :z-index="99992" @change="setThemeColor">
+            <pick-colors :size="150" :value="themeColor" class="showSubjectColor" :z-index="99992" @change="setThemeColor" title="点击设置颜色">
 
             </pick-colors>
         </div>
@@ -15,7 +14,7 @@
 
 
             <pick-colors class="pickColorsStyle" v-for="(item,index) in colorList" :z-index="99992" :key="index"
-            :size="80" :value="colorRecord[item]"  @change="(e)=>{setDColor(e,item)}" >
+            :size="80" :value="colorRecord[item]"  @change="(e)=>{setDColor(e,item)}" title="点击设置颜色">
         
             </pick-colors>
 
@@ -102,6 +101,10 @@ export default{
          * @param {String} color 颜色
          */
         setThemeColor(color){
+            if(this.autoColor){
+                proceedHint.MinWindowHint.hint("自动主题启用中,无法设置",2000)
+                return
+            }
             this.themeColor = color
             document.documentElement.style.setProperty('--theme-colour',color)
         }
@@ -150,6 +153,7 @@ export default{
     border-radius: 15px;
     margin-top: 30px;
     display: flex;
+    cursor: pointer;
 }
 
 .autoColorText{
@@ -161,6 +165,7 @@ export default{
 .pickColorsStyle{
     border: 4px solid white;
     border-radius: 10px;
+    cursor: pointer;
 }
 
 

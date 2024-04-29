@@ -7,6 +7,10 @@
         <barTypePlayer  :isShow="showBarTypePlayer" @conceal="concealBarTypePlayer"></barTypePlayer>
         <progressBar :miniBarShow="showBarTypePlayer" @mouseenter="shiftToBottom"></progressBar>
     </div>
+
+    <div class="backdropBox">
+
+    </div>
 </template>
 
 <script>
@@ -79,5 +83,20 @@ export default{
     height: 96vh;
     background-color: var(--theme-colour);
     transition: background-color 0.5s;
+}
+
+.backdropBox{
+    width: 100vw;
+    height: 96vh;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -10;
+    background-image: url("../../../public//img/Nocover.jpg");
+    background-size: 100% auto;
+    background-repeat: no-repeat;
+    background-position: center;
+    overflow: hidden;
+    filter: blur(10px);
 }
 </style>

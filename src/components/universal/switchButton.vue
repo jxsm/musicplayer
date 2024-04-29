@@ -57,6 +57,7 @@ export default{
     border-radius: 30px;
     background-color: var(--adjacent-theme-colour);
     border: 2px solid var(--opposite-theme-colour);
+    cursor: pointer;
 }
 
 .round{

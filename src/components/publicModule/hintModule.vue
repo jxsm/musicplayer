@@ -133,6 +133,7 @@
     overflow: hidden;
     transition:right 0.4s;
     display: none;
+    cursor: pointer;
 }
 
 .title{
