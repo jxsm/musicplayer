@@ -201,6 +201,23 @@ static testTemp() {
     fs.mkdirSync("./userFile/temp");
   }
 }
+
+
+/**
+ * 读取主题文件
+ */
+static async readTheme(event){
+  fileOperations.FileBasic.getFileListContent("./userFile/theme/")
+  .then(content=>{
+    event.sender.send('ThemeFileContent',content)
+  })
+  .catch(e=>{
+    console.log(e)
+    event.sender.send('ThemeFileContent','')
+  })
+}
+
+
 }
 
 

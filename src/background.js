@@ -208,3 +208,5 @@ ipcMain.on('getMusicServerPort',(event)=>{
 
 //获取歌词
 ipcMain.on('ipcLyric',IpcLyric.Ipcentry)
+
+ipcMain.on('getThemeFileContent',MonitorDispose.readTheme)

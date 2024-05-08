@@ -9,8 +9,9 @@
             </div>
         </div>
         <div class="storeBox">
-            <div>将当前颜色导出为预设</div>
+            <div>将当前颜色保存为预设</div>
             <div>导入预设</div>
+            <div>将当前颜色导出为预设</div>
         </div>
     </div>
 </template>
@@ -117,5 +118,6 @@ export default{
     padding: 5px 10px;
     border-radius: 5px;
     cursor: pointer;
+    font-size: 0.8rem;
 }
 </style>

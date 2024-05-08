@@ -10,7 +10,18 @@ import Color from 'color'
  * 主题颜色管理
  */
 import globalSet from "../assets/globalSet"
+
 class ThemeColors{
+    static colorList = [
+        '--theme-colour',
+        '--opposite-theme-colour',
+        '--adjacent-theme-colour',
+        '--adjacent-HighBrightness-colour',
+        '--adjacentColour-theme-two',
+        '--adjacent-theme-colour-d',
+        '--oppositeAdjacent-theme-colour'
+    ]
+
     /**
      * 设置主题颜色
      * @param {String} colour 
@@ -40,7 +51,6 @@ class ThemeColors{
      * 浅色主题
      */
     static lightTheme(colour){
-        this.get()
           //主题色处理
           let lowSaturation = Color(colour).hsv();
 
@@ -147,10 +157,33 @@ class ThemeColors{
 
     /**
      * 获取主题颜色
+     * 获取所有的主题颜色
+     * @returns {Object}
      */
-    static get(){
-        // console.log(document.documentElement.style)
-        return getComputedStyle(document.documentElement).getPropertyValue('--theme-colour');
+    static getAll(){
+        let themeColour = {}
+
+        for(let i = 0;i<this.colorList.length;i++){
+            themeColour[this.colorList[i]] = document.documentElement.style.getPropertyValue(this.colorList[i])
+        }
+        return themeColour;
+    }
+
+    /**
+     * 恢复到上一次的主题颜色
+     */
+    static restoreToLast(){
+        const jsonStr =  localStorage.getItem('lastThemeColors')
+        
+        if(jsonStr){
+            const lastThemeColors = JSON.parse(jsonStr)
+            for(let i = 0;i<this.colorList.length;i++){
+                document.documentElement.style.setProperty(this.colorList[i],lastThemeColors[this.colorList[i]])
+            }
+        }
+        else{
+            ThemeColors.set("#F5EF6D")
+        }
     }
 
      //获取指定的颜色值并降低到指定的透明度
@@ -172,7 +205,7 @@ class ThemeColors{
         else{
             item.color[2] = (item.color[2]+30) * 1.5
         }
-
+        
         return item
     }
 

@@ -26,9 +26,9 @@ import hintModule from "./components/publicModule/hintModule.vue"//提示框
 import  songList  from "./components/songList/songList.vue"//歌单列表
 import MainInterface from "./components/mainInterface/mainInterface.vue"//主页面
 import miniPopUpWindow from "./components/publicModule/miniPopUpWindow.vue"//迷你弹窗
-import ThemeColors from "./js/ThemeColors.js"
-import {globalStore_Object,getGlobalStore, alterGlobalStore} from './assets/globalStore.js'
-import globalSet from "./assets/globalSet.js"
+import {getGlobalStore, alterGlobalStore} from './assets/globalStore.js'
+import initialize from "./js/render/initialize.js"
+import beforeunloadHandler from "./js/render/beforeunloadHandler.js"
 
 
 
@@ -150,63 +150,6 @@ export default {
                 window.ipcRenderer.on('musicFolderList',this.setfFilePath)
             }
         },
-        //软件关闭的操作
-        beforeunloadHandler(e) {
-            void e
-            //保存歌单数据
-            let  filePath = JSON.parse(localStorage.getItem('filePath'))
-            if(filePath){
-                window.ipcRenderer.send('changeFolderList',filePath)
-            }
-
-            //删除临时文件夹中的数据
-            window.ipcRenderer.send('clearTempAll',true)
-
-        },
-        /**
-         * 初始化
-         */
-        initialize(){
-            this.testFilePath()
-
-            //加载保存的公共变量
-            try{
-                let globalStore = JSON.parse(localStorage.getItem('globalStore'))
-                globalStore_Object(globalStore)
-            }
-            catch{
-                console.log("没有保存的公共变量")
-            }
-
-            //加载设置文件
-            window.ipcRenderer.send('getGlobalSet',1)
-
-
-            function setGlobalSet(event,data){
-                void event
-
-                if(data[0] === 1){
-                    if(data[1] != 'error' && Object.keys(data[1]).length != 0){
-                        globalSet.set(data[1])
-                    }
-                    else{
-                        console.log("没有设置文件(现已创建),现目前使用的是默认配置")
-                        globalSet.save()
-                    }
-                }
-                window.ipcRenderer.off('returnGetGlobalSet',setGlobalSet)
-            }
-
-            window.ipcRenderer.on('returnGetGlobalSet',setGlobalSet)
-            
-            //去获取音乐信息
-            alterGlobalStore('currentPath',getGlobalStore('currentPath'),true)
-
-
-       
-     
-           
-        },
         /**
          * 默认选择歌单
          */
@@ -225,15 +168,14 @@ export default {
     },
     mounted(){
         //初始化
-        this.initialize()
+        initialize()
 
        
 
         //软件关闭的时候保存数据
-        window.addEventListener('beforeunload', e => this.beforeunloadHandler(e))
+        window.addEventListener('beforeunload', e =>beforeunloadHandler(e))
 
-        //TODO:更改全局主题
-        ThemeColors.set("#F5EF6D")
+        
         //全局监听按键
         window.pressKeys ={}
         window.addEventListener('keydown', function (event) {
@@ -260,12 +202,6 @@ export default {
                 
             }
         })
-
-        
-
-       
-
-
     },
     computed:{
         songListStyle(){

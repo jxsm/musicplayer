@@ -54,7 +54,7 @@ import filenameExtension from "./setPage/filenameExtension.vue"
 import {proceedHint} from "../../public/static/proceedHint"
 import localForage from "localforage"
 import themeSetting from "./setPage/themeSetting.vue"
-import Presuppose from "./setPage/themeColoerPresuppose"
+import Presuppose from "./setPage/themeColoerPresuppose.vue"
 export default{
     data(){
         return{

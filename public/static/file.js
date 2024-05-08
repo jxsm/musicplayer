@@ -1,3 +1,4 @@
+const { log } = require('console');
 const fs = require('fs')
 const path = require('path');
 const request = require('request');
@@ -110,14 +111,112 @@ function removeTempFile(path){
  * @param {*} fileName 保存的文件名
  * @param {*} callback 回调函数(在下载完成的时候会被调用)
  */
-function DownloadFile_Temp(url,fileName,callback=()=>{}){
+function DownloadFile_Temp(uri,fileName,callback=()=>{}){
     request.head(uri, function(err, res, body){
         console.log('content-type:', res.headers['content-type']);
         console.log('content-length:', res.headers['content-length']);
-        request(uri).pipe(fs.createWriteStream(filename)).on('close', callback);
+        request(uri).pipe(fs.createWriteStream(fileName)).on('close', callback);
     
       }
       );
 }
 
-module.exports = { readFile,writeFile,getFilesAndFoldersInDir,getFolderList,removeTempFile}
+
+
+
+class FileBasic{
+    /**
+     * 读取文件内容
+     * @param {string} path 路径 
+     */
+    static getFileContent(path){
+
+        return new Promise((resolve, reject)=>{
+            fs.readFile(path, { flag: 'r', encoding:'utf-8' }, (err, data) => {
+                if (err) { reject('出错啦'); }
+                resolve(data);
+            }); 
+        })
+    }
+
+//TODO:该类出错
+    /**
+     * 获取文件夹下所有文件
+     * (返回的是所有文件的绝对路径的一个列表)
+     * @param {string} pathStr 
+     */
+    static getFileList(pathStr){
+        return new Promise((resolve, reject)=>{
+            fs.readdir(pathStr, { withFileTypes: true }, (err, files) => {
+                if (err) { reject('出错啦'); }
+                let filesList = [];
+                files.forEach(file=>{
+                    if(file.isFile()){
+                        //获取该文件的绝对路径
+                        // console.log(path+file.name)
+                        filesList.push(path.resolve(pathStr+file.name))
+                    }
+                })
+                resolve(filesList);
+            });
+        })
+    }
+
+    /**
+     * 获取一个文件下所有文件中的信息(返回的是一个字典,key为文件路径,value为文件内容)
+     */
+      /**
+     * 获取一个文件下所有文件中的信息(返回的是一个字典,key为文件路径,value为文件内容)
+     */
+      static getFileListContent(path){
+        return new Promise((resolve, reject)=>{
+            this.getFileList(path)
+            .then(files=>{
+                let fileListContent = {};
+                let promiseList = [];
+                files.forEach(file=>{
+                    promiseList.push(this.getFileContent(file).then(data=>{
+                        fileListContent[file] = data;
+                    }))
+                })
+                Promise.all(promiseList)
+                .then(()=>{
+                    resolve(fileListContent);
+                })
+                .catch((err)=>{
+                    reject(err);
+                })
+            }
+            )
+            .catch(err=>{
+                reject(err)
+            })
+        })
+    }
+
+    static writeFile(path,content,flag){
+        return new Promise((resolve, reject)=>{
+            //写入文件
+            fs.writeFile(path, content, { flag: flag, encoding:'utf-8' }
+            , (err) => {
+                if (err) { reject('出错啦'); }
+                resolve('写入成功');
+            });
+
+        })
+    }
+
+}
+
+
+
+
+module.exports = { 
+    readFile,
+    writeFile,
+    getFilesAndFoldersInDir,
+    getFolderList,
+    removeTempFile,
+    DownloadFile_Temp,
+    FileBasic
+}

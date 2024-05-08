@@ -49,7 +49,7 @@ ProgramCycle.priorityList.fileChecking = function(){
         console.log("创建用户数据文件夹")
     }
 
-    if(!fsexistsSync("./userFile/theme/")){
+    if(!fs.existsSync("./userFile/theme/")){
         fs.mkdirSync("./userFile/theme/")
         console.log("创建主题文件夹")
     }
