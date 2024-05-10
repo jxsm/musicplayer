@@ -3,6 +3,15 @@ let  globalStore = {
    'musicVolume':0,
    'playMode':1,
    'currentPath':{},//当前选中的文件路径
+   'themeColorName':[
+      '--theme-colour',
+      '--opposite-theme-colour',
+      '--adjacent-theme-colour',
+      '--adjacent-HighBrightness-colour',
+      '--adjacentColour-theme-two',
+      '--adjacent-theme-colour-d',
+      '--oppositeAdjacent-theme-colour'
+   ]
 }
 
 let firstTime = true

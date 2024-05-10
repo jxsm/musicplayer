@@ -10,17 +10,15 @@
             </pick-colors>
         </div>
         <div class="showColor" ref="showColor">
-     
-
-
-            <pick-colors class="pickColorsStyle" v-for="(item,index) in colorList" :z-index="99992" :key="index"
+            <pick-colors class="pickColorsStyle" v-for="(item,index) in [...colorList].splice(1)" :z-index="99992" :key="index"
             :size="80" :value="colorRecord[item]"  @change="(e)=>{setDColor(e,item)}" title="点击设置颜色">
-        
             </pick-colors>
 
         </div>
         
     </div>
+
+   
     
 </template>
 
@@ -29,21 +27,19 @@ import switchButton from "../universal/switchButton.vue"
 import globalSet from "../../assets/globalSet"
 import proceedHint from "../../js/render/proceedHint"
 import PickColors from 'vue-pick-colors'
+import {getGlobalStore} from "../../assets/globalStore"
+
 
 export default{
     data(){
         return{
+            //主题色名列表,可通过公共变量进行修改(影响到全局,注意修改)[对主题文件的读取有较大影响]
             colorList:[
-                '--opposite-theme-colour',
-                '--adjacent-theme-colour',
-                '--adjacent-HighBrightness-colour',
-                '--adjacentColour-theme-two',
-                '--adjacent-theme-colour-d',
-                '--oppositeAdjacent-theme-colour'
             ],
             autoColor:false,
             colorRecord:{},
-            themeColor:'',//主题色
+            themeColor:'',//主题色,
+            
         }
     },
     components:{
@@ -52,6 +48,7 @@ export default{
     },
     mounted(){
         // this.setShowColorDiv()
+        this.colorList = getGlobalStore("themeColorName")
 
         this.getGlobaValue()
         this.lodeColorRecord()
@@ -107,7 +104,8 @@ export default{
             }
             this.themeColor = color
             document.documentElement.style.setProperty('--theme-colour',color)
-        }
+        },
+       
 
     }
 }
@@ -121,6 +119,7 @@ export default{
     border: 1px solid red;
     display: grid;
     grid-template-columns:1fr 3fr;
+    
 }
 
 .subjectColor{

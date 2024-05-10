@@ -49,14 +49,8 @@ export default function initialize() {
                 ThemeColors.restoreToLast();
 
 
-                //去获取主题文件夹下文件中的内容
-                window.ipcRenderer.send('getThemeFileContent',1)
+                
 
-
-                window.ipcRenderer.on('ThemeFileContent',(event,data)=>{
-                    void event 
-                    console.log(data)
-                })
 }
 
 
