@@ -10,21 +10,13 @@
 sudo apt-get install ffmpeg
 ```
 
-**windows用户会使用软件中自带的ffmpeg，不过要注意的是,该ffmpeg为64位的切确保win10和win11可以运行,其他windows版本暂时不确定**
-
 # 还未制作完成,正在制作中
-
-# 依赖
-
-**electron**
-**vue**
-**ffmpeg**
 
 ## # 注意
 
-**该项目需要使用到ffmpeg,默认是使用内置的ffmpeg(需要自行下载ffmpeg放到ffmpeg目录下,然后在`background.js`中注册ffmpeg路径的位置)**
+**该项目需要使用到ffmpeg,默认是使用ffmpeg文件夹下ffmpeg(需要自行下载ffmpeg放到ffmpeg目录下,然后在 `background.js`中注册ffmpeg路径的位置)**
 
-**如果你想构建好的项目使用系统环境变量中的ffmpeg则可以在`background.js`中将`ffmpegPath`给换成空对象:**
+**如果你想构建好的项目使用系统环境变量中的ffmpeg则可以在 `background.js`中将 `ffmpegPath`给换成空对象:**
 
 ```js
 // ffmpegPath = {
@@ -36,11 +28,7 @@ sudo apt-get install ffmpeg
 ffmpegPath = {}
 ```
 
-# 构建项目
-
-****
-
-**应为该项目使用到了vue3，所以在构建项目前,请确保您已经正确的安装了vue@3.2.13>= 的版本以及vue/cli**
+# 启动项目
 
 ```bash
 # 先从git上克隆仓库
@@ -51,7 +39,37 @@ cd musicplayer
 npm install
 # 启动项目
 npm run electron:serve
-# 打包项目
-npm run build
+
 
 ```
+
+# 构建项目
+
+```
+# 先从git上克隆仓库
+git clone https://github.com/jxsm/musicplayer.git
+# 进入项目
+cd musicplayer
+# 下载依赖
+npm install
+# 设置环境变量
+   # linux || mac
+export NODE_OPTIONS=--openssl-legacy-provider
+   # windows
+set NODE_OPTIONS=--openssl-legacy-provider
+
+# 构建
+npm run electron:build
+
+
+```
+
+# 预览
+
+![1715440897319](images/README/1715440897319.png)
+
+![1715440957063](images/README/1715440957063.png)
+
+![1715440964467](images/README/1715440964467.png)
+
+![1715440973100](images/README/1715440973100.png)

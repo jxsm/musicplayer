@@ -210,3 +210,5 @@ ipcMain.on('getMusicServerPort',(event)=>{
 ipcMain.on('ipcLyric',IpcLyric.Ipcentry)
 
 ipcMain.on('getThemeFileContent',MonitorDispose.readTheme)
+
+ipcMain.on('writeThemeFile',MonitorDispose.writeTheme)

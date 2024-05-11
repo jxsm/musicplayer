@@ -33,13 +33,18 @@ import {getGlobalStore} from "../../assets/globalStore"
 export default{
     data(){
         return{
-            //主题色名列表,可通过公共变量进行修改(影响到全局,注意修改)[对主题文件的读取有较大影响]
             colorList:[
-            ],
+                    '--theme-colour',
+                    '--opposite-theme-colour',
+                    '--adjacent-theme-colour',
+                    '--adjacent-HighBrightness-colour',
+                    '--adjacentColour-theme-two',
+                    '--adjacent-theme-colour-d',
+                    '--oppositeAdjacent-theme-colour'
+                ],
             autoColor:false,
             colorRecord:{},
             themeColor:'',//主题色,
-            
         }
     },
     components:{
@@ -49,7 +54,6 @@ export default{
     mounted(){
         // this.setShowColorDiv()
         this.colorList = getGlobalStore("themeColorName")
-
         this.getGlobaValue()
         this.lodeColorRecord()
     },
@@ -114,9 +118,10 @@ export default{
 
 <style scoped>
 .themeSetting{
+    border: 4px solid var(--theme-colour);
+    border-radius: 4px;
     width: 80%;
     height: 300px;
-    border: 1px solid red;
     display: grid;
     grid-template-columns:1fr 3fr;
     
@@ -127,11 +132,9 @@ export default{
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    border: 1px solid rgb(25, 218, 160);
 }
 
 .showColor{
-    border: 1px solid royalblue;
     display: grid;
     grid-template-columns: repeat(3,1fr);
     grid-template-rows: repeat(2,1fr);

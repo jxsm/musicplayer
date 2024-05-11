@@ -10,7 +10,7 @@
         </div>
         <div class="storeBox">
             <div @click="savePresuppose">将当前颜色保存为预设</div>
-            <div>导入预设</div>
+            <div @click="importTheme">导入预设</div>
             <div @click="exportPresuppose">将当前颜色导出为预设</div>
         </div>
     </div>
@@ -69,19 +69,23 @@ export default{
             //先遍历,将数据全部转为json
             for(let i in data){
                 
-                reckoning +=1
-                const INFO = JSON.parse(data[i])
-                if(!INFO.color) return;
-                let name = INFO.name ? INFO.name:reckoning.toString()
-                if(Array.isArray(INFO.color)){
-                    this.presuppose[name] = INFO.color
-                }
-                else{
-                    let colors = []
-                    for(let j in this.colorList){
-                        colors[j] = INFO.color[this.colorList[j]] ?INFO.color[this.colorList[j]] : "#FFFFFF"
-                        this.presuppose[name] = colors
+                try {
+                    reckoning +=1
+                    const INFO = JSON.parse(data[i])
+                    if(!INFO.color) return;
+                    let name = INFO.name ? INFO.name:reckoning.toString()
+                    if(Array.isArray(INFO.color)){
+                        this.presuppose[name] = INFO.color
                     }
+                    else{
+                        let colors = []
+                        for(let j in this.colorList){
+                            colors[j] = INFO.color[this.colorList[j]] ?INFO.color[this.colorList[j]] : "#FFFFFF"
+                            this.presuppose[name] = colors
+                        }
+                    }
+                } catch (error) {
+                    console.log(error);
                 }
                 
             }
@@ -91,7 +95,9 @@ export default{
          * 和exportPresuppose方法不同,该方法会将预设主题保存到主题文件夹下而不是用户指定位置
          */
         savePresuppose(){
+            this.verifyFunc = this.savePresupposeRealize
             this.showInputThemeName = true
+
         },
         /**
          * 将当前主题导出成文件
@@ -115,6 +121,31 @@ export default{
             a.download = name+".json"
             a.click()
             proceedHint.MinWindowHint.hint("导出成功")
+            this.showInputThemeName = false
+            window.ipcRenderer.send('getThemeFileContent',1)
+        },
+        /**
+         * 
+         * @param {string} name 
+         */
+        savePresupposeRealize(name){
+            
+            //先判断有没有同名的主题
+            if(Object.keys(this.presuppose).includes(name)){
+                proceedHint.proceedHint.warning("该主题已存在,请重新命名")
+                return;
+            }
+            const THEMEOBJ =  this.constructThemeObj(name)
+            const THEMSSTR = JSON.stringify(THEMEOBJ)
+            let file = {
+                        succeed:"保存成功",
+                        err:"保存失败",
+                        content:THEMSSTR
+                    }
+
+            window.ipcRenderer.send('writeThemeFile',file)
+            this.showInputThemeName = false
+
         },
         /**
          * 构建主题对象
@@ -136,18 +167,82 @@ export default{
             console.log(colorTheme)
 
             return colorTheme
-        }
+        },
+        /**
+         * 保存主题文件提醒
+         * @param {*} event 
+         * @param {*} data 
+         */
+        saveHint(event,data){
+            void event
+            if(data.err != void 0){
+                proceedHint.proceedHint.warning(data.err)
+            }else{
+                proceedHint.proceedHint.commonHint(data.succeed,"提示",2000)
+                window.ipcRenderer.send('getThemeFileContent',1)
+            }
+        },
+        /**
+         * 导入文件
+         */
+        importTheme(){
+            //让用户选择json文件并拿到文件对象
+            //创建一个dom对象
+            let file = document.createElement("input")
+            file.type = "file"
+            file.accept = ".json"
+            file.click()
+            //监听用户选择文件
+            file.onchange = (e)=>{
+                //获取用户选择的文件对象
+                let file = e.target.files[0]
+                //创建一个文件读取对象
+                let reader = new FileReader()
+                //读取文件内容
+                reader.readAsText(file)
+                reader.onload = (e)=>{
+                    //获取文件内容
+                    let data = e.target.result
+                    //将文件内容转换为对象
+                    let obj = JSON.parse(data)
+                    //判断是否是主题文件
+
+                    let file = {
+                        succeed:"导入成功",
+                        err:"导入失败",
+                        content:data
+                    }
+
+                    if(obj.name && obj.color){
+                        //先判断有没有同名的主题
+                        if(Object.keys(this.presuppose).includes(obj.name)){
+                            proceedHint.proceedHint.warning("该主题名已经存在,请修改后再导入")
+                            return;
+                        }
+                        window.ipcRenderer.send('writeThemeFile',file)
+                    }else{
+                        proceedHint.proceedHint.warning("该文件不是主题文件")
+                    }
+                }   
+            }
+    }
     },
     mounted(){
         this.colorList = getGlobalStore("themeColorName")
         //去获取主题文件夹下文件中的内容
         window.ipcRenderer.send('getThemeFileContent',1)
-        //TODO: 获取主题文件中的内容
+
+        //获取主题文件中的内容
         window.ipcRenderer.on('ThemeFileContent',this.setThemeFileContent)
+
+        //监听主题文件夹是否写入成功
+        window.ipcRenderer.on('writeThemeFile',this.saveHint)
+
     },
     //在被卸载前先清除监听事件
     beforeUnmount(){
         window.ipcRenderer.removeListener('ThemeFileContent',this.setThemeFileContent)
+        window.ipcRenderer.removeListener('writeThemeFile',this.saveHint)
     },
     components:{
         inputThemeName
@@ -157,10 +252,12 @@ export default{
 
 <style scoped>
 .presupposeBox{
+    margin-top: 10px;
+    border: 4px solid var(--theme-colour);
+    border-radius: 4px;
     display: flex;
     width: 80%;
     height: 300px;
-    border: 1px solid red;
     align-items: center;
     justify-content: center;
     flex-direction: column;
@@ -172,7 +269,6 @@ export default{
     overflow: scroll;
     width: 100%;
     height: 100%;
-    border: 1px solid blue;
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr;;
     font-weight: bold;

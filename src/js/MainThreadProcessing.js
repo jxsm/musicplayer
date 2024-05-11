@@ -70,153 +70,173 @@ class MonitorDispose{
 
 
 
-    
-//TODO: 完成这里
 
-/**
- * 
- * * {
- * path:"路径",
- * position:"位置信息" ,   如(local|internet)本地或网络位置
- * sourceType:"原类型" 如(wav)
- * fileName:,"保存的文件名" 转码后在本地保存的文件名(不需要后缀!!)该文件会被保存到userFile下的temp目录下
- * target:"希望转成的目标类型" 如(mp3),
- * tag:唯一标签
- * headers: 请求头(可为空)
- * } 
- * 接收ipc信息,并调用内置的ffmpeg进行转码
- * 该函数执行后会立即返回转码后临时文件的路径
- * @param {IpcMessageEvent} event 
- * @param {{
- * path:string,
- * position:string,
- * sourceType:string,
- * fileName:string,
- * target:string,
- * tag:string,
- * name:string,
- * artists:Array,
- * headers:object
- * fileLocation:string,
- * }} args 该对象传入的数据应该严格要这样
- */
-static ipc_ffmpeg_transcoding(event,args = {}){
-  console.log(args)
-  //先检查传入的args是否正确
-  if(!(args.path && args.position && args.sourceType && args.fileName && args.target && args.tag)){
-    event.sender.send('return_ffmpeg_transcoding',[args.tag,'error','请检查传入的args的置是否正确(除了headers属性外都不能为空)'])
-  }
-  if(Transcoding.transcoding_list[args.sourceType]){
-    let flag = Transcoding.transcoding_list[args.sourceType](args.path,args.fileName,args.position,args.target,args.headers)
-    flag.then((res)=>{
-      event.sender.send('return_ffmpeg_transcoding',[args.tag,'ok',res,
-      {
-        name:args.name,//歌曲名称
-        artists:args.artists,//艺术家
-        img:args.img,//歌曲封面
-        path:args.path,//歌曲路径
-        fileLocation:args.fileLocation//歌曲文件夹路径
-      }])
-    })
-    .catch((e)=>{
-      event.sender.send('return_ffmpeg_transcoding',[args.tag,'error',e])
-    })
-
-    
-  }
-  else{
-    event.sender.send('return_ffmpeg_transcoding',[args.tag,'error',"没有相对应的转码器,如果您是开发者您可以尝试更改sourceType属性为其他类型"])
-  }
-}
-
-
-
-
-
-
-
-
-/**
- * 下载文件到temp文件目录
- * @param {string} uri 资源的远程路径
- * @param {string} filename 保存的资源名称如(a.mp3)
- * @param {Object} headers 请求头(可不传)
- * @returns {Promise} 如果执行正确则返回下载的文件在temp中的文件名称如(a.mp3)
- */
-static DownloadFile_Temp(uri,filename,headers={}){
-  return new Promise((resolve,reject)=>{
-    request.head(uri, function(err, res, body){
-      if(err){
-        reject(err)
-      }
-      request({url:uri,headers:headers}).pipe(fs.createWriteStream(filename)).on('close', ()=>{
-        resolve(filename);
-      })
+  /**
+   * 
+   * * {
+   * path:"路径",
+   * position:"位置信息" ,   如(local|internet)本地或网络位置
+   * sourceType:"原类型" 如(wav)
+   * fileName:,"保存的文件名" 转码后在本地保存的文件名(不需要后缀!!)该文件会被保存到userFile下的temp目录下
+   * target:"希望转成的目标类型" 如(mp3),
+   * tag:唯一标签
+   * headers: 请求头(可为空)
+   * } 
+   * 接收ipc信息,并调用内置的ffmpeg进行转码
+   * 该函数执行后会立即返回转码后临时文件的路径
+   * @param {IpcMessageEvent} event 
+   * @param {{
+   * path:string,
+   * position:string,
+   * sourceType:string,
+   * fileName:string,
+   * target:string,
+   * tag:string,
+   * name:string,
+   * artists:Array,
+   * headers:object
+   * fileLocation:string,
+   * }} args 该对象传入的数据应该严格要这样
+   */
+  static ipc_ffmpeg_transcoding(event,args = {}){
+    console.log(args)
+    //先检查传入的args是否正确
+    if(!(args.path && args.position && args.sourceType && args.fileName && args.target && args.tag)){
+      event.sender.send('return_ffmpeg_transcoding',[args.tag,'error','请检查传入的args的置是否正确(除了headers属性外都不能为空)'])
     }
-    );
-  })
-}
+    if(Transcoding.transcoding_list[args.sourceType]){
+      let flag = Transcoding.transcoding_list[args.sourceType](args.path,args.fileName,args.position,args.target,args.headers)
+      flag.then((res)=>{
+        event.sender.send('return_ffmpeg_transcoding',[args.tag,'ok',res,
+        {
+          name:args.name,//歌曲名称
+          artists:args.artists,//艺术家
+          img:args.img,//歌曲封面
+          path:args.path,//歌曲路径
+          fileLocation:args.fileLocation//歌曲文件夹路径
+        }])
+      })
+      .catch((e)=>{
+        event.sender.send('return_ffmpeg_transcoding',[args.tag,'error',e])
+      })
 
-
-
-
-/**
- * 删除临时文件(一般都在关闭软件的时候进行调用)
- */
-static clear_Temp_File(){
-  //使用nodejs删除一共文件夹下的所有文件
-  const fileList =  fileOperations.getFolderList("./userFile/temp/",true)
-
-  for(let i = 0;i<fileList.length;i++){
-    if(fileList[i].name){
-      this.clear_Temp_File_By_Path(fileList[i].name + "." + fileList[i].type)
+      
     }
     else{
-      //争对无文件名的文件需要特殊删除
-      if(!this.clear_Temp_File_By_Path(fileList[i].type)){
-        this.clear_Temp_File_By_Path("."+ fileList[i].type)
-      }
+      event.sender.send('return_ffmpeg_transcoding',[args.tag,'error',"没有相对应的转码器,如果您是开发者您可以尝试更改sourceType属性为其他类型"])
     }
-    
-    console.log("删除临时文件a:" + fileList[i].name + "." + fileList[i].type)  
   }
-}
 
 
-/**
- * 删除临时文件中的莫一个文件
- * @param {String} name 文件名(需要包含后缀)
- */
-static clear_Temp_File_By_Path(name){
-  const path = "./userFile/temp/" + name
-  fileOperations.removeTempFile(path)
-}
 
 
-/**
- * 检查temp文件夹是否存在,如果不存在则进行创建
- */
-static testTemp() {
-  if(!fs.existsSync("./userFile/temp/")){
-    fs.mkdirSync("./userFile/temp");
+
+
+
+
+  /**
+   * 下载文件到temp文件目录
+   * @param {string} uri 资源的远程路径
+   * @param {string} filename 保存的资源名称如(a.mp3)
+   * @param {Object} headers 请求头(可不传)
+   * @returns {Promise} 如果执行正确则返回下载的文件在temp中的文件名称如(a.mp3)
+   */
+  static DownloadFile_Temp(uri,filename,headers={}){
+    return new Promise((resolve,reject)=>{
+      request.head(uri, function(err, res, body){
+        if(err){
+          reject(err)
+        }
+        request({url:uri,headers:headers}).pipe(fs.createWriteStream(filename)).on('close', ()=>{
+          resolve(filename);
+        })
+      }
+      );
+    })
   }
-}
 
 
-/**
- * 读取主题文件
- */
-static async readTheme(event){
-  fileOperations.FileBasic.getFileListContent("./userFile/theme/")
-  .then(content=>{
-    event.sender.send('ThemeFileContent',content)
-  })
-  .catch(e=>{
-    console.log(e)
-    event.sender.send('ThemeFileContent','')
-  })
-}
 
+
+  /**
+   * 删除临时文件(一般都在关闭软件的时候进行调用)
+   */
+  static clear_Temp_File(){
+    //使用nodejs删除一共文件夹下的所有文件
+    const fileList =  fileOperations.getFolderList("./userFile/temp/",true)
+
+    for(let i = 0;i<fileList.length;i++){
+      if(fileList[i].name){
+        this.clear_Temp_File_By_Path(fileList[i].name + "." + fileList[i].type)
+      }
+      else{
+        //争对无文件名的文件需要特殊删除
+        if(!this.clear_Temp_File_By_Path(fileList[i].type)){
+          this.clear_Temp_File_By_Path("."+ fileList[i].type)
+        }
+      }
+      
+      console.log("删除临时文件a:" + fileList[i].name + "." + fileList[i].type)  
+    }
+  }
+
+
+  /**
+   * 删除临时文件中的莫一个文件
+   * @param {String} name 文件名(需要包含后缀)
+   */
+  static clear_Temp_File_By_Path(name){
+    const path = "./userFile/temp/" + name
+    fileOperations.removeTempFile(path)
+  }
+
+
+  /**
+   * 检查temp文件夹是否存在,如果不存在则进行创建
+   */
+  static testTemp() {
+    if(!fs.existsSync("./userFile/temp/")){
+      fs.mkdirSync("./userFile/temp");
+    }
+  }
+
+
+  /**
+   * 读取主题文件
+   */
+  static async readTheme(event){
+    fileOperations.FileBasic.getFileListContent("./userFile/theme/")
+    .then(content=>{
+      event.sender.send('ThemeFileContent',content)
+    })
+    .catch(e=>{
+      console.log(e)
+      event.sender.send('ThemeFileContent','')
+    })
+  }
+
+  /**
+   * 写入主题文件到主题文件夹内
+   * @param {*} event 
+   * @param {
+   * {
+   * succeed,
+   * err,
+   * content
+   * }
+   * } data 
+   */
+  static async writeTheme(event,data){
+    const themeJson = JSON.parse(data.content)
+    fileOperations.FileBasic.writeFile(`./userFile/theme/${themeJson.name}.json`,JSON.stringify(themeJson))
+    .then(r=>{
+      event.sender.send('writeThemeFile',{succeed:data.succeed})
+    })
+    .catch(e=>{
+      console.log(e)
+      event.sender.send('writeThemeFile',{err:data.err})
+    })
+  }
 
 }
 
@@ -244,12 +264,6 @@ function setMusicInfo(infos){
 
   return [prList,infos]
 }
-
-
-//TODO: 添加读取音频二进制文件的的功能
-
-
-
 
 
 module.exports = {
