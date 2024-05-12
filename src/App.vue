@@ -154,15 +154,19 @@ export default {
          * 默认选择歌单
          */
         selectThePlaylistByDefault(){
-           const a =  Object.keys(getGlobalStore('currentPath')).length
-           if(a === 0){
-                let  filePath = JSON.parse(localStorage.getItem('filePath'))
-                
-                if(filePath.left != 0 ){
-                    let b = {}
-                    b[filePath[0].path] = filePath[0].type
-                    alterGlobalStore('currentPath',b,true)
-                }
+           try {
+            const a =  Object.keys(getGlobalStore('currentPath')).length
+            if(a === 0){
+                 let  filePath = JSON.parse(localStorage.getItem('filePath'))
+                 
+                 if(filePath.left != 0 ){
+                     let b = {}
+                     b[filePath[0].path] = filePath[0].type
+                     alterGlobalStore('currentPath',b,true)
+                 }
+            }
+           } catch (error) {
+            console.log("未选择歌单")
            }
         }
     },
@@ -195,10 +199,16 @@ export default {
             if(!e.detail.type){
                 //如果是删除歌单,则需要将该歌单从被选中的歌单列表中给删除
                 let fileList =  getGlobalStore('currentPath')
-                if(e.detail.path in fileList){
+                try{
+                    if(e.detail.path in fileList){
                     delete fileList[e.detail.path]
                     alterGlobalStore('currentPath',fileList,true)
+                    }
                 }
+                catch(err){
+                    console.log(err)
+                }
+                
                 
             }
         })
