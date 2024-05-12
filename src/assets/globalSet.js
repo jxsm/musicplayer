@@ -6,6 +6,7 @@ class globalSet{
     static #setInfo = {
         'readFileType':['mp3','ogg','acc','wav',"flac"],
         'autoColor':true,
+        'ffmpegPath':"",
     }
 
     /**

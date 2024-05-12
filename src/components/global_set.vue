@@ -38,8 +38,19 @@
                         <Presuppose></Presuppose>
                     </div>
 
+                    <!--ffmpeg路径设置-->
+                    <div class="ffmepgPathBox">
+                        <p>FFMPEG设置</p>
+                        <ffmpegInfo>
+                        </ffmpegInfo>
+                    </div>
+                </div>
+
+                <div class="topbox" >
+                    
                 </div>
             </div>
+            
             
         </div>
         
@@ -55,6 +66,8 @@ import {proceedHint} from "../../public/static/proceedHint"
 import localForage from "localforage"
 import themeSetting from "./setPage/themeSetting.vue"
 import Presuppose from "./setPage/themeColoerPresuppose.vue"
+import ffmpegInfo from "./setPage/ffmpegInfo.vue"
+
 export default{
     data(){
         return{
@@ -166,6 +179,7 @@ export default{
         filenameExtension,//文件扩展名设置2
         themeSetting,//主题设置
         Presuppose,//预设主题
+        ffmpegInfo,//ffmpeg信息
     }
    
 }

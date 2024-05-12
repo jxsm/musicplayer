@@ -11,15 +11,6 @@ import MusicHttpServer from "./js/MusicHttpServer"
 import ProgramCycle from "./js/ProgramCycle" 
 import {IpcLyric} from "./js/backstage/ipcLyric"
 
-//ffmpeg的路径,如果您要为特定的平台构建则只需要指定特定平台的ffmpeg就可以了
-let ffmpegPath = {
-  Windows_NT:"ffmpeg/win/ffmpeg-2024-03-04-git-e30369bc1c-full_build/bin/ffmpeg.exe",
-  Darwin:"ffmpeg/mac/ffmpeg",
-  Linux:"ffmpeg/linux/ffmpeg-6.1-amd64-static/ffmpeg"
-}
-
-void ffmpegPath
-
 ProgramCycle.executePriority()
 
 // Scheme must be registered before the app is ready

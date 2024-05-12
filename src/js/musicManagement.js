@@ -340,6 +340,7 @@ class MusicManagement{
         if(data[0] ===MusicManagement.musicId || MusicManagement.musicId === -1){
             if(data[1] == 'error'){
                 console.error(data[2])
+                proceedHint.warning("ffmpeg转码失败,请检查音乐文件或是否安装ffmpeg","警告",3000)
             }
             else if(data[1] == 'ok'){
 

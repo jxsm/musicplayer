@@ -2,7 +2,8 @@
 
 # 该项目是一个跨平台的音乐播放器
 
-**首先,如果您是linux用户或mac用户,请先自行安装ffmpeg**
+**首先,如果您是linux用户或mac用户,请先自行安装Ffmpeg,当然了也可以在软件的设置中制定Ffmpeg二进制文件的路径
+默认会使用系统中的Ffmpeg,除了`mp3,ogg,acc,wav,flac`这些格式的音乐外,其他格式的音乐都会经过转码后再播放,所以请确保您正确的安装或选择了Ffmpeg**
 
 **ubuntu**
 
@@ -11,22 +12,6 @@ sudo apt-get install ffmpeg
 ```
 
 # 还未制作完成,正在制作中
-
-## # 注意
-
-**该项目需要使用到ffmpeg,默认是使用ffmpeg文件夹下ffmpeg(需要自行下载ffmpeg放到ffmpeg目录下,然后在 `background.js`中注册ffmpeg路径的位置)**
-
-**如果你想构建好的项目使用系统环境变量中的ffmpeg则可以在 `background.js`中将 `ffmpegPath`给换成空对象:**
-
-```js
-// ffmpegPath = {
-//   Windows_NT:"ffmpeg/win/ffmpeg-2024-03-04-git-e30369bc1c-full_build/bin/ffmpeg.exe",
-//   Darwin:"ffmpeg/mac/ffmpeg",
-//   Linux:"ffmpeg/linux/ffmpeg-6.1-amd64-static/ffmpeg"
-// }
-
-ffmpegPath = {}
-```
 
 # 启动项目
 

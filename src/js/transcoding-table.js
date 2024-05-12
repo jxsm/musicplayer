@@ -1,24 +1,20 @@
 const FfmpegCommand = require('../../node_modules/fluent-ffmpeg/lib/fluent-ffmpeg.js');
 const tempPath = "./userFile/temp/";//临时文件夹
 const os = require('os');
-
-//检查平台,更具不同的平台下载对应的ffmpeg的包
-if (os.type() == 'Windows_NT') {
-	//Windows
-  FfmpegCommand.setFfmpegPath("ffmpeg/win/ffmpeg-2024-03-04-git-e30369bc1c-full_build/bin/ffmpeg.exe")
-}
-if (os.type() == 'Darwin') {
-	//mac
-  FfmpegCommand.setFfmpegPath("ffmpeg/mac/ffmpeg")
-  console.log("mac用户,如果包内自带的ffmpeg有问题,则请自行更换到您可使用的版本")
-}
-if (os.type() == 'Linux') {
-	//Linux平台
-  FfmpegCommand.setFfmpegPath("ffmpeg/linux/ffmpeg-6.1-amd64-static/ffmpeg")
-  console.log("Linux平台用户,如果包内自带的ffmpeg有问题,则请自行更换到您可使用的版本")
-}
+const fileControls = require("../../public/static/file")
 
 
+fileControls.FileBasic.getFileContent("userFile/setInfo.json")
+  .then((data)=>{
+    const info = JSON.parse(data)
+    console.log("ffmpegPaht:"+info.ffmpegPath)
+    if(info.ffmpegPath != "" && info.ffmpegPath != void 0){
+      FfmpegCommand.setFfmpegPath(info.ffmpegPath)
+    }
+  })
+  .catch((err)=>{
+    console.log(err)
+  })
 
 class Transcoding{
 
