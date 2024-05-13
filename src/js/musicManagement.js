@@ -2,6 +2,7 @@
 import localForage from "localforage"
 import {proceedHint} from "../../public/static/proceedHint"
 import {getGlobalStore} from "../assets/globalStore"
+import keyProcessing from "./render/keyProcessing"
 
 /**
  * 管理全局的音乐播放,所有有关播放的控制器都在该类中
@@ -28,6 +29,8 @@ class MusicManagement{
         endTime:0,//结束时间
         surplusTime:0,//剩余时间
     }
+
+    static isPlaying = false //是否正在播放
 
 
     static #audioElement = document.createElement("audio");//创建一个audio标签
@@ -374,11 +377,13 @@ class MusicManagement{
         this.#audioElement.addEventListener('pause',()=>{
             //如果暂停了
             localStorage.setItem("MusicIsPlay",!this.#audioElement.paused)
+            this.isPlaying = !this.#audioElement.paused
         })
 
         this.#audioElement.addEventListener('play',()=>{
             //如果播放了
             localStorage.setItem("MusicIsPlay",!this.#audioElement.paused)
+            this.isPlaying = !this.#audioElement.paused
         })
 
         this.#audioElement.addEventListener('ended',()=>{
@@ -897,7 +902,6 @@ function lodeMusicList(paths){
 }
 
 
-//TODO: 优化未读取到配置时进行重复读取,尝试3次,如果三次过后仍然没有读取到信息则弹窗提醒用户
 window.addEventListener('globalStore:currentPath',(e)=>{
     lodeMusicList(Object.keys(e.detail.value))
 })
@@ -911,6 +915,20 @@ window.addEventListener('globalStore:playMode',(e)=>{
         MusicManagement.lodePlayMode()
     }
 })
+
+
+//当用户按下空格后切换播放
+keyProcessing.addKeydownFunc("Space",()=>{
+    if(MusicManagement.isPlaying){
+        MusicManagement.stop();
+        localStorage.setItem("MusicIsPlay",false)
+    }
+    else{
+        MusicManagement.play();
+        localStorage.setItem("MusicIsPlay",true)
+    }
+})
+
 
 
 

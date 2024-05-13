@@ -179,18 +179,6 @@ export default {
         //软件关闭的时候保存数据
         window.addEventListener('beforeunload', e =>beforeunloadHandler(e))
 
-        
-        //全局监听按键
-        window.pressKeys ={}
-        window.addEventListener('keydown', function (event) {
-            window.pressKeys[event.key] = true
-        });
-
-        window.addEventListener('keyup', function (event) {
-            window.pressKeys[event.key] = false
-        })
-
-
         this.selectThePlaylistByDefault()//初始化歌单选中列表
 
         //监听歌单列表变化
