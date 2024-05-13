@@ -100,25 +100,49 @@ class MonitorDispose{
    */
   static ipc_ffmpeg_transcoding(event,args = {}){
     console.log(args)
+
+
     //先检查传入的args是否正确
     if(!(args.path && args.position && args.sourceType && args.fileName && args.target && args.tag)){
       event.sender.send('return_ffmpeg_transcoding',[args.tag,'error','请检查传入的args的置是否正确(除了headers属性外都不能为空)'])
     }
     if(Transcoding.transcoding_list[args.sourceType]){
-      let flag = Transcoding.transcoding_list[args.sourceType](args.path,args.fileName,args.position,args.target,args.headers)
-      flag.then((res)=>{
-        event.sender.send('return_ffmpeg_transcoding',[args.tag,'ok',res,
-        {
-          name:args.name,//歌曲名称
-          artists:args.artists,//艺术家
-          img:args.img,//歌曲封面
-          path:args.path,//歌曲路径
-          fileLocation:args.fileLocation//歌曲文件夹路径
-        }])
+      //TODO:先检查是否已经解码过了
+    
+      fileOperations.FileBasic.getFileNameList("userFile/temp/")
+      .then((data)=>{
+        const fileName = `${args.fileName}.${args.target}`
+          if(data.includes(fileName)){
+            
+            event.sender.send('return_ffmpeg_transcoding',[args.tag,'ok',fileName,
+            {
+              name:args.name,//歌曲名称
+              artists:args.artists,//艺术家
+              img:args.img,//歌曲封面
+              path:args.path,//歌曲路径
+              fileLocation:args.fileLocation//歌曲文件夹路径
+            }])
+
+            
+          }else{
+            let flag = Transcoding.transcoding_list[args.sourceType](args.path,args.fileName,args.position,args.target,args.headers)
+            flag.then((res)=>{
+              event.sender.send('return_ffmpeg_transcoding',[args.tag,'ok',res,
+              {
+                name:args.name,//歌曲名称
+                artists:args.artists,//艺术家
+                img:args.img,//歌曲封面
+                path:args.path,//歌曲路径
+                fileLocation:args.fileLocation//歌曲文件夹路径
+              }])
+            })
+            .catch((e)=>{
+              event.sender.send('return_ffmpeg_transcoding',[args.tag,'error',e])
+            })
+          }
       })
-      .catch((e)=>{
-        event.sender.send('return_ffmpeg_transcoding',[args.tag,'error',e])
-      })
+
+      
 
       
     }

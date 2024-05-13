@@ -18,7 +18,9 @@ class MusicManagement{
         nowMusicInfo:{},//当前音乐信息
         nowIndex:0,//当前播放的索引
         fileLocation:"",//文件夹位置
+        ffmpegMessage:{},//ffmpeg信息
     }
+
 
     static #musicList = []//音乐播放列表
     
@@ -272,6 +274,11 @@ class MusicManagement{
      * @returns {int} 音乐识别id
      */
     static ffpegTranscoding(info,target,headers={}){
+        this.#info.ffmpegMessage={
+            info:info,
+            target:target,
+            headers:headers
+        }
         //音乐识别id加上1,即忽略之前的请求返回信息
         this.musicId += 1
         if(!info || !target) return;
@@ -384,6 +391,27 @@ class MusicManagement{
             //如果播放了
             localStorage.setItem("MusicIsPlay",!this.#audioElement.paused)
             this.isPlaying = !this.#audioElement.paused
+        })
+
+        this.#audioElement.addEventListener('error',()=>{
+            try{
+                const data = this.#info
+                const ffmpegData = this.#info.ffmpegMessage
+                
+                //如果路径对的上则进行转码
+                if(ffmpegData.info.fileLocation === data.fileLocation){
+                    this.ffpegTranscoding(ffmpegData.info,ffmpegData.target,ffmpegData.headers)
+                    console.log("转吗中")
+                }
+                else{
+                    proceedHint.warning("播放失败","警告",2000)
+                }
+
+            }
+            catch(e){
+                proceedHint.warning("播放失败","警告",3000)
+                console.error(e)
+            }
         })
 
         this.#audioElement.addEventListener('ended',()=>{
@@ -506,7 +534,7 @@ class MusicManagement{
 
     /**
      * 播放方法,使用该方法进行播放会更新传入的格式来判断是否需要转码
-     * @param {Object} infos 音乐信心
+     * @param {Object} infos 音乐信息
      * @param {int} sequence 音乐在页面中列表中的第几个
      */
     static play(infos,sequence){

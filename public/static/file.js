@@ -1,4 +1,5 @@
 
+const { promises } = require('dns');
 const fs = require('fs')
 const path = require('path');
 const request = require('request');
@@ -139,11 +140,11 @@ class FileBasic{
         })
     }
 
-//TODO:该类出错
     /**
      * 获取文件夹下所有文件
      * (返回的是所有文件的绝对路径的一个列表)
      * @param {string} pathStr 
+     * @
      */
     static getFileList(pathStr){
         return new Promise((resolve, reject)=>{
@@ -206,6 +207,27 @@ class FileBasic{
         })
     }
 
+    /**
+     * 获取一个文件下所有文件的名称(包括文件扩展名)
+     * @param {string} path
+     * @returns {promises}
+     */
+    static getFileNameList(path){
+        return new Promise((resolve, reject)=>{
+          fs.readdir(path, { withFileTypes: true }, (err, files) => {
+              
+              if (err) { reject('出错啦'); }
+              let filesList = [];
+              files.forEach(file=>{
+                  if(file.isFile()){
+                      filesList.push(file.name);
+                  }
+              })
+              resolve(filesList);
+          })
+        })
+       
+    }
 }
 
 
