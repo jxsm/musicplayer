@@ -68,7 +68,23 @@ class MonitorDispose{
       event.sender.send('returnGetGlobalSet',[arg,info])
     }
 
-
+     /**
+   * 检查temp文件下的文件,如果过多则从最老的开始删除
+   * @param {number} [MAX=20] 文件的最大数量
+   */
+  static TestClearTemp(MAX = 20){
+    fileOperations.FileBasic.getTimeFileList("userFile/temp/")
+    .then(list=>{
+      console.log(`文件长度${list.length}`)
+      if(list.length>MAX){
+        const removeFile = list.length - MAX
+        for(let i = 0;i<removeFile;i++){
+          console.log(list[i])
+          this.clear_Temp_File_By_Path(list[i].name)
+        }
+      }
+    })
+  }
 
 
   /**
@@ -100,15 +116,12 @@ class MonitorDispose{
    */
   static ipc_ffmpeg_transcoding(event,args = {}){
     console.log(args)
-
-
+    MonitorDispose.TestClearTemp(15)
     //先检查传入的args是否正确
     if(!(args.path && args.position && args.sourceType && args.fileName && args.target && args.tag)){
       event.sender.send('return_ffmpeg_transcoding',[args.tag,'error','请检查传入的args的置是否正确(除了headers属性外都不能为空)'])
     }
-    if(Transcoding.transcoding_list[args.sourceType]){
-      //TODO:先检查是否已经解码过了
-    
+    if(Transcoding.transcoding_list[args.sourceType]){   
       fileOperations.FileBasic.getFileNameList("userFile/temp/")
       .then((data)=>{
         const fileName = `${args.fileName}.${args.target}`
@@ -262,7 +275,13 @@ class MonitorDispose{
     })
   }
 
+
+
+
+
 }
+
+ 
 
 
 /**

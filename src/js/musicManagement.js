@@ -169,7 +169,7 @@ class MusicManagement{
                 if(!this.#info.nowMusicUri.startsWith("/")) nowPath =  '/' + this.#info.nowMusicUri;
                 nowPath = this.URL_PATH + nowPath
                 //设置路径
-                this.#audioElement.src = nowPath;
+                this.setAudioElementSrc(nowPath)
             }
         }
     }
@@ -244,7 +244,6 @@ class MusicManagement{
     }
 
     
-    //TODO: 添加删除文件夹的时候删除所有文件的播放历史记录
     /**
      * 删除指定文件夹下的所有历史记录信息
      * @param {string} file 
@@ -263,7 +262,6 @@ class MusicManagement{
         })
     }
 
-    //TODO: 临时文件需要删除
     /**
      * 主线程调用ffmpeg进行转码
      * @param {Object} info 歌曲信息
@@ -336,7 +334,6 @@ class MusicManagement{
     }
 
 
-    //TODO: 转码后的回调
     /**
      * 默认回调函数
      * @param { Electron.IpcMainEvent} event 
@@ -511,7 +508,8 @@ class MusicManagement{
        clearTimeout(this.palyNowTimeId)
        //设置路径
        this.palyNowTimeId = setTimeout(()=>{
-            this.#audioElement.src = nowPath;
+            this.setAudioElementSrc(nowPath)
+            // this.#audioElement.src = nowPath;
             this.#info.img = img
             this.#palyNow()
             this.saveInfo();
@@ -531,6 +529,15 @@ class MusicManagement{
        
     }
 
+    //TODO:流传输
+    /**
+     * 设置音频元素的src
+     * @param {string} src 
+     */
+    static setAudioElementSrc(src){
+        this.#audioElement.src = src;
+    }
+
 
     /**
      * 播放方法,使用该方法进行播放会更新传入的格式来判断是否需要转码
@@ -539,7 +546,7 @@ class MusicManagement{
      */
     static play(infos,sequence){
         
-        if(infos === undefined && sequence == undefined){
+        if(infos === void 0  && sequence == void 0){
             this.recoverVolume()
             this.#palyNow();
         }
@@ -558,12 +565,8 @@ class MusicManagement{
                 catch(e){
                     artists = undefined
                 }
-
                 const name = infos.infos.title || infos.name
-                
-
                 let img
-
                 try{
                     img = infos.infos.picture[0]
                 }catch{
@@ -650,7 +653,6 @@ class MusicManagement{
      * 播放上一首歌曲
      */
     static previousMusic(){
-        //TODO:播放时索引有误
         this.clearPlayInexRecord(-1)
         if(this.#info.nowIndex == -1){
             //已经是第一首了

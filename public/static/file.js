@@ -228,6 +228,34 @@ class FileBasic{
         })
        
     }
+
+
+    /**
+     * 获取一个路径下所有的文件, 返回一个数组
+     * 顺序是按时间排序
+     * @param {string} pathStr 
+     */
+    static getTimeFileList(pathStr){
+        return new Promise((resolve, reject) => {
+            try {
+                let files = []
+                fs.readdirSync(pathStr).map(file=>{
+                    files.push(
+                        {
+                            name: file,
+                            path: path.resolve( pathStr + "/" + file),
+                            mtime: fs.statSync(pathStr + "/" + file).mtime
+                        }
+                    )
+                }).sort((a,b)=>{
+                    resolve(a.mtime.getTime() - b.mtime.getTime())
+                })
+                resolve(files)
+            } catch (error) {
+                reject(error)
+            }
+        })
+    }
 }
 
 
