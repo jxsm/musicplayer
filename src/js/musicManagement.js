@@ -2,6 +2,7 @@
 import localForage from "localforage"
 import {proceedHint} from "../../public/static/proceedHint"
 import {getGlobalStore} from "../assets/globalStore"
+import keyProcessing from "./render/keyProcessing"
 
 /**
  * 管理全局的音乐播放,所有有关播放的控制器都在该类中
@@ -17,7 +18,9 @@ class MusicManagement{
         nowMusicInfo:{},//当前音乐信息
         nowIndex:0,//当前播放的索引
         fileLocation:"",//文件夹位置
+        ffmpegMessage:{},//ffmpeg信息
     }
+
 
     static #musicList = []//音乐播放列表
     
@@ -28,6 +31,8 @@ class MusicManagement{
         endTime:0,//结束时间
         surplusTime:0,//剩余时间
     }
+
+    static isPlaying = false //是否正在播放
 
 
     static #audioElement = document.createElement("audio");//创建一个audio标签
@@ -164,7 +169,7 @@ class MusicManagement{
                 if(!this.#info.nowMusicUri.startsWith("/")) nowPath =  '/' + this.#info.nowMusicUri;
                 nowPath = this.URL_PATH + nowPath
                 //设置路径
-                this.#audioElement.src = nowPath;
+                this.setAudioElementSrc(nowPath)
             }
         }
     }
@@ -239,7 +244,6 @@ class MusicManagement{
     }
 
     
-    //TODO: 添加删除文件夹的时候删除所有文件的播放历史记录
     /**
      * 删除指定文件夹下的所有历史记录信息
      * @param {string} file 
@@ -258,7 +262,6 @@ class MusicManagement{
         })
     }
 
-    //TODO: 临时文件需要删除
     /**
      * 主线程调用ffmpeg进行转码
      * @param {Object} info 歌曲信息
@@ -269,6 +272,11 @@ class MusicManagement{
      * @returns {int} 音乐识别id
      */
     static ffpegTranscoding(info,target,headers={}){
+        this.#info.ffmpegMessage={
+            info:info,
+            target:target,
+            headers:headers
+        }
         //音乐识别id加上1,即忽略之前的请求返回信息
         this.musicId += 1
         if(!info || !target) return;
@@ -326,7 +334,6 @@ class MusicManagement{
     }
 
 
-    //TODO: 转码后的回调
     /**
      * 默认回调函数
      * @param { Electron.IpcMainEvent} event 
@@ -374,11 +381,34 @@ class MusicManagement{
         this.#audioElement.addEventListener('pause',()=>{
             //如果暂停了
             localStorage.setItem("MusicIsPlay",!this.#audioElement.paused)
+            this.isPlaying = !this.#audioElement.paused
         })
 
         this.#audioElement.addEventListener('play',()=>{
             //如果播放了
             localStorage.setItem("MusicIsPlay",!this.#audioElement.paused)
+            this.isPlaying = !this.#audioElement.paused
+        })
+
+        this.#audioElement.addEventListener('error',()=>{
+            try{
+                const data = this.#info
+                const ffmpegData = this.#info.ffmpegMessage
+                
+                //如果路径对的上则进行转码
+                if(ffmpegData.info.fileLocation === data.fileLocation){
+                    this.ffpegTranscoding(ffmpegData.info,ffmpegData.target,ffmpegData.headers)
+                    console.log("转吗中")
+                }
+                else{
+                    proceedHint.warning("播放失败","警告",2000)
+                }
+
+            }
+            catch(e){
+                proceedHint.warning("播放失败","警告",3000)
+                console.error(e)
+            }
         })
 
         this.#audioElement.addEventListener('ended',()=>{
@@ -478,7 +508,8 @@ class MusicManagement{
        clearTimeout(this.palyNowTimeId)
        //设置路径
        this.palyNowTimeId = setTimeout(()=>{
-            this.#audioElement.src = nowPath;
+            this.setAudioElementSrc(nowPath)
+            // this.#audioElement.src = nowPath;
             this.#info.img = img
             this.#palyNow()
             this.saveInfo();
@@ -498,15 +529,24 @@ class MusicManagement{
        
     }
 
+    //TODO:流传输
+    /**
+     * 设置音频元素的src
+     * @param {string} src 
+     */
+    static setAudioElementSrc(src){
+        this.#audioElement.src = src;
+    }
+
 
     /**
      * 播放方法,使用该方法进行播放会更新传入的格式来判断是否需要转码
-     * @param {Object} infos 音乐信心
+     * @param {Object} infos 音乐信息
      * @param {int} sequence 音乐在页面中列表中的第几个
      */
     static play(infos,sequence){
         
-        if(infos === undefined && sequence == undefined){
+        if(infos === void 0  && sequence == void 0){
             this.recoverVolume()
             this.#palyNow();
         }
@@ -525,12 +565,8 @@ class MusicManagement{
                 catch(e){
                     artists = undefined
                 }
-
                 const name = infos.infos.title || infos.name
-                
-
                 let img
-
                 try{
                     img = infos.infos.picture[0]
                 }catch{
@@ -617,7 +653,6 @@ class MusicManagement{
      * 播放上一首歌曲
      */
     static previousMusic(){
-        //TODO:播放时索引有误
         this.clearPlayInexRecord(-1)
         if(this.#info.nowIndex == -1){
             //已经是第一首了
@@ -897,7 +932,6 @@ function lodeMusicList(paths){
 }
 
 
-//TODO: 优化未读取到配置时进行重复读取,尝试3次,如果三次过后仍然没有读取到信息则弹窗提醒用户
 window.addEventListener('globalStore:currentPath',(e)=>{
     lodeMusicList(Object.keys(e.detail.value))
 })
@@ -911,6 +945,20 @@ window.addEventListener('globalStore:playMode',(e)=>{
         MusicManagement.lodePlayMode()
     }
 })
+
+
+//当用户按下空格后切换播放
+keyProcessing.addKeydownFunc("Space",()=>{
+    if(MusicManagement.isPlaying){
+        MusicManagement.stop();
+        localStorage.setItem("MusicIsPlay",false)
+    }
+    else{
+        MusicManagement.play();
+        localStorage.setItem("MusicIsPlay",true)
+    }
+})
+
 
 
 

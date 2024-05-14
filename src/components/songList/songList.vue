@@ -11,6 +11,7 @@
 import detailChunk from "./detailChunk.vue"
 import {alterGlobalStore,getGlobalStore} from "../../assets/globalStore"
 import {proceedHint} from "../../../public/static/proceedHint"
+import keyProcessing from "../../js/render/keyProcessing.js"
 
 export default{
     data(){
@@ -178,9 +179,9 @@ export default{
          */
         switchCurrentFolder(info){
             let fileList =  getGlobalStore('currentPath')
-            if(window.pressKeys['Shift']){
+            if(keyProcessing.pressKeys['ShiftLeft'] || keyProcessing.pressKeys['ShiftRight']){
                 fileList[info.path] = info.type
-            }else if(window.pressKeys['Control']){
+            }else if(keyProcessing.pressKeys['ControlLeft']){
                 //删除一个键
                 delete fileList[info.path]
             }

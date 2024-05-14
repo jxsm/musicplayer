@@ -100,7 +100,8 @@ export default{
     border-radius: 3px;
     color: var(--adjacent-HighBrightness-colour);
     background-color: var(--adjacent-HighBrightness-colour);
-    color: white;
+    color: var(--adjacent-theme-colour);
+    font-weight: bold;
     border: none;
 }
 

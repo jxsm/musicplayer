@@ -130,8 +130,9 @@ class MusicHttpServer {
 
             const rangeHeader = req.headers.range;
             if (!rangeHeader) {
-      
-              res.writeHead(200, { 'Content-Type': 'audio/mpeg', 'Accept-Ranges': 'bytes' });
+
+              res.writeHead(200, { 'Content-Type': 'audio/mpeg', 'Accept-Ranges': 'bytes', 'Access-Control-Allow-Origin': '*' });
+
               fs.createReadStream(filePath).pipe(res);
             } else {
    
@@ -144,6 +145,7 @@ class MusicHttpServer {
                 'Content-Range': `bytes ${start}-${end}/${stats.size}`,
                 'Content-Length': contentLength,
                 'Content-Type': 'audio/mpeg',
+                'Access-Control-Allow-Origin': '*'
               });
         
               const stream = fs.createReadStream(filePath, { start, end });

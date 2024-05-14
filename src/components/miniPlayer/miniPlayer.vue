@@ -1,5 +1,5 @@
 <template>
-    <div class="waiBox" ref="miniPlayerWaiBox" :style="miniPlayerWaiBoxStyle" >
+    <div class="waiBox" ref="miniPlayerWaiBox" :style="miniPlayerWaiBoxStyle">
         <div class="mainBox">
             <div class="upBox" ref="upBox" :style="upBoxStyle" >
                 <div class="songCover" >
@@ -362,8 +362,9 @@ export default{
 /**音频斜杠 */
 .slash{
     transition: background-color 0.2s;
-    position: absolute;
-    bottom: 85px;
+    position: relative;
+    top: 18px;
+    left: -2px;
     width: 30px;
     height: 6px;
     background-color: var(--theme-colour);
