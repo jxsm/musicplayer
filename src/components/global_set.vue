@@ -67,6 +67,7 @@ import localForage from "localforage"
 import themeSetting from "./setPage/themeSetting.vue"
 import Presuppose from "./setPage/themeColoerPresuppose.vue"
 import ffmpegInfo from "./setPage/ffmpegInfo.vue"
+import MusicManagement from "../js/musicManagement"
 
 export default{
     data(){
@@ -119,6 +120,7 @@ export default{
          * @param {String} filePath 
          */
         deleteFiles(path){
+            MusicManagement.deleteFileAllHistorical(path)
             let filePath =  JSON.parse(this.getFileList()) 
             for(let i = 0;i<filePath.length;i++){
                 if(filePath[i].path == path){
