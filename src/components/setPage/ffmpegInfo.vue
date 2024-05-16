@@ -103,6 +103,8 @@ export default{
     color: var(--adjacent-theme-colour);
     font-weight: bold;
     border: none;
+    overflow: hidden;
+    font-size: 70%;
 }
 
 .ffmpegPath button:hover{

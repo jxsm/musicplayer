@@ -45,6 +45,11 @@
                         </ffmpegInfo>
                     </div>
                 </div>
+                <!--插件设置-->
+                <div class="pluginBox">
+                    <p class="plugintitle">插件</p>
+                    <plugIn></plugIn>
+                </div>
 
                 <div class="topbox" >
                     
@@ -68,6 +73,7 @@ import themeSetting from "./setPage/themeSetting.vue"
 import Presuppose from "./setPage/themeColoerPresuppose.vue"
 import ffmpegInfo from "./setPage/ffmpegInfo.vue"
 import MusicManagement from "../js/musicManagement"
+import plugIn from "./setPage/plugIn.vue"
 
 export default{
     data(){
@@ -182,6 +188,7 @@ export default{
         themeSetting,//主题设置
         Presuppose,//预设主题
         ffmpegInfo,//ffmpeg信息
+        plugIn,//插件设置
     }
    
 }
