@@ -10,6 +10,8 @@ import {MonitorDispose} from "./js/MainThreadProcessing"
 import MusicHttpServer from "./js/MusicHttpServer"
 import ProgramCycle from "./js/ProgramCycle" 
 import {IpcLyric} from "./js/backstage/ipcLyric"
+import {pluginLoad} from "./js/backstage/pluginLoad"
+void pluginLoad
 
 ProgramCycle.executePriority()
 

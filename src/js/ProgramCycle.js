@@ -59,6 +59,17 @@ ProgramCycle.priorityList.fileChecking = function(){
         console.log("创建插件文件夹")
     }
 
+    if(!fs.existsSync("./userFile/plugin/background")){
+        fs.mkdirSync("./userFile/plugin/background")
+        console.log("创建主线程插件文件夹")
+    }
+
+    if(!fs.existsSync("./userFile/plugin/render")){
+        fs.mkdirSync("./userFile/plugin/render")
+        console.log("创建渲染进程插件文件夹")
+    }
+    
+
 }
 
 export default ProgramCycle
