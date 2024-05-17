@@ -26,7 +26,7 @@
 <style scoped>
 .displayPlugIn{
     width: 100%;
-    height: 90%;
+    height: 92%;
     overflow: scroll;
     display: flex;
     flex-wrap: wrap;

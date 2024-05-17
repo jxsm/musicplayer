@@ -54,6 +54,11 @@ ProgramCycle.priorityList.fileChecking = function(){
         console.log("创建主题文件夹")
     }
 
+    if(!fs.existsSync("./userFile/plugin")){
+        fs.mkdirSync("./userFile/plugin")
+        console.log("创建插件文件夹")
+    }
+
 }
 
 export default ProgramCycle

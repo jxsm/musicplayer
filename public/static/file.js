@@ -256,6 +256,34 @@ class FileBasic{
             }
         })
     }
+
+    /**
+     * 获取指定路径下的文件夹列表
+     * @param {string} pathStr 
+     * @returns {Promise}
+     */
+    static getDirectoryList(pathStr){
+        return new Promise((resolve, reject) => {
+            try{
+                fs.readdir(pathStr, "utf-8", (err, files) => {
+                    if(err) reject(err)
+
+                    let filesList = []
+                    files.forEach(file=>{
+                        if(fs.statSync(pathStr + "/" + file).isDirectory()){
+                            filesList.push(file)
+                        }
+                    })
+
+                    resolve(filesList)
+                })
+
+            }catch(err){
+                reject(err)
+            }
+        })
+    }
+
 }
 
 
