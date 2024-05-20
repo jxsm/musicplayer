@@ -6,7 +6,7 @@ import { app, protocol, BrowserWindow ,contextBridge, ipcMain,dialog} from 'elec
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
-import {MonitorDispose} from "./js/MainThreadProcessing"
+import MonitorDispose from "./js/MainThreadProcessing"
 import MusicHttpServer from "./js/MusicHttpServer"
 import ProgramCycle from "./js/ProgramCycle" 
 import {IpcLyric} from "./js/backstage/ipcLyric"
@@ -211,3 +211,5 @@ ipcMain.on('ipcLyric',IpcLyric.Ipcentry)
 ipcMain.on('getThemeFileContent',MonitorDispose.readTheme)
 
 ipcMain.on('writeThemeFile',MonitorDispose.writeTheme)
+
+ipcMain.on('getRenderPluginsContent',MonitorDispose.getRenderPluginsContent)

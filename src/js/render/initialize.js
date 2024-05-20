@@ -48,6 +48,9 @@ export default function initialize() {
                 //恢复到之前的主题
                 ThemeColors.restoreToLast();
 
+                //加载插件加载器
+                import("../render/pluginLoad.js")
+
 
                 
 

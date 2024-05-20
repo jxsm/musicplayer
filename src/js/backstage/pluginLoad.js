@@ -2,7 +2,7 @@ import ProgramCycle from "../ProgramCycle"
 import {FileBasic} from "../../../public/static/file"
 import fs from "fs"
 import path from "path"
-
+import RenderPluginsLoad from "./RenderPluginsLoad"
 
 ProgramCycle.priorityList.pluginLoad = async ()=>{
     // 加载插件
@@ -15,7 +15,16 @@ ProgramCycle.priorityList.pluginLoad = async ()=>{
         if(!fs.existsSync(NOWFILE+"plugin.json")) continue;
         //读取plugin.json文件
         const pluginInfo = JSON.parse(fs.readFileSync(NOWFILE+"plugin.json","utf-8"))
-        if(pluginInfo.location !== "background") return
+        if(pluginInfo.location !== "background") continue
+        //读取config.json文件,看是否启用,并且,如个没有该文件的化进行初始化
+        if(fs.existsSync(NOWFILE+"config.json")){
+            const configInfo = JSON.parse(fs.readFileSync(NOWFILE+"config.json","utf-8"))
+            if(configInfo.enable === false) continue;
+        }
+        else{
+          RenderPluginsLoad.foundConfig(NOWFILE)
+        }
+
         switch (pluginInfo.loading_time) {
             case 1:
                 immediateLoad(NOWFILE,pluginInfo.main)
@@ -42,8 +51,7 @@ ProgramCycle.priorityList.pluginLoad = async ()=>{
  */
 async function  immediateLoad(pathStr,mainFile){
     const FILESTR  = pathStr+mainFile
-    console.log(FILESTR)
-    //判断文件是否存在
+    //判断文件夹子是否存在
     if(!fs.existsSync(FILESTR)) return false;
     //导入js文件
     //获取文件中的字符
@@ -109,3 +117,6 @@ function addClosedList(pathStr,mainFile){
     }
   })
 }
+
+
+

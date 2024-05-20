@@ -8,6 +8,9 @@ const request = require('request');
 
 const tempPath = "./userFile/temp/";//临时文件夹
 
+import RenderPluginsLoad from "./backstage/RenderPluginsLoad"
+
+
 
 
 /**
@@ -276,11 +279,12 @@ class MonitorDispose{
   }
 
   /**
-   * 获取插件列表
+   * 获取渲染进程的所有插件的内容
    * @param {*} event 
    */
-  static async getPlugins(event){
-    void event
+  static async getRenderPluginsContent(event){
+    const contentList = await RenderPluginsLoad.getPulgins()
+    event.sender.send('getRenderPluginsContent',contentList)
   }
 
 
@@ -288,7 +292,6 @@ class MonitorDispose{
 
 }
 
- 
 
 
 /**
@@ -316,9 +319,5 @@ function setMusicInfo(infos){
 }
 
 
-module.exports = {
-  MonitorDispose
-}
-
-
+export default MonitorDispose
 
