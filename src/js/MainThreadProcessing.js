@@ -275,6 +275,13 @@ class MonitorDispose{
     })
   }
 
+  /**
+   * 获取插件列表
+   * @param {*} event 
+   */
+  static async getPlugins(event){
+    void event
+  }
 
 
 

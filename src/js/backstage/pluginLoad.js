@@ -21,10 +21,13 @@ ProgramCycle.priorityList.pluginLoad = async ()=>{
                 immediateLoad(NOWFILE,pluginInfo.main)
                 break;
             case 2:
+                addExecuteProcess(NOWFILE,pluginInfo.main)
                 break;
             case 3:
+                addClosedList(NOWFILE,pluginInfo.main)
                 break
             default:
+                console.log(`插件优先级设置错误,插件路径:(${NOWFILE})`)
                 break;
         }
 
@@ -50,10 +53,59 @@ async function  immediateLoad(pathStr,mainFile){
         return
       } 
       else{
-        eval(data)
+        const func = new Function(data)
+        func()
       }
     })
         
     //获取绝对路径
     console.log(path.dirname(__filename))
+}
+
+
+
+/**
+ * 给第二优先级的插件添加加载
+ * @param {string} pathStr 文件夹路径 
+ * @param {string} mainFile main文件的名称
+ */
+function addExecuteProcess(pathStr,mainFile){
+  const FILESTR  = pathStr+mainFile
+  if(!fs.existsSync(FILESTR)) return false;
+
+  fs.readFile(FILESTR,"utf-8",(err,data)=>{
+    if(err){
+      console.log(`${pathStr}插件加载出错`)
+    } 
+    else{
+      const func = new Function(data)
+      ProgramCycle.processList[FILESTR] = ()=>{
+        func()
+      }
+    }
+  })
+}
+
+
+/**
+ * 给第三优先级加载的插件添加加载事件
+ * @param {string} pathStr 
+ * @param {string} mainFile 
+ * @returns 
+ */
+function addClosedList(pathStr,mainFile){
+  const FILESTR  = pathStr+mainFile
+  if(!fs.existsSync(FILESTR)) return false;
+
+  fs.readFile(FILESTR,"utf-8",(err,data)=>{
+    if(err){
+      console.log(`${pathStr}插件加载出错`)
+    } 
+    else{
+      const func = new Function(data)
+      ProgramCycle.closedList[FILESTR] = ()=>{
+        func()
+      }
+    }
+  })
 }

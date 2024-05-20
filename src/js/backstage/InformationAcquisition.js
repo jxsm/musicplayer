@@ -265,4 +265,5 @@ class InformationAcquisitionAtNetwork{
     
 }
 
+
 export default InformationAcquisitionAtNetwork;

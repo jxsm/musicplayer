@@ -11,6 +11,10 @@ import MusicHttpServer from "./js/MusicHttpServer"
 import ProgramCycle from "./js/ProgramCycle" 
 import {IpcLyric} from "./js/backstage/ipcLyric"
 import {pluginLoad} from "./js/backstage/pluginLoad"
+import module_ad from "./js/backstage/importModule"
+
+void module_ad
+
 void pluginLoad
 
 ProgramCycle.executePriority()
@@ -79,6 +83,7 @@ app.on('activate', () => {
 // Some APIs can only be used after this event occurs.
 app.on('ready', async () => {
   if (isDevelopment && !process.env.IS_TEST) {
+    
     // Install Vue Devtools
     try {
       await installExtension(VUEJS3_DEVTOOLS)
@@ -87,6 +92,7 @@ app.on('ready', async () => {
     }
   }
   createWindow()
+  ProgramCycle.executeProcess()
 })
 
 // Exit cleanly on request from parent process in development mode.
@@ -105,7 +111,7 @@ if (isDevelopment) {
 }
 
 
-ProgramCycle.executeProcess()
+
 
 
 /**
