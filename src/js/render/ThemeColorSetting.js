@@ -91,6 +91,8 @@ class ThemeColorSetting{
 }
 
 
-
+export const aaa = () => {
+    console.log(aaa)
+}
 
 export default ThemeColorSetting;

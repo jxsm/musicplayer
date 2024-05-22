@@ -29,8 +29,8 @@ import miniPopUpWindow from "./components/publicModule/miniPopUpWindow.vue"//迷
 import {getGlobalStore, alterGlobalStore} from './assets/globalStore.js'
 import initialize from "./js/render/initialize.js"
 import beforeunloadHandler from "./js/render/beforeunloadHandler.js"
-
-
+import importModule from "./js/render/importModule"//导入模块
+void importModule
 
 
 SetItemEvent()

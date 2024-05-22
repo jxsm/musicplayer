@@ -61,13 +61,12 @@ async function  immediateLoad(pathStr,mainFile){
         return
       } 
       else{
-        const func = new Function(data)
-        func()
+        eval(data)
       }
     })
         
     //获取绝对路径
-    console.log(path.dirname(__filename))
+    console.log(`执行的绝对路径${path.dirname(__filename)}`)
 }
 
 
@@ -86,9 +85,8 @@ function addExecuteProcess(pathStr,mainFile){
       console.log(`${pathStr}插件加载出错`)
     } 
     else{
-      const func = new Function(data)
       ProgramCycle.processList[FILESTR] = ()=>{
-        func()
+        eval(data)
       }
     }
   })
@@ -110,9 +108,8 @@ function addClosedList(pathStr,mainFile){
       console.log(`${pathStr}插件加载出错`)
     } 
     else{
-      const func = new Function(data)
       ProgramCycle.closedList[FILESTR] = ()=>{
-        func()
+        eval(data)
       }
     }
   })
