@@ -22,7 +22,7 @@
 
 <script>
 import globalSet from "../../assets/globalSet"
-import proceedHint from "../../js/render/proceedHint"
+const proceedHint = require("../../js/render/proceedHint")
 import {getGlobalStore} from "../../assets/globalStore"
 import inputThemeName from "./inputThemeName.vue"
 import ThemeColors from "../../js/ThemeColors"

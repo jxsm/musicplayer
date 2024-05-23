@@ -25,7 +25,7 @@
 <script>
 import switchButton from "../universal/switchButton.vue"
 import globalSet from "../../assets/globalSet"
-import proceedHint from "../../js/render/proceedHint"
+const proceedHint = require("../../js/render/proceedHint")
 import PickColors from 'vue-pick-colors'
 import {getGlobalStore} from "../../assets/globalStore"
 

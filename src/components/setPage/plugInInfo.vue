@@ -4,7 +4,7 @@
             <svg t="1715824587703" class="defaultIcon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5203" width="200" height="200"><path d="M563.20625 545.3875l232.1875-142.7a51.25 51.25 0 0 0-53.6-87.2375L512.00625 456.6 282.61875 315.45a51.25 51.25 0 0 0-53.65 87.2375l231.8375 142.5875v273.925a51.25 51.25 0 1 0 102.4 0zM512.00625 0l443.3875 256v512L512.00625 1024 68.60625 768V256z m0 0"  p-id="5204"></path></svg>
         </div>
         <diV class="details" :title="details">
-            {{details}}
+            {{infos["plugin"]["description"]}}
         </diV>
         <div class="featureBox">
             <svg title="禁用" v-if="enable" t="1715826382013" class="featureIcon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4277" ><path d="M512 953.6a441.6 441.6 0 1 1 0-883.2 441.6 441.6 0 0 1 0 883.2z m0-64a377.6 377.6 0 1 0 0-755.2 377.6 377.6 0 0 0 0 755.2z"  p-id="4278"></path><path d="M182.1696 227.4304l45.2608-45.2608 614.4 614.4-45.2608 45.2608z"  p-id="4279"></path></svg>
@@ -20,9 +20,32 @@
 export default{
     data(){
         return{
-            details:"插件详情插件详情插件详情插件详情插件详情插件详情插件详情插件详情",
             enable:true
         }
+    },
+    props:{
+        infos:{
+            type:Object
+        }
+    },
+    mounted(){
+        
+        // plugin:{
+        //             author: "作者"
+        //             description: "测试插件"
+        //             homepage: "作者主页"
+        //             loading_time: 1
+        //             location: "background"
+        //             logo: "logo.png"
+        //             main: "main.js"
+        //             name: "测试插件"
+        //             version: "1.0.0"
+        //         },
+        //         config:{
+        //             enable:true
+        //         }   
+    
+        
     }
 }
 

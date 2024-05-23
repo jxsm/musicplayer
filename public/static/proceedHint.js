@@ -98,5 +98,5 @@ class MinWindowHint{
 }
 
 
-module.exports = {proceedHint,MinWindowHint} // 导出proceedHint类
+export {proceedHint,MinWindowHint} // 导出proceedHint类
 

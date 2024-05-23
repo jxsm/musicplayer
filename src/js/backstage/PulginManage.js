@@ -19,13 +19,22 @@ class PulginManage{
             background:{},
             render:{}
         }
+        //TODO:这里修改了,渲染线程也需要重新修改
         const BackgroundArr =  await this.getBackgroundFileList()
         for(let i of BackgroundArr){
-            PulginInfo.background[i] = await this.getBackgroundPluginInfo(i)
+            PulginInfo.background[i] = {
+                plugin:await this.getBackgroundPluginInfo(i),
+                config:await this.getBackgroundConfig(i)
+            }
         }
-        const RenderArr = await this.getRenderPluginInfo()
+        const RenderArr = await this.getRenderFileList()
         for(let i of RenderArr){
-            PulginInfo.render[i] = await this.getRenderPluginInfo(i)
+            PulginInfo.render[i] = {
+                plugin:await this.getRenderPluginInfo(i),
+                config:await this.getBackgroundConfig(i)
+            }
+            
+            
         }
         return PulginInfo
 
@@ -76,7 +85,7 @@ class PulginManage{
                 resolve(data)
             })
             .catch(()=>{
-                resolve([])
+                resolve({})
             })
         })
     }
@@ -94,10 +103,48 @@ class PulginManage{
                 resolve(data)
             })
             .catch(()=>{
-                resolve([])
+                resolve({})
             })
         })
     }
+
+    /**
+     * 获取背景线程下指定插件的配置文件
+     * @param {string} name 
+     * @return 如果文件不存在则默认返回{enable:true}
+     */
+    static getBackgroundConfig(name){
+        const ROOT_PATH = "userFile/plugin/background/"
+        return new Promise((resolve)=>{
+            FileBasic.getFileContent(`${ROOT_PATH}${name}/config.json`)
+            .then(data=>{
+                resolve(data)
+            })
+            .catch(()=>{
+                resolve({enable:true})
+            })
+        })
+    }
+
+    /**
+     * 获取渲染线程下指定插件的配置文件
+     * @param {string} name 
+     * @return {Promise} 如果文件不存在则默认返回{enable:true}
+     */
+    static getRenderConfig(name){
+        const ROOT_PATH = "userFile/plugin/render/"
+        return new Promise((resolve)=>{
+            FileBasic.getFileContent(`${ROOT_PATH}${name}/config.json`)
+            .then(data=>{
+                resolve(data)
+            })
+            .catch(()=>{
+                resolve({enable:true})
+            })
+        })
+    }
+
+    
 
 }
 
