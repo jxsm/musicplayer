@@ -5,6 +5,10 @@ import ThemeColors from "../../js/ThemeColors.js"
 
 export default function initialize() {
 
+            window.刷新 = ()=>{
+                location.reload()
+            }
+
             if (!localStorage.getItem('filePath')){
                 localStorage.setItem('filePath',"[]")
                 //如果不存在则从文件中取读取
@@ -47,7 +51,6 @@ export default function initialize() {
                 
                 //恢复到之前的主题
                 ThemeColors.restoreToLast();
-
                 //加载插件加载器
                 import("../render/pluginLoad.js")
 

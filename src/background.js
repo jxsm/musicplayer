@@ -213,3 +213,5 @@ ipcMain.on('getThemeFileContent',MonitorDispose.readTheme)
 ipcMain.on('writeThemeFile',MonitorDispose.writeTheme)
 
 ipcMain.on('getRenderPluginsContent',MonitorDispose.getRenderPluginsContent)
+
+ipcMain.on("getAllPluginsInfo",MonitorDispose.getAllPulginInfo)

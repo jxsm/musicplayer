@@ -94,5 +94,4 @@ class globalSet{
     }
 }
 
-
-module.exports = globalSet;
+export default globalSet;

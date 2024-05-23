@@ -10,7 +10,7 @@ const tempPath = "./userFile/temp/";//临时文件夹
 
 import RenderPluginsLoad from "./backstage/RenderPluginsLoad"
 
-
+import PulginManage from "../js/backstage/PulginManage"
 
 
 /**
@@ -287,9 +287,19 @@ class MonitorDispose{
     event.sender.send('getRenderPluginsContent',contentList)
   }
 
-
-
-
+  /**
+   * 获取所有插件的信息内容
+   */
+  static async getAllPulginInfo(event){
+    PulginManage.getAllPulginInfo()
+    .then(r=>{
+      event.sender.send("getAllPluginsInfo",r)
+    })
+    .catch(e=>{
+      console.log(e)
+      event.sender.send("getAllPluginsInfo",{err:"获取插件错误"})
+    })
+  }
 }
 
 

@@ -289,7 +289,7 @@ class FileBasic{
 
 
 
-module.exports = { 
+export { 
     readFile,
     writeFile,
     getFilesAndFoldersInDir,
