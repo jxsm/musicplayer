@@ -24,12 +24,9 @@
                  */
                 const handleFunc = (keys,indata)=>{
                     for(let i of keys){
-                        const info = (indata[i] instanceof Object)?indata[i]:JSON.parse(indata[i])
+                        const info = indata[i]
                         if(Object.keys(info["plugin"]).length === 0 ){
                             continue
-                        }
-                        for(let i in info){
-                            info[i] = (info[i] instanceof Object)?info[i]:JSON.parse(info[i])
                         }
                         this.pluginList.push(info)
                 }

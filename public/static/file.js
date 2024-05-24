@@ -284,6 +284,20 @@ class FileBasic{
         })
     }
 
+    /**
+     * 获取指定路径下的文件的二进制数据
+     * @param {string} path 
+     * @returns {Promise}
+     */
+    static gteBinaryData(path){
+        return new Promise((resolve, reject) => {
+            fs.readFile(path, (err, data) => {
+                if(err) reject(err)
+                resolve(data)
+            })
+        })
+    }
+
 }
 
 
