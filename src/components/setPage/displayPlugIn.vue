@@ -37,6 +37,8 @@
                 handleFunc(Object.keys(data["background"]),data["background"])
                 handleFunc(Object.keys(data["render"]),data["render"])
             },
+            
+            
         },
         components:{
             plugInInfo

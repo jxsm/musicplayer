@@ -27,6 +27,7 @@ class PulginManage{
             PulginInfo.background[i] = {
                 plugin:pluginTemp,
                 config:await this.getBackgroundConfig(i),
+                fileName:i
             }
            
             PulginInfo.background[i]["logo"]= await this.getBackgroundLogo(i,pluginTemp["logo"])
@@ -37,7 +38,8 @@ class PulginManage{
             const pluginTemp = Object.keys(data).length>0?JSON.parse(await this.getRenderPluginInfo(i)):data
             PulginInfo.render[i] = {
                 plugin:pluginTemp,
-                config:await this.getRenderConfig(i)
+                config:await this.getRenderConfig(i),
+                fileName:i
             }
             
             PulginInfo.render[i]["logo"]= await this.getRenderLogo(i,pluginTemp["logo"])

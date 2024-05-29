@@ -12,10 +12,11 @@ import ProgramCycle from "./js/ProgramCycle"
 import {IpcLyric} from "./js/backstage/ipcLyric"
 import {pluginLoad} from "./js/backstage/pluginLoad"
 import module_ad from "./js/backstage/importModule"
+import {IpcOperatePlugin} from "./js/backstage/operatePlugin"
 
-void module_ad
 
-void pluginLoad
+void module_ad//API加载器
+void pluginLoad//插件加载器
 
 ProgramCycle.executePriority()
 
@@ -215,3 +216,6 @@ ipcMain.on('writeThemeFile',MonitorDispose.writeTheme)
 ipcMain.on('getRenderPluginsContent',MonitorDispose.getRenderPluginsContent)
 
 ipcMain.on("getAllPluginsInfo",MonitorDispose.getAllPulginInfo)
+
+//禁用插件
+ipcMain.on("setPluginEnable",IpcOperatePlugin.setPluginEnable)

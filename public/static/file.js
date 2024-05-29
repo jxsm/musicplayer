@@ -195,7 +195,7 @@ class FileBasic{
         })
     }
 
-    static writeFile(path,content,flag){
+    static writeFile(path,content,flag='w'){
         return new Promise((resolve, reject)=>{
             //写入文件
             fs.writeFile(path, content, { flag: flag, encoding:'utf-8' }
