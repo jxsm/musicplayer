@@ -1,0 +1,13 @@
+/*导入字体*/
+@font-face {
+    font-family: 'AliMaMa';
+    src: url('../font/AlimamaShuHeiTi-Bold.woff2') format('woff2'),
+         url('../font/AlimamaShuHeiTi-Bold.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+
+*{
+    font-family: AliMaMa;
+}

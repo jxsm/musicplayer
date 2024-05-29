@@ -16,6 +16,6 @@ window.Music = {}
 for(let key in moduleList){
     if(!window.Music[key]) window.Music[key] = {}
     for(let j in moduleList[key]){
-        window.Music[key] = moduleList[key][j]
+        window.Music[key][j] = moduleList[key][j]
     }
 }

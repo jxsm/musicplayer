@@ -34,7 +34,7 @@ class PulginManage{
         const RenderArr = await this.getRenderFileList()
         for(let i of RenderArr){
             const data = await this.getRenderPluginInfo(i)
-            const pluginTemp = Object.keys(data).length>0?JSON.parse(await this.getBackgroundPluginInfo(i)):data
+            const pluginTemp = Object.keys(data).length>0?JSON.parse(await this.getRenderPluginInfo(i)):data
             PulginInfo.render[i] = {
                 plugin:pluginTemp,
                 config:await this.getRenderConfig(i)
