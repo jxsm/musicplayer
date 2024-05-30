@@ -48,10 +48,15 @@ class IpcOperatePlugin extends OperatePlugin{
     static async setPluginEnable(event,fileName,location,enable){
         try{
             await super.setPluginEnable(fileName,location,enable);
-            event.sender.send("forbiddenPlugin",fileName,location,true);
+            event.sender.send("updatePluginEnable",fileName,location,{
+                ok:'ok',
+                enable:enable
+            });
         }
         catch(e){
-            event.sender.send("forbiddenPlugin",fileName,location,false);
+            event.sender.send("updatePluginEnable",fileName,location,{
+                err:"err"
+            });
             console.warn("禁用插件失败->")
             console.error(e)
         }

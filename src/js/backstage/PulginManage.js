@@ -22,27 +22,36 @@ class PulginManage{
         //TODO:这里修改了,渲染线程也需要重新修改
         const BackgroundArr =  await this.getBackgroundFileList()
         for(let i of BackgroundArr){
-            const data = await this.getBackgroundPluginInfo(i)
-            const pluginTemp = Object.keys(data).length>0?JSON.parse(await this.getBackgroundPluginInfo(i)):data
-            PulginInfo.background[i] = {
-                plugin:pluginTemp,
-                config:await this.getBackgroundConfig(i),
-                fileName:i
+            try{
+                const data = await this.getBackgroundPluginInfo(i)
+                const pluginTemp = Object.keys(data).length>0?JSON.parse(await this.getBackgroundPluginInfo(i)):data
+                PulginInfo.background[i] = {
+                    plugin:pluginTemp,
+                    config:await this.getBackgroundConfig(i),
+                    fileName:i
+                }
+            
+                PulginInfo.background[i]["logo"]= await this.getBackgroundLogo(i,pluginTemp["logo"])
             }
-           
-            PulginInfo.background[i]["logo"]= await this.getBackgroundLogo(i,pluginTemp["logo"])
+            catch(err){
+                console.error(err)
+            }
         }
         const RenderArr = await this.getRenderFileList()
         for(let i of RenderArr){
-            const data = await this.getRenderPluginInfo(i)
-            const pluginTemp = Object.keys(data).length>0?JSON.parse(await this.getRenderPluginInfo(i)):data
-            PulginInfo.render[i] = {
-                plugin:pluginTemp,
-                config:await this.getRenderConfig(i),
-                fileName:i
+            try {
+                const data = await this.getRenderPluginInfo(i)
+                const pluginTemp = Object.keys(data).length>0?JSON.parse(await this.getRenderPluginInfo(i)):data
+                PulginInfo.render[i] = {
+                    plugin:pluginTemp,
+                    config:await this.getRenderConfig(i),
+                    fileName:i
+                }
+                
+                PulginInfo.render[i]["logo"]= await this.getRenderLogo(i,pluginTemp["logo"])
+            } catch (error) {
+                console.error(error)
             }
-            
-            PulginInfo.render[i]["logo"]= await this.getRenderLogo(i,pluginTemp["logo"])
         }
         return PulginInfo
 
@@ -146,10 +155,17 @@ class PulginManage{
      * @returns 
      */
     static getConfig(ROOT_PATH,name){
-        return new Promise((resolve)=>{
+        return new Promise((resolve,reject)=>{
             FileBasic.getFileContent(`${ROOT_PATH}${name}/config.json`)
             .then(data=>{
-                resolve(data)
+                try{
+                    let jsonDate = JSON.parse(data)
+                    resolve(jsonDate)
+                }
+                catch(err){
+                    console.error(err)
+                    reject(new Error(`${ROOT_PATH}${name}/config.json 配置文件出错,应为json格式`))
+                }
             })
             .catch(()=>{
                 resolve({enable:true})
