@@ -1,5 +1,6 @@
 <template>
     <div class="plugIn">
+        <PluginIformDetails/>
         <displayPlugIn/>
         <div class="feature">
            <div class="feature-item"> 
@@ -11,16 +12,28 @@
 </template>
 <script>
 import displayPlugIn from "./displayPlugIn.vue"
+import PluginIformDetails from "./PluginIformDetails.vue"
 //插件扩展设置
 export default {
     components:{
-        displayPlugIn
+        displayPlugIn,
+        PluginIformDetails
+    },
+    methods:{
+        /**
+         * 显示插件详情
+         * @param {string} info 
+         */
+        showIformDetails(info){
+            console.log(info)
+        }
     }
 }
 </script>
 
 <style scoped>
 .plugIn{
+    position: absolute;
     width: 80%;
     height: 100%;
     border-radius: 10px;

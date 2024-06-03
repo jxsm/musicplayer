@@ -53,7 +53,7 @@ export default{
         //         fileName:文件名   
     
         
-        //TODO:完善启用插件
+        
     },
     computed:{
         showDefaultIcon(){

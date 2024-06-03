@@ -4,6 +4,8 @@ const moduleList ={
     File:require("../../../public/static/file"),//文件操作
     TranscodingTable:require("../transcoding-table"),//音乐解码器
     MainThreadProcessing:require("../MainThreadProcessing"),//主线程中的处理函数
+    IpcLyric:require("../backstage/ipcLyric"),//歌词处理器
+    transcodingTable:require("../transcoding-table.js"),//音乐解码器
 }
 
 
