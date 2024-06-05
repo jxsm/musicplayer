@@ -1,6 +1,6 @@
 <template>
     <div class="displayPlugIn">
-        <plugInInfo v-for="(item,index) in pluginList" :key="index" :infos="item" ref="plugInInfo">
+        <plugInInfo v-for="(item,index) in pluginList" :key="index" :infos="item" ref="plugInInfo" @detainfo="(data)=>{$emit('detainfo',data)}">
 
         </plugInInfo>
       
@@ -75,10 +75,8 @@ import {proceedHint} from "../../js/render/proceedHint"
                         console.error("返回的插件信息与现有的插件信息不匹配,但配置仍然可能被修改")
                     }
                 }
+            },
 
-
-
-            }
             
         },
         components:{

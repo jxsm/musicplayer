@@ -1,7 +1,7 @@
 <template>
     <div class="plugIn">
-        <PluginIformDetails/>
-        <displayPlugIn/>
+        <PluginIformDetails :infos="DetailsInfos" :isShow="showDetails" @close="closeIformDetails"/>
+        <displayPlugIn @detainfo="showIformDetails"/>
         <div class="feature">
            <div class="feature-item"> 
                 <p>导入插件</p>
@@ -17,7 +17,13 @@ import PluginIformDetails from "./PluginIformDetails.vue"
 export default {
     components:{
         displayPlugIn,
-        PluginIformDetails
+        PluginIformDetails,
+    },
+    data(){
+        return {
+            DetailsInfos:{},
+            showDetails:false
+        }
     },
     methods:{
         /**
@@ -25,7 +31,11 @@ export default {
          * @param {string} info 
          */
         showIformDetails(info){
-            console.log(info)
+            this.showDetails = true;
+            this.DetailsInfos = info;
+        },
+        closeIformDetails(){
+            this.showDetails = false;
         }
     }
 }
@@ -33,7 +43,7 @@ export default {
 
 <style scoped>
 .plugIn{
-    position: absolute;
+    position: relative;
     width: 80%;
     height: 100%;
     border-radius: 10px;
