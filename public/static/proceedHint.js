@@ -100,3 +100,4 @@ class MinWindowHint{
 
 export {proceedHint,MinWindowHint} // 导出proceedHint类
 
+export default {proceedHint,MinWindowHint}

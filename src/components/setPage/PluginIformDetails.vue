@@ -1,12 +1,28 @@
 <template>
     <div class="outerLayer">
         <div class="pluginIform">
+            <div class="imgBox">
+                <img :src="imageSrc" v-if="imageSrc!=void 0">
+            </div>
+            <div class="shielding">
+
+            </div>
             <svg data-v-34e53e54="" t="1703493087916" class="closeSet" @click="$emit('close')" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5098" width="200" height="200"><path data-v-34e53e54="" d="M576 512l277.333333 277.333333-64 64-277.333333-277.333333L234.666667 853.333333 170.666667 789.333333l277.333333-277.333333L170.666667 234.666667 234.666667 170.666667l277.333333 277.333333L789.333333 170.666667 853.333333 234.666667 576 512z" fill="" p-id="5099"></path></svg>
+            <div class="infoBox">
+                <h2>{{title}}</h2>
+                <p>版本:{{version}}</p>
+                <p @click="openUserHomepage">作者:{{author}}</p>
+                <div class="description">
+                    {{description}}
+                </div>
+            </div>
         </div>
     </div>
 </template>
 
 <script>
+import { shell } from 'electron'
+
 //插件信息详情
 export default {
     data(){
@@ -22,9 +38,18 @@ export default {
             get thisDisplay(){
                 return this.displayStyle?"flex":"none"
             },
+            title:"",
+            version:"0.0.0",
+            author:"未知",
+            description:"",
+            imageSrc:""
+            
         }
     },
     methods:{
+        /**
+         * 关闭
+         */
         closeSet(){
             this.manage(()=>{
                 this.pluginRotate = 90
@@ -32,9 +57,17 @@ export default {
                 this.displayStyle = false
             })()
         },
+        /**
+         * 显示
+         */
         showSet(){
             this.manage(()=>{
-                console.log("aaa")
+                console.log(this.infos)
+                this.title = this.infos["plugin"]["name"]
+                this.version = this.infos["plugin"]["version"]
+                this.author = this.infos["plugin"]["author"]
+                this.description = this.infos["plugin"]["description"]
+                this.setImg();
                 this.displayStyle = true
                 setTimeout(()=>{
                     this.pluginRotate = 0
@@ -61,6 +94,22 @@ export default {
                 },Rotate)
             }
         },
+        openUserHomepage(){
+            const url = this.infos["plugin"]["homepage"]
+            if(url){
+                shell.openExternal(url)
+            }
+        },
+        setImg(){
+            if(this.infos['logo']){
+                this.imageSrc = "data:image/png;base64,"+this.infos['logo']
+            }
+            else{
+                this.imageSrc = void 0
+            }
+            
+        }
+
     },
     props:{
         isShow:{
@@ -69,8 +118,14 @@ export default {
         },
         infos:{
             type:Object,
-            default:()=>{}
-        }
+            default:()=>{
+                return {
+                    plugin:{
+                        name:"标题"
+                    }
+                }
+            }
+        },
     },
     watch:{
         isShow(val){
@@ -97,6 +152,7 @@ export default {
 }
 
 .pluginIform{
+    overflow: hidden;
     transition: all 0.3s;
     transform: rotateY(v-bind(pluginRotateY)) rotateX(v-bind(pluginRotateX));
     position: absolute;
@@ -105,7 +161,7 @@ export default {
     background-color: var(--adjacentColour-theme-two);
     border-radius: 15px;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
     box-shadow: 10px 10px 10px 0px var(--adjacent-HighBrightness-colour) ;
 }
@@ -114,5 +170,58 @@ export default {
 .pluginIform svg{
     position: absolute;
     right: 10px;
+    
 }
+
+.infoBox{
+    position: absolute;
+    z-index: 10;
+    color: var(--adjacent-theme-colour);
+    display: flex;
+    border: 1px solid red;
+    width: 90%;
+    height: 100%;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.infoBox h1{
+    margin: 0;
+    padding: 0;
+}
+
+.infoBox p {
+    margin-top: 2px;
+    margin: 0;
+}
+
+.description{
+    width: 100%;
+    height: 60%;
+    border: 1px solid rebeccapurple;
+    position: relative;
+    top: 30px;
+    overflow: scroll;
+}
+
+.imgBox{
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    z-index: 1;
+}
+
+.imgBox img{
+    opacity: 0.2;
+    width: 100%;
+}
+
+.shielding{
+    z-index: 2;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to top,var(--oppositeAdjacent-theme-colour) 30%, rgba(255, 0, 0, 0));
+}
+
 </style>
