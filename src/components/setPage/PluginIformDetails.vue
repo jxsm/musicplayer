@@ -8,6 +8,7 @@
 
             </div>
             <svg data-v-34e53e54="" t="1703493087916" class="closeSet" @click="$emit('close')" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5098" width="200" height="200"><path data-v-34e53e54="" d="M576 512l277.333333 277.333333-64 64-277.333333-277.333333L234.666667 853.333333 170.666667 789.333333l277.333333-277.333333L170.666667 234.666667 234.666667 170.666667l277.333333 277.333333L789.333333 170.666667 853.333333 234.666667 576 512z" fill="" p-id="5099"></path></svg>
+            <img :src="loadTypeSrc" class="loadType">
             <div class="infoBox">
                 <h2>{{title}}</h2>
                 <p>版本:{{version}}</p>
@@ -42,8 +43,8 @@ export default {
             version:"0.0.0",
             author:"未知",
             description:"",
-            imageSrc:""
-            
+            imageSrc:"",
+            loadTypeSrc:"",
         }
     },
     methods:{
@@ -68,6 +69,7 @@ export default {
                 this.author = this.infos["plugin"]["author"]
                 this.description = this.infos["plugin"]["description"]
                 this.setImg();
+                this.setloadTypeSrc();
                 this.displayStyle = true
                 setTimeout(()=>{
                     this.pluginRotate = 0
@@ -108,6 +110,16 @@ export default {
                 this.imageSrc = void 0
             }
             
+        },
+        /**
+         * 设置加载类型展示图片
+         */
+        setloadTypeSrc(){
+            const imgSrc = {
+                "background":require("../../assets/svg/xitongguanli.svg"),
+                "render":require("../../assets/svg/渲染.svg")
+            }
+            this.loadTypeSrc = imgSrc[this.infos["plugin"]["location"]]
         }
 
     },
@@ -178,7 +190,6 @@ export default {
     z-index: 10;
     color: var(--adjacent-theme-colour);
     display: flex;
-    border: 1px solid red;
     width: 90%;
     height: 100%;
     flex-direction: column;
@@ -199,7 +210,7 @@ export default {
 .description{
     width: 100%;
     height: 60%;
-    border: 1px solid rebeccapurple;
+
     position: relative;
     top: 30px;
     overflow: scroll;
@@ -222,6 +233,14 @@ export default {
     width: 100%;
     height: 100%;
     background: linear-gradient(to top,var(--oppositeAdjacent-theme-colour) 30%, rgba(255, 0, 0, 0));
+}
+
+.loadType{
+    width: 30px;
+    height: 30px;
+    position: absolute;
+    left: 10px;
+    top: 10px;
 }
 
 </style>

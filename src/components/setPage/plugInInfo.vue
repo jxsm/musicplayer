@@ -1,6 +1,7 @@
 <template>
     <div class="outerBox">
         <div class="showPictures">
+            <img :src="loadTypeSrc" class="loadTypeSrcStyle">
             <img v-if="!showDefaultIcon" :src="imgSrc" class="pluginImg">
             <svg v-if="showDefaultIcon" t="1715824587703" class="defaultIcon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5203" width="200" height="200"><path d="M563.20625 545.3875l232.1875-142.7a51.25 51.25 0 0 0-53.6-87.2375L512.00625 456.6 282.61875 315.45a51.25 51.25 0 0 0-53.65 87.2375l231.8375 142.5875v273.925a51.25 51.25 0 1 0 102.4 0zM512.00625 0l443.3875 256v512L512.00625 1024 68.60625 768V256z m0 0"  p-id="5204"></path></svg>
         </div>
@@ -27,7 +28,8 @@
 export default{
     data(){
         return{
-            imgSrc:""
+            imgSrc:"",
+            loadTypeSrc:""
         }
     },
     props:{
@@ -63,6 +65,7 @@ export default{
     },
     methods:{
         setImg(){
+            this.setloadTypeSrc()
             if(this.infos['logo']){
                 this.imgSrc = "data:image/png;base64,"+this.infos['logo']
             }
@@ -78,6 +81,16 @@ export default{
          */
         enableThisPlugin(){
             window.ipcRenderer.send('setPluginEnable',this.infos['fileName'],this.infos['plugin']['location'],true)
+        },
+        /**
+         * 设置加载类型展示图片
+         */
+         setloadTypeSrc(){
+            const imgSrc = {
+                "background":require("../../assets/svg/xitongguanli.svg"),
+                "render":require("../../assets/svg/渲染.svg")
+            }
+            this.loadTypeSrc = imgSrc[this.infos["plugin"]["location"]]
         },
     }
 }
@@ -162,5 +175,12 @@ export default{
 
 .pluginImg:hover{
     transform: scale(1.1);
+}
+
+.loadTypeSrcStyle{
+   position: fixed;
+   width: 10px;
+   height: 10px;
+   z-index: 2;
 }
 </style>

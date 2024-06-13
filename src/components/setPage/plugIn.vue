@@ -1,5 +1,6 @@
 <template>
     <div class="plugIn">
+        <deleteThePlugin :infos="deleteInfo"></deleteThePlugin>
         <PluginIformDetails :infos="DetailsInfos" :isShow="showDetails" @close="closeIformDetails"/>
         <displayPlugIn @detainfo="showIformDetails"/>
         <div class="feature">
@@ -13,16 +14,19 @@
 <script>
 import displayPlugIn from "./displayPlugIn.vue"
 import PluginIformDetails from "./PluginIformDetails.vue"
+import deleteThePlugin from "./deleteThePlugin.vue"
 //插件扩展设置
 export default {
     components:{
         displayPlugIn,
         PluginIformDetails,
+        deleteThePlugin,
     },
     data(){
         return {
             DetailsInfos:{},
-            showDetails:false
+            showDetails:false,
+            deleteInfo:{},
         }
     },
     methods:{
