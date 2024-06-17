@@ -1,6 +1,6 @@
 <template>
     <div class="outerLayer">
-        <div class="pluginIform">
+        <div class="pluginIform" ref="pluginIform">
             <div class="imgBox">
                 <img :src="imageSrc" v-if="imageSrc!=void 0">
             </div>
@@ -23,28 +23,22 @@
 
 <script>
 import { shell } from 'electron'
-
+import UnfoldAndClone from "../../js/render/UnfoldAndClone"
 //插件信息详情
 export default {
     data(){
         return{
-            pluginRotate:90,
-            displayStyle:false,
-            get pluginRotateY(){
-                return this.pluginRotate +"deg"
-            },
-            get pluginRotateX(){
-                return this.pluginRotate ==0?"0deg" : (this.pluginRotate - 45) +"deg"
-            },
-            get thisDisplay(){
-                return this.displayStyle?"flex":"none"
-            },
+            unfoldAndClone:null,
             title:"",
             version:"0.0.0",
             author:"未知",
             description:"",
             imageSrc:"",
             loadTypeSrc:"",
+            dislpayStyle:false,
+            get thisDisplay(){
+                return this.dislpayStyle?"flex":"none"
+            }
         }
     },
     methods:{
@@ -52,11 +46,11 @@ export default {
          * 关闭
          */
         closeSet(){
-            this.manage(()=>{
-                this.pluginRotate = 90
-            },300,()=>{
-                this.displayStyle = false
-            })()
+            this.unfoldAndClone.close()
+            
+            setTimeout(()=>{
+                this.dislpayStyle = false
+            },400)
         },
         /**
          * 显示
@@ -70,10 +64,10 @@ export default {
                 this.description = this.infos["plugin"]["description"]
                 this.setImg();
                 this.setloadTypeSrc();
-                this.displayStyle = true
+                this.dislpayStyle = true
                 setTimeout(()=>{
-                    this.pluginRotate = 0
-                },0)
+                    this.unfoldAndClone.show()
+                },10)
             },300)()
         },
         /**
@@ -147,6 +141,9 @@ export default {
                 this.closeSet()
             }
         }
+    },
+    mounted(){
+        this.unfoldAndClone = new UnfoldAndClone(this.$refs.pluginIform,"flex")
     }
 }
 </script>
@@ -166,13 +163,12 @@ export default {
 .pluginIform{
     overflow: hidden;
     transition: all 0.3s;
-    transform: rotateY(v-bind(pluginRotateY)) rotateX(v-bind(pluginRotateX));
     position: absolute;
     width: 80%;
     height: 80%;
     background-color: var(--adjacentColour-theme-two);
     border-radius: 15px;
-    display: flex;
+    display: none;
     flex-direction: column;
     align-items: center;
     box-shadow: 10px 10px 10px 0px var(--adjacent-HighBrightness-colour) ;

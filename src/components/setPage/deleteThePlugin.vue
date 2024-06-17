@@ -1,8 +1,8 @@
 <template>
-    <div class="deletePluginBox">
+    <div class="deletePluginBox" ref="deletePluginBox">
         <div class="infoBox">
             <!--TODO:先将删除插件的关闭页面功能做出来-->
-            <svg data-v-34e53e54="" t="1703493087916" class="closeSet" @click="$emit('close')" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5098" width="200" height="200"><path data-v-34e53e54="" d="M576 512l277.333333 277.333333-64 64-277.333333-277.333333L234.666667 853.333333 170.666667 789.333333l277.333333-277.333333L170.666667 234.666667 234.666667 170.666667l277.333333 277.333333L789.333333 170.666667 853.333333 234.666667 576 512z" fill="" p-id="5099"></path></svg>
+            <svg t="1703493087916" class="closeSet" @click="$emit('close')" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5098" width="200" height="200"><path data-v-34e53e54="" d="M576 512l277.333333 277.333333-64 64-277.333333-277.333333L234.666667 853.333333 170.666667 789.333333l277.333333-277.333333L170.666667 234.666667 234.666667 170.666667l277.333333 277.333333L789.333333 170.666667 853.333333 234.666667 576 512z" fill="" p-id="5099"></path></svg>
             <div class="divisionBox">
                 <img :src="imgSrc">
             </div>
@@ -11,10 +11,13 @@
 </template>
 
 <script>
+import UnfoldAndClone from "../../js/render/UnfoldAndClone"
+
 export default{
     data(){
         return{
-            imgSrc:""
+            imgSrc:"",
+            unfoldAndClone:null
         }
     },
     methods:{
@@ -33,11 +36,23 @@ export default{
             default:()=>{
                 return {}
             }
+        },
+        isShow:{
+            type:Boolean,
+            default:false
         }
     },
     watch:{
         infos(){
             this.setImg()
+        },
+        isShow(newValue){
+            if(newValue){
+                this.unfoldAndClone.show()
+            }
+            else{
+                this.unfoldAndClone.close()
+            }
         }
     },
     mounted()
@@ -45,6 +60,8 @@ export default{
         setTimeout(()=>{
             console.log(this.infos)
         },1000)
+
+        this.unfoldAndClone = new UnfoldAndClone(this.$refs.deletePluginBox,"flex")
     }
 }
 </script>
@@ -55,7 +72,7 @@ export default{
     height: 100%;
     position: absolute;
     z-index: 999;
-    display:flex;
+    display:none;
     align-items: center;
     justify-content: center;
 }

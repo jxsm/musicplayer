@@ -1,8 +1,8 @@
 <template>
     <div class="plugIn">
-        <deleteThePlugin :infos="deleteInfo"></deleteThePlugin>
+        <deleteThePlugin :infos="deleteInfo" :is-show="showDeleteInfo" @close="showDeleteInfo = false"></deleteThePlugin>
         <PluginIformDetails :infos="DetailsInfos" :isShow="showDetails" @close="closeIformDetails"/>
-        <displayPlugIn @detainfo="showIformDetails"/>
+        <displayPlugIn @detainfo="showIformDetails" @delete="deletePlugIn"/>
         <div class="feature">
            <div class="feature-item"> 
                 <p>导入插件</p>
@@ -27,6 +27,7 @@ export default {
             DetailsInfos:{},
             showDetails:false,
             deleteInfo:{},
+            showDeleteInfo:false,
         }
     },
     methods:{
@@ -40,6 +41,10 @@ export default {
         },
         closeIformDetails(){
             this.showDetails = false;
+        },
+        deletePlugIn(info){
+            this.showDeleteInfo = true;
+            this.deleteInfo = info;
         }
     }
 }

@@ -1,6 +1,6 @@
 <template>
     <div class="displayPlugIn">
-        <plugInInfo v-for="(item,index) in pluginList" :key="index" :infos="item" ref="plugInInfo" @detainfo="(data)=>{$emit('detainfo',data)}">
+        <plugInInfo @delete="(data)=>{$emit('delete',data)}" v-for="(item,index) in pluginList" :key="index" :infos="item" ref="plugInInfo" @detainfo="(data)=>{$emit('detainfo',data)}">
 
         </plugInInfo>
       
