@@ -57,7 +57,6 @@ export default {
          */
         showSet(){
             this.manage(()=>{
-                console.log(this.infos)
                 this.title = this.infos["plugin"]["name"]
                 this.version = this.infos["plugin"]["version"]
                 this.author = this.infos["plugin"]["author"]
