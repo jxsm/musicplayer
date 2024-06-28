@@ -1,7 +1,7 @@
 <template>
     <div class="deletePluginBox" ref="deletePluginBox">
         <div class="infoBox">
-            <!--TODO:先将删除插件的关闭页面功能做出来-->
+            
             <svg t="1703493087916" class="closeSet" @click="$emit('close')" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5098" width="200" height="200"><path data-v-34e53e54="" d="M576 512l277.333333 277.333333-64 64-277.333333-277.333333L234.666667 853.333333 170.666667 789.333333l277.333333-277.333333L170.666667 234.666667 234.666667 170.666667l277.333333 277.333333L789.333333 170.666667 853.333333 234.666667 576 512z" fill="" p-id="5099"></path></svg>
             
             <div class="imgBox">
@@ -10,7 +10,7 @@
                         <p>确定要删除<kt>{{ showInfo.title }}</kt>吗</p>
                     </div>
                     <div>
-                        <div id="certain" class="sebutton">确定</div>
+                        <div id="certain" class="sebutton" @click="removePlugins">确定</div>
                         <div id="abolish" class="sebutton" @click="$emit('close')">取消</div>
                     </div>
                 </div>
@@ -24,6 +24,7 @@
 
 <script>
 import UnfoldAndClone from "../../js/render/UnfoldAndClone"
+import {proceedHint} from "../../js/render/proceedHint"
 
 export default{
     data(){
@@ -49,6 +50,21 @@ export default{
         },
         setShowInfo(){
             this.showInfo.title = this.infos["plugin"]["name"]
+        },
+        removePlugins(){
+            window.ipcRenderer.send("removePlugins",this.infos["plugin"]["location"],this.infos["fileName"])
+            window.ipcRenderer.on("removePlugins",this.removeMonitor)
+            this.$emit("close")
+        },
+        async removeMonitor(isOK){
+            if(isOK){
+                proceedHint.commonHint("删除成功")
+            }
+            else{
+                proceedHint.warn("删除失败")
+            }
+            window.ipcRenderer.off("removePlugins",this.removeMonitor)
+            window.ipcRenderer.send("getAllPluginsInfo")
         }
     },
     props:{

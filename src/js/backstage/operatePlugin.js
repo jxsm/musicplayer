@@ -1,3 +1,4 @@
+import { ipcMain } from "electron";
 import {FileBasic} from "../../../public/static/file"
 /**
  * 插件的操作方法
@@ -39,6 +40,25 @@ class OperatePlugin{
        data[key] = value;
        await FileBasic.writeFile(ROOT_PATH+"/"+FILE_NAME+"/config.json",JSON.stringify(data))
     }
+
+    static async removePlugin(location,fileName){
+        console.log(fileName)
+        switch(location){
+            case "background":
+                return OperatePlugin.removePathPlugin("userFile/plugin/background/",fileName)
+            case "render":
+                return OperatePlugin.removePathPlugin("userFile/plugin/render/",fileName)
+            default:
+                return Promise.reject("location参数错误");
+        }
+    }
+
+    static async removePathPlugin(ROOT_PATH,FILE_NAME){
+        if(!ROOT_PATH || !FILE_NAME){
+            throw new Error("参数错误");
+        }
+        await FileBasic.removeDirectory(ROOT_PATH+"/"+FILE_NAME);
+    }
 }
 
 /**
@@ -61,6 +81,19 @@ class IpcOperatePlugin extends OperatePlugin{
             console.error(e)
         }
         
+    }
+
+    static async removePlugins(event,location,fileName){
+        
+        super.removePlugin(location,fileName)
+        .then(()=>{
+            event.sender.send("removePlugins",true)
+        })
+        .catch(e=>{
+            console.warn("删除插件失败->")
+            console.error(e)
+            event.sender.send("removePlugins",false)
+        })
     }
 }
 

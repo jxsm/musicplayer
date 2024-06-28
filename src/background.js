@@ -219,3 +219,6 @@ ipcMain.on("getAllPluginsInfo",MonitorDispose.getAllPulginInfo)
 
 //禁用插件
 ipcMain.on("setPluginEnable",IpcOperatePlugin.setPluginEnable)
+
+//删除插件
+ipcMain.on("removePlugins",IpcOperatePlugin.removePlugins)

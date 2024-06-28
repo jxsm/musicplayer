@@ -125,6 +125,7 @@ function DownloadFile_Temp(uri,fileName,callback=()=>{}){
 
 
 
+// 文件操作
 class FileBasic{
     /**
      * 读取文件内容
@@ -294,6 +295,15 @@ class FileBasic{
             fs.readFile(path, (err, data) => {
                 if(err) reject(err)
                 resolve(data)
+            })
+        })
+    }
+
+    static removeDirectory(path){
+        return new Promise((resolve, reject) => {
+            fs.rmdir(path, { recursive: true }, (err) => {
+                if(err) reject(err)
+                resolve()
             })
         })
     }

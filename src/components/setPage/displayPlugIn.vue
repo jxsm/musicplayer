@@ -18,6 +18,7 @@ import {proceedHint} from "../../js/render/proceedHint"
         },
         methods:{
             addPluginList(event,data){
+                this.pluginList= []
                 /**
                  * 处理插件信息
                  * @param {string} keys 插件的key值
@@ -34,7 +35,7 @@ import {proceedHint} from "../../js/render/proceedHint"
                 }
 
                 void event
-                window.ipcRenderer.removeListener("getAllPluginsInfo",this.addPluginList)
+                // window.ipcRenderer.removeListener("getAllPluginsInfo",this.addPluginList)
                 handleFunc(Object.keys(data["background"]),data["background"])
                 handleFunc(Object.keys(data["render"]),data["render"])
             },
