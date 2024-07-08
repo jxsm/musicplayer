@@ -132,12 +132,13 @@ export default{
     justify-content:center;
     width: 100%;
     height: 90%;
-    border: 1px solid red;
 }
 
 .divisionBox img{
+    position: relative;
     top: 0;
     width: 100%;
+    opacity: 0.5;
 }
 
 .imgBox{

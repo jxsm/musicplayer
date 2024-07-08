@@ -206,17 +206,22 @@ class MonitorDispose{
     const fileList =  fileOperations.getFolderList("./userFile/temp/",true)
 
     for(let i = 0;i<fileList.length;i++){
-      if(fileList[i].name){
-        this.clear_Temp_File_By_Path(fileList[i].name + "." + fileList[i].type)
-      }
-      else{
-        //争对无文件名的文件需要特殊删除
-        if(!this.clear_Temp_File_By_Path(fileList[i].type)){
-          this.clear_Temp_File_By_Path("."+ fileList[i].type)
+      try{
+        if(fileList[i].name){
+          this.clear_Temp_File_By_Path(fileList[i].name + "." + fileList[i].type)
         }
+        else{
+          //争对无文件名的文件需要特殊删除
+          if(!this.clear_Temp_File_By_Path(fileList[i].type)){
+            this.clear_Temp_File_By_Path("."+ fileList[i].type)
+          }
+        }
+        
+        console.log("删除临时文件a:" + fileList[i].name + "." + fileList[i].type)  
       }
-      
-      console.log("删除临时文件a:" + fileList[i].name + "." + fileList[i].type)  
+      catch(e){
+        console.log(e)
+      }
     }
   }
 

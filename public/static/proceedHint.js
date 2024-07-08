@@ -2,7 +2,7 @@
  * 提示类,该类中封装了侧边推出提示组件的使用
  */
 class proceedHint {
-
+    static promPting = false
     /**
      * 提示
      * @param {String} content 提示内容
@@ -54,7 +54,12 @@ class proceedHint {
                 level:level
             }
         });
+        this.promPting = true;
         window.dispatchEvent(warningEvent);
+        setTimeout(()=>{
+            this.promPting = false;
+        },time)
+
     }
     
 

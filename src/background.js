@@ -192,7 +192,7 @@ ipcMain.on('globalSetSave',MonitorDispose.globalSetSave)
 ipcMain.on('getGlobalSet',MonitorDispose.getGlobalSet)
 
 //删除临时文件下的所有文件
-ipcMain.on("clearTempAll",(event,arg)=>{MonitorDispose.clear_Temp_File()})
+ipcMain.on("clearTempAll",MonitorDispose.clear_Temp_File)
 
 //使用ffmpeg进行转码率
 ipcMain.on("ffpegTranscoding",MonitorDispose.ipc_ffmpeg_transcoding)
@@ -222,3 +222,5 @@ ipcMain.on("setPluginEnable",IpcOperatePlugin.setPluginEnable)
 
 //删除插件
 ipcMain.on("removePlugins",IpcOperatePlugin.removePlugins)
+
+ipcMain.on("importPlugin",IpcOperatePlugin.importPlugin)

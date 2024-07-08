@@ -308,6 +308,16 @@ class FileBasic{
         })
     }
 
+    
+    /**
+     * 检查文件夹是否存在
+     */
+    static examineDirectoryExistence(path){
+        return new Promise((resolve) => {
+             resolve(fs.existsSync(path))
+        })
+    }
+
 }
 
 

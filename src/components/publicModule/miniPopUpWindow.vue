@@ -59,6 +59,10 @@ export default {
             setTimeout(()=>{
                 this.window_box_style.width = this.$refs.window_box.offsetWidth + 30 + "px"
                 this.window_box_style.height = this.$refs.window_box.offsetHeight + 10 + "px"
+                setTimeout(()=>{
+                    //设置元素未知到屏幕中间
+                    this.window_box_style.left = (document.body.clientWidth - this.$refs.window_box.offsetWidth)/2 + "px"
+                },3)
             },3)
         }
     },
