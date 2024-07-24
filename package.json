@@ -17,6 +17,7 @@
   "dependencies": {
     "@babel/core": "^7.24.0",
     "@babel/preset-env": "^7.24.0",
+    "@vue/cli": "^5.0.8",
     "adm-zip": "^0.5.14",
     "color": "^4.2.3",
     "colorthief": "^2.4.0",
